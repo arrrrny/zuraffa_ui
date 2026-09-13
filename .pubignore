@@ -8,3 +8,7 @@ macos
 web
 linux
 fonts.zip
+# `flutter test` golden diffs. These are gitignored build debris, but
+# `.pubignore` replaces `.gitignore` for `dart pub publish` rather than
+# stacking on it, so they have to be excluded here as well.
+test/**/failures/
