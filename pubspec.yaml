@@ -1,9 +1,7 @@
 name: zuraffa_ui
 description: Zuraffa UI - identified Zfa components and ZuraffaApp. The skin lane certified vocabulary, repackaged end to end from the shadcn_ui Flutter port.
 version: 0.1.0
-homepage: https://mariuti.com/flutter-shadcn-ui
-repository: https://github.com/arrrrny/zuraffa-ui
-documentation: https://mariuti.com/flutter-shadcn-ui
+repository: https://github.com/arrrrny/zuraffa_ui
 topics:
   - user-interface
   - design-system

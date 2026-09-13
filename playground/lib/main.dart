@@ -115,7 +115,7 @@ class _MyAppState extends State<MyApp> {
         final themeMode = themeSignal.value;
         final themeColor = themeColorSignal.value;
         return ShadApp.router(
-          title: 'shadcn-ui Flutter Playground',
+          title: 'zuraffa_ui Flutter Playground',
           routerConfig: router,
           themeMode: themeMode,
           debugShowCheckedModeBanner: false,
