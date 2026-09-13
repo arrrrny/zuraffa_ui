@@ -1,4 +1,4 @@
-Contributing to Flutter Shadcn UI
+Contributing to Zuraffa UI
 =======================
 
 _TL;DR_: join [Discord](https://discord.gg/ZhRMAPNh5Y), be courteous.
@@ -19,7 +19,7 @@ useful for our engineers.
 
 If you want to help us triage, you are very welcome to do so!
 
-See all the issues [here](https://github.com/nank1ro/flutter-shadcn-ui/issues)
+See all the issues [here](https://github.com/arrrrny/zuraffa_ui/issues)
 
 ## Quality Assurance
 
@@ -46,7 +46,7 @@ The name of the widget must be prefixed with `Shad`, so we have `ShadAvatar` and
 
 Each component should have a corresponding theme, which is put at the path `lib/src/theme/components` with the same name of the component you provided early.
 
-The component and the component's theme must be exported from the `lib/shadcn_ui.dart` file.
+The component and the component's theme must be exported from the `lib/shad.dart` file.
 
 The parameters of the component should be as customizable as possible, ideally they must be put in both the component and component's theme.
 

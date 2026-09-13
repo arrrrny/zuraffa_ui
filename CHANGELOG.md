@@ -1,3 +1,26 @@
+## 0.2.0
+
+- **FEAT**: `ShadStickySectionList` (with `ShadListSection` and the matching
+  `ShadStickySectionListTheme`) — a scrollable list with one sticky header that
+  tracks the active section by measuring the live inline headers, plus an
+  `onSectionChanged` callback. Wired through `ShadThemeData` and both default
+  theme variants, with tests, example pages and a sheet guide for the
+  pinned-title-with-list pattern.
+- **FIX**: the packaged font families still named the old package —
+  `kDefaultFontFamily`/`kDefaultFontFamilyMono` now resolve
+  `packages/zuraffa_ui/Geist` instead of the pre-repackage path, which silently
+  fell back to the platform font.
+- **FIX**: `ZuraffaApp.theme`/`darkTheme` are typed `ZfaThemeData`, so the
+  certified barrel no longer exposes a raw `Shad*` type.
+- **CHORE**: the localization output is regenerated with the current `slang`
+  builder.
+- **CHORE**: the CLI package is renamed `shadcn` → `zuraffa`, and the generated
+  agent skill moves to `skills/zuraffa-ui-flutter`.
+- Package identity reframed end to end: pubspec repository URL, README, the
+  prohibited-import CI check (it still matched the old barrel path), the publish
+  workflow (it called the upstream reusable workflow instead of this repo's own),
+  `CONTRIBUTING.md` and the issue/PR templates.
+
 ## 0.1.0
 
 End-to-end repackage of the shadcn_ui fork as `zuraffa_ui` (spec #1099) — the

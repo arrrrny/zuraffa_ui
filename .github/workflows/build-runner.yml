@@ -5,6 +5,10 @@ on:
 
 jobs:
   build-runner:
+    # Pushing the regenerated output back to the PR branch needs write access
+    # to contents. The caller grants it; this is only a subset request.
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}

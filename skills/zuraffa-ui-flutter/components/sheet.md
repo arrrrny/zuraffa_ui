@@ -141,10 +141,191 @@ Row(
 // See EditProfileSheet code in the previous code example
 ```
 
+
+
+## Expandable
+
+Set `expandable: true` to let the user drag the handle (or the sheet's body
+edge) to resize the sheet between `minSize` and `maxSize`, starting at
+`initialSize`. Enable `snap` with `snapSizes` to make releases settle on the
+nearest stop, and a fast flick always goes straight to `maxSize` or `minSize`.
+
+Drive the size programmatically with a `ShadSheetController` (`jumpTo`,
+`animateTo`), and replace the default pill with `dragHandle` or the
+side-aware `dragHandleBuilder`.
+
+
+
+```dart
+ShadButton.outline(
+  child: const Text('Open expandable sheet'),
+  onPressed: () => showShadSheet(
+    side: ShadSheetSide.bottom,
+    context: context,
+    builder: (context) => const ShadSheet(
+      expandable: true,
+      snap: true,
+      snapSizes: [0.3, 0.6, 0.9],
+      initialSize: 0.3,
+      minSize: 0.3,
+      maxSize: 0.9,
+      title: Text('Expandable Sheet'),
+      description: Text('Drag the handle to resize'),
+      child: Text('Content here'),
+    ),
+  ),
+)
+```
+
+
+
+## Dynamic Sticky Title with List
+
+Use a `ShadSheet` with `scrollable: false` and manage the scroll + title
+yourself. The title bar sits outside the scroll view so it stays pinned,
+and a `ScrollController` listener updates the title text based on which
+section is currently visible.
+
+```dart
+showShadSheet(
+  context: context,
+  builder: (context) => const _ListSheetContent(),
+);
+
+class _ListSheetContent extends StatefulWidget {
+  const _ListSheetContent();
+
+  @override
+  State<_ListSheetContent> createState() => _ListSheetContentState();
+}
+
+class _ListSheetContentState extends State<_ListSheetContent> {
+  late final ScrollController _scrollController;
+  String _currentSection = sections.first.title;
+  late final List<double> _sectionOffsets;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()
+      ..addListener(_onScroll);
+
+    _sectionOffsets = [];
+    double offset = 0;
+    for (final s in sections) {
+      _sectionOffsets.add(offset);
+      offset += 48; // section header height
+      offset += s.products.length * 72; // item height
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final offset = _scrollController.position.pixels;
+    for (var i = _sectionOffsets.length - 1; i >= 0; i--) {
+      if (offset >= _sectionOffsets[i] - 1) {
+        if (_currentSection != sections[i].title) {
+          setState(() => _currentSection = sections[i].title);
+        }
+        return;
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    final s = sections;
+
+    return ShadSheet(
+      scrollable: false,
+      expandable: true,
+      initialSize: 1.0,
+      minSize: 0.3,
+      maxSize: 1.0,
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          // Pinned title — outside the scroll view
+          Container(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.background,
+              border: Border(
+                bottom: BorderSide(
+                  color: theme.colorScheme.border,
+                ),
+              ),
+            ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Text(
+                _currentSection,
+                key: ValueKey(_currentSection),
+                style: theme.textTheme.large.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          // Scrollable list with section headers + items
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: EdgeInsets.zero,
+              itemCount: s.fold<int>(
+                0,
+                (sum, sec) => sum + 1 + sec.products.length,
+              ),
+              itemBuilder: (context, index) {
+                var remaining = index;
+                for (final section in s) {
+                  if (remaining == 0) {
+                    // Section header
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      color: theme.colorScheme.muted
+                          .withValues(alpha: 0.3),
+                      child: Text(section.title),
+                    );
+                  }
+                  remaining--;
+                  if (remaining < section.products.length) {
+                    // Product item
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      child: Text(
+                        section.products[remaining].name,
+                      ),
+                    );
+                  }
+                  remaining -= section.products.length;
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
 ## Example
 ```dart
 import 'package:example/common/base_scaffold.dart';
-import 'package:example/common/extensions.dart';
 import 'package:example/common/properties/bool_property.dart';
 import 'package:example/common/properties/enum_property.dart';
 import 'package:flutter/material.dart';
@@ -165,6 +346,8 @@ class SheetPage extends StatefulWidget {
 class _SheetPageState extends State<SheetPage> {
   var side = ShadSheetSide.bottom;
   var draggable = false;
+  var expandable = false;
+  var snap = false;
   var titlePinned = false;
   var descriptionPinned = false;
   var actionsPinned = true;
@@ -193,6 +376,16 @@ class _SheetPageState extends State<SheetPage> {
           onChanged: (value) => setState(() => draggable = value),
         ),
         MyBoolProperty(
+          label: 'Expandable',
+          value: expandable,
+          onChanged: (value) => setState(() => expandable = value),
+        ),
+        MyBoolProperty(
+          label: 'Snap',
+          value: snap,
+          onChanged: (value) => setState(() => snap = value),
+        ),
+        MyBoolProperty(
           label: 'titlePinned',
           value: titlePinned,
           onChanged: (v) => setState(() => titlePinned = v),
@@ -218,6 +411,12 @@ class _SheetPageState extends State<SheetPage> {
               builder: (context) {
                 return ShadSheet(
                   draggable: draggable,
+                  expandable: expandable,
+                  snap: snap,
+                  snapSizes: snap ? [0.3, 0.6, 0.9] : null,
+                  initialSize: 0.5,
+                  minSize: 0.25,
+                  maxSize: 0.9,
                   constraints:
                       side == ShadSheetSide.left || side == ShadSheetSide.right
                       ? const BoxConstraints(maxWidth: 512)
@@ -235,29 +434,26 @@ class _SheetPageState extends State<SheetPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       spacing: 16,
-                      children:
-                          (profile.map(
-                                    (p) => Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            p.title,
-                                            textAlign: TextAlign.end,
-                                            style: theme.textTheme.small,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        Expanded(
-                                          flex: 5,
-                                          child: ShadInput(
-                                            initialValue: p.value,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ) *
-                                  20)
-                              .toList(),
+                      children: profile
+                          .map(
+                            (p) => Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    p.title,
+                                    textAlign: TextAlign.end,
+                                    style: theme.textTheme.small,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  flex: 5,
+                                  child: ShadInput(initialValue: p.value),
+                                ),
+                              ],
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                 );

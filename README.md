@@ -48,14 +48,17 @@ The engine: shadcn/ui ported in Flutter. Awesome UI components, fully customizab
 
 ## Documentation
 
-See the [documentation](https://mariuti.com/flutter-shadcn-ui/) to interact with the components and see the code.
+The certified `Zfa*` surface is documented above. The engine components below it
+are documented by the upstream project: see the
+[upstream documentation](https://mariuti.com/flutter-shadcn-ui/) to interact
+with them and see the code.
 
 ### Agent Skills
 
 You can install the [Agent Skills](https://agentskills.io) for this project with:
 
 ```bash
-npx skills add nank1ro/flutter-shadcn-ui
+npx skills add arrrrny/zuraffa_ui
 ```
 
 ## Progress
