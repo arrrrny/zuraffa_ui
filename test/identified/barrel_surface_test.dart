@@ -68,6 +68,29 @@ void main() {
         reason: 'the upstream shadcn_ui version must be recorded',
       );
     });
+
+    test('packaged font families resolve under the current package name', () {
+      // Flutter registers a dependency's fonts as `packages/<name>/<family>`.
+      // A rename that misses these constants makes the default Geist family
+      // silently fail to resolve at runtime.
+      final name = RegExp(
+        r'^name:\s*(\S+)',
+        multiLine: true,
+      ).firstMatch(pubspec)!.group(1)!;
+      final fonts = File(
+        'lib/src/theme/text_theme/text_styles_default.dart',
+      ).readAsStringSync();
+      expect(
+        fonts,
+        contains("'packages/$name/Geist'"),
+        reason: 'kDefaultFontFamily must point at packages/$name/Geist',
+      );
+      expect(
+        fonts,
+        contains("'packages/$name/GeistMono'"),
+        reason: 'kDefaultFontFamilyMono must point at packages/$name/GeistMono',
+      );
+    });
   });
 
   group('barrel surface', () {
@@ -155,6 +178,64 @@ void main() {
             'downstream must import package:zuraffa_ui/... only; these files '
             'still import the shadcn_ui package: $offenders',
       );
+    });
+  });
+
+  group('certified surface vocabulary', () {
+    // The alias seam: this file IS the Zfa<->Shad bridge, so it is the one
+    // place where the raw engine theme names may stand in a type position.
+    const aliasSeam = 'src/identified/theme/zfa_theme.dart';
+
+    // A raw engine name is fine in a call position — `ShadButton(`,
+    // `showShadSheet<T>(`, `ShadTheme.of(context)` — the identified layer
+    // composes the engine. Declared as a type it is a leak.
+    bool isCallSite(String code, int matchEnd) {
+      final rest = code.substring(matchEnd).trimLeft();
+      return rest.startsWith('(') ||
+          rest.startsWith('<') ||
+          rest.startsWith('.');
+    }
+
+    test('the barrel types the certified surface with Zfa names only', () {
+      final barrel = File('lib/zuraffa_ui.dart').readAsStringSync();
+      final exports = RegExp(
+        r"^export\s+'([^']+)'",
+        multiLine: true,
+      ).allMatches(barrel).map((m) => m.group(1)!).toList();
+
+      final offenders = <String>[];
+      for (final path in exports) {
+        if (path == aliasSeam) continue;
+        final code = File('lib/$path')
+            .readAsStringSync()
+            .split('\n')
+            .where((line) => !line.trimLeft().startsWith('//'))
+            .join('\n');
+        for (final match in RegExp(
+          r'\bShad[A-Z][A-Za-z0-9_]*',
+        ).allMatches(code)) {
+          if (!isCallSite(code, match.end)) {
+            offenders.add('$path declares ${match.group(0)}');
+          }
+        }
+      }
+
+      expect(
+        offenders,
+        isEmpty,
+        reason:
+            'a skin types Zfa names only, e.g. ZuraffaApp(theme: '
+            'ZfaThemeData(...)) — so no exported file may declare a raw '
+            'engine name. Offenders: $offenders',
+      );
+    });
+
+    test('ZuraffaApp types its themes with ZfaThemeData', () {
+      final source = File(
+        'lib/src/identified/app/zuraffa_app.dart',
+      ).readAsStringSync();
+      expect(source, contains('final ZfaThemeData? theme;'));
+      expect(source, contains('final ZfaThemeData? darkTheme;'));
     });
   });
 }
