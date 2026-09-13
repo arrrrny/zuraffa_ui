@@ -17,9 +17,11 @@ jobs:
         run: |
           echo "Checking for prohibited Material, Cupertino and package-barrel imports in lib directory..."
 
-          # Define excluded files
+          # App-level shells wrap MaterialApp/CupertinoApp and need their
+          # imports; the component and theme layers below them must not.
           EXCLUDED_FILES=(
             "lib/src/app.dart"
+            "lib/src/identified/app/zuraffa_app.dart"
           )
 
           # Build grep exclusion pattern
