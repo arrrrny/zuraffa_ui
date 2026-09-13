@@ -33,15 +33,15 @@ void main() async {
   final indexFile = File('docs/src/content/docs/index.md');
   final utilsDir = Directory('docs/src/content/docs/Utils');
   final packagesFile = File('docs/src/content/docs/packages.md');
-  final outputDir = Directory('skills/shadcn-ui-flutter');
+  final outputDir = Directory('skills/zuraffa-ui-flutter');
 
   if (!outputDir.existsSync()) {
     outputDir.createSync(recursive: true);
   }
 
   // Ensure subdirectories exist
-  Directory('skills/shadcn-ui-flutter/components').createSync(recursive: true);
-  Directory('skills/shadcn-ui-flutter/guides').createSync(recursive: true);
+  Directory('skills/zuraffa-ui-flutter/components').createSync(recursive: true);
+  Directory('skills/zuraffa-ui-flutter/guides').createSync(recursive: true);
 
   print('Parsing components...');
   final components = <ComponentInfo>[];
@@ -74,7 +74,7 @@ void main() async {
   print('Generating component files...');
   for (final comp in components) {
     final compFile = File(
-      'skills/shadcn-ui-flutter/components/${comp.fileName}',
+      'skills/zuraffa-ui-flutter/components/${comp.fileName}',
     );
     await compFile.writeAsString('# ${comp.name}\n\n${comp.content}');
   }
@@ -147,7 +147,9 @@ void main() async {
 
   print('Generating guide files...');
   for (final guide in guides) {
-    final guideFile = File('skills/shadcn-ui-flutter/guides/${guide.fileName}');
+    final guideFile = File(
+      'skills/zuraffa-ui-flutter/guides/${guide.fileName}',
+    );
     await guideFile.writeAsString(guide.content);
   }
 
@@ -157,7 +159,7 @@ void main() async {
     packagesContent = _cleanMdx(await packagesFile.readAsString());
   }
   final skillMd = _generateSkillMd(components, guides, packagesContent);
-  await File('skills/shadcn-ui-flutter/SKILL.md').writeAsString(skillMd);
+  await File('skills/zuraffa-ui-flutter/SKILL.md').writeAsString(skillMd);
 
   print('Done!');
 }
@@ -229,21 +231,21 @@ String _generateSkillMd(
 ) {
   final buffer = StringBuffer();
   buffer.writeln('---');
-  buffer.writeln('name: shadcn-ui-flutter');
+  buffer.writeln('name: zuraffa-ui-flutter');
   buffer.writeln(
     'description: A comprehensive Flutter UI library inspired by shadcn/ui. Provides high-quality, customizable, and accessible components including Buttons, Cards, Forms, and more. Use this skill when building Flutter UIs, implementing design systems, or needing specific component usage examples.',
   );
   buffer.writeln('---');
   buffer.writeln();
-  buffer.writeln('# Shadcn UI for Flutter');
+  buffer.writeln('# Zuraffa UI for Flutter');
   buffer.writeln();
   buffer.writeln(
-    'This skill provides documentation and examples for using the `shadcn_ui` package in Flutter.',
+    'This skill provides documentation and examples for using the `zuraffa_ui` package in Flutter.',
   );
   buffer.writeln();
   buffer.writeln('## Theming and Customization');
   buffer.writeln(
-    'Shadcn UI for Flutter provides a powerful theming system. You can use built-in color schemes (blue, gray, green, neutral, orange, red, rose, slate, stone, violet, yellow, zinc) or create your own.',
+    'Zuraffa UI provides a powerful theming system. You can use built-in color schemes (blue, gray, green, neutral, orange, red, rose, slate, stone, violet, yellow, zinc) or create your own.',
   );
   buffer.writeln();
   buffer.writeln('### Applying a Theme');
@@ -272,7 +274,7 @@ String _generateSkillMd(
   buffer.writeln();
   buffer.writeln('### Basic Setup');
   buffer.writeln(
-    'Here is a complete example of a Counter App using `shadcn_ui`, including light and dark theme support.',
+    'Here is a complete example of a Counter App using `zuraffa_ui`, including light and dark theme support.',
   );
   buffer.writeln('```dart');
   buffer.writeln("import 'package:zuraffa_ui/shad.dart';");
@@ -322,7 +324,7 @@ String _generateSkillMd(
   buffer.writeln('  Widget build(BuildContext context) {');
   buffer.writeln('    final theme = ShadTheme.of(context);');
   buffer.writeln('    return Scaffold(');
-  buffer.writeln("      appBar: AppBar(title: const Text('Shadcn Counter')),");
+  buffer.writeln("      appBar: AppBar(title: const Text('Zuraffa Counter')),");
   buffer.writeln('      body: Center(');
   buffer.writeln('        child: Column(');
   buffer.writeln('          mainAxisAlignment: MainAxisAlignment.center,');

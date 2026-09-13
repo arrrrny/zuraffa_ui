@@ -1,14 +1,14 @@
 ---
-name: shadcn-ui-flutter
+name: zuraffa-ui-flutter
 description: A comprehensive Flutter UI library inspired by shadcn/ui. Provides high-quality, customizable, and accessible components including Buttons, Cards, Forms, and more. Use this skill when building Flutter UIs, implementing design systems, or needing specific component usage examples.
 ---
 
-# Shadcn UI for Flutter
+# Zuraffa UI for Flutter
 
-This skill provides documentation and examples for using the `shadcn_ui` package in Flutter.
+This skill provides documentation and examples for using the `zuraffa_ui` package in Flutter.
 
 ## Theming and Customization
-Shadcn UI for Flutter provides a powerful theming system. You can use built-in color schemes (blue, gray, green, neutral, orange, red, rose, slate, stone, violet, yellow, zinc) or create your own.
+Zuraffa UI provides a powerful theming system. You can use built-in color schemes (blue, gray, green, neutral, orange, red, rose, slate, stone, violet, yellow, zinc) or create your own.
 
 ### Applying a Theme
 Use `ShadThemeData` within `ShadApp` to define your light and dark themes.
@@ -61,7 +61,7 @@ Use `ShadThemeData` within `ShadApp` to define your light and dark themes.
 Examples are available at the bottom of each component page.
 
 ### Basic Setup
-Here is a complete example of a Counter App using `shadcn_ui`, including light and dark theme support.
+Here is a complete example of a Counter App using `zuraffa_ui`, including light and dark theme support.
 ```dart
 import 'package:zuraffa_ui/shad.dart';
 
@@ -110,7 +110,7 @@ class _CounterPageState extends State<CounterPage> {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Shadcn Counter')),
+      appBar: AppBar(title: const Text('Zuraffa Counter')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
