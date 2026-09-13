@@ -14,9 +14,9 @@ Update the `ref` below with your branch name, then users can test your changes b
 To try this branch, add the following to your `pubspec.yaml`:
 
 ```yaml
-shadcn_ui:
+zuraffa_ui:
     git:
-      url: https://github.com/nank1ro/flutter-shadcn-ui
+      url: https://github.com/arrrrny/zuraffa_ui
       ref: your-branch-name-here
 ```
 
@@ -35,7 +35,7 @@ shadcn_ui:
 If you need help, consider asking for advice on [Discord].
 
 <!-- Links -->
-[Contributor Guide]: [https://github.com/flutter/flutter/blob/main/docs/contributing/Tree-hygiene.md#overview](https://github.com/nank1ro/flutter-shadcn-ui/blob/main/CONTRIBUTING.md)
+[Contributor Guide]: [https://github.com/flutter/flutter/blob/main/docs/contributing/Tree-hygiene.md#overview](https://github.com/arrrrny/zuraffa_ui/blob/master/CONTRIBUTING.md)
 [Flutter Style Guide]: https://github.com/flutter/flutter/blob/main/docs/contributing/Style-guide-for-Flutter-repo.md
 [Discord]: https://discord.gg/ZhRMAPNh5Y
 [Data Driven Fixes]: https://github.com/flutter/flutter/blob/main/docs/contributing/Data-driven-Fixes.md

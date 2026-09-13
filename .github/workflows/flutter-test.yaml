@@ -6,7 +6,7 @@ on:
       - "**.md"
   push:
     branches:
-      - main
+      - master
       - dev
     paths-ignore:
       - "**.md"
@@ -15,6 +15,11 @@ jobs:
   check-imports:
     uses: ./.github/workflows/check-imports.yaml
   build-runner:
+    # The job commits regenerated build_runner output back to the PR branch,
+    # so it needs a writable token. Callers grant it; the called workflow
+    # cannot escalate on its own.
+    permissions:
+      contents: write
     uses: ./.github/workflows/build-runner.yml
 
   build:
