@@ -21,7 +21,7 @@ void main() {
     final pubspec = File('pubspec.yaml').readAsStringSync();
     final changelog = File('CHANGELOG.md').readAsStringSync();
 
-    test('pubspec declares zuraffa_ui at 0.1.0', () {
+    test('pubspec declares zuraffa_ui at a released version', () {
       final name = RegExp(
         r'^name:\s*(\S+)',
         multiLine: true,
@@ -33,8 +33,13 @@ void main() {
       expect(name, 'zuraffa_ui', reason: 'pubspec name must be zuraffa_ui');
       expect(
         version,
-        '0.1.0',
-        reason: 'zuraffa_ui owns its own semver timeline starting at 0.1.0',
+        matches(RegExp(r'^\d+\.\d+\.\d+$')),
+        reason: 'zuraffa_ui owns its own semver timeline, starting at 0.1.0',
+      );
+      expect(
+        changelog,
+        contains('## $version'),
+        reason: 'the released version must carry a CHANGELOG entry',
       );
     });
 
