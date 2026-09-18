@@ -1,11 +1,9 @@
 /// The Zfa surface: every engine name under a `Zfa*` alias, plus the
 /// certified `Zfa` vocabulary.
 ///
-/// Import this library to write Zfa names only:
+/// Consumers of `package:zuraffa_ui/zfa.dart` write Zfa names only:
 ///
 /// ```dart
-/// import 'package:zuraffa_ui/zfa.dart';
-///
 /// ZuraffaApp(home: ZfaButton(onPressed: submit, child: const Text('Go')));
 /// ```
 ///
