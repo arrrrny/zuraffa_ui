@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:shadcn_ui/src/components/icon_button.dart';
-import 'package:shadcn_ui/src/theme/theme.dart';
-import 'package:shadcn_ui/src/theme/themes/shadows.dart';
-import 'package:shadcn_ui/src/utils/animate.dart';
-import 'package:shadcn_ui/src/utils/border.dart';
-import 'package:shadcn_ui/src/utils/position.dart';
-import 'package:shadcn_ui/src/utils/responsive.dart';
+import 'package:zuraffa_ui/src/components/icon_button.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/theme/themes/shadows.dart';
+import 'package:zuraffa_ui/src/utils/animate.dart';
+import 'package:zuraffa_ui/src/utils/border.dart';
+import 'package:zuraffa_ui/src/utils/position.dart';
+import 'package:zuraffa_ui/src/utils/responsive.dart';
 
 /// The default duration for toasts to remain visible.
 const kDefaultToastDuration = Duration(seconds: 5);

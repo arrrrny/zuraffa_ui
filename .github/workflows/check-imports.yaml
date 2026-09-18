@@ -15,11 +15,16 @@ jobs:
 
       - name: Check for prohibited imports
         run: |
-          echo "Checking for prohibited Material and Cupertino imports in lib directory..."
+          echo "Checking for prohibited Material, Cupertino and package-barrel imports in lib directory..."
 
-          # Define excluded files
+          # App-level shells wrap MaterialApp/CupertinoApp and need their
+          # imports; the component and theme layers below them must not. The
+          # TDD lane's acceptance subjects boot the shell and drive Material
+          # feedback APIs (Scaffold, SnackBar); they never ship (.pubignore).
           EXCLUDED_FILES=(
             "lib/src/app.dart"
+            "lib/src/identified/app/zuraffa_app.dart"
+            "lib/tdd"
           )
 
           # Build grep exclusion pattern
@@ -34,8 +39,10 @@ jobs:
           # Check for cupertino.dart imports (excluding specified files)
           CUPERTINO_IMPORTS=$(eval "grep -r \"import.*cupertino\.dart\" lib/ $GREP_EXCLUDE || true")
 
-          # Check for shadcn_ui.dart imports in lib directory
-          SHADCN_UI_IMPORTS=$(grep -r "import.*shadcn_ui/shadcn_ui\.dart" lib/ || true)
+          # The engine must reach its own code by granular path, never through
+          # the package barrels: lib/zfa.dart (raw engine) or
+          # lib/zuraffa_ui.dart (certified surface).
+          BARREL_IMPORTS=$(grep -rE "import.*zuraffa_ui/(zfa|zuraffa_ui)\.dart" lib/ || true)
 
           # Report all findings first
           FOUND_VIOLATIONS=false
@@ -52,9 +59,9 @@ jobs:
             FOUND_VIOLATIONS=true
           fi
 
-          if [ ! -z "$SHADCN_UI_IMPORTS" ]; then
-            echo "❌ Found prohibited shadcn_ui.dart imports:"
-            echo "$SHADCN_UI_IMPORTS"
+          if [ ! -z "$BARREL_IMPORTS" ]; then
+            echo "❌ Found prohibited package-barrel imports:"
+            echo "$BARREL_IMPORTS"
             FOUND_VIOLATIONS=true
           fi
 

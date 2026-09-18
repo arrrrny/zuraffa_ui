@@ -2,11 +2,11 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/components/form/field.dart';
-import 'package:shadcn_ui/src/components/textarea.dart';
-import 'package:shadcn_ui/src/theme/components/decorator.dart';
-import 'package:shadcn_ui/src/theme/theme.dart';
-import 'package:shadcn_ui/src/utils/clipboard/clipboard_service.dart';
+import 'package:zuraffa_ui/src/components/form/field.dart';
+import 'package:zuraffa_ui/src/components/textarea.dart';
+import 'package:zuraffa_ui/src/theme/components/decorator.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/utils/clipboard/clipboard_service.dart';
 
 class ShadTextareaFormField extends ShadFormBuilderField<String> {
   ShadTextareaFormField({

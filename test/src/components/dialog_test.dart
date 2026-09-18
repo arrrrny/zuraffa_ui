@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shadcn_ui/src/app.dart';
-import 'package:shadcn_ui/src/components/dialog.dart';
-import 'package:shadcn_ui/src/theme/components/dialog.dart';
-import 'package:shadcn_ui/src/theme/data.dart';
-import 'package:shadcn_ui/src/utils/position.dart';
+import 'package:zuraffa_ui/src/app.dart';
+import 'package:zuraffa_ui/src/components/dialog.dart';
+import 'package:zuraffa_ui/src/theme/components/dialog.dart';
+import 'package:zuraffa_ui/src/theme/data.dart';
+import 'package:zuraffa_ui/src/utils/position.dart';
 
 void main() {
   // Helper method to create a test widget wrapped in ShadApp and Scaffold

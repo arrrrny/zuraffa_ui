@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/components/form/form.dart';
-import 'package:shadcn_ui/src/theme/components/decorator.dart';
-import 'package:shadcn_ui/src/theme/components/input_decorator.dart';
+import 'package:zuraffa_ui/src/components/form/form.dart';
+import 'package:zuraffa_ui/src/theme/components/decorator.dart';
+import 'package:zuraffa_ui/src/theme/components/input_decorator.dart';
 
 /// A function that transforms the value of a form field into a different
 /// format.
