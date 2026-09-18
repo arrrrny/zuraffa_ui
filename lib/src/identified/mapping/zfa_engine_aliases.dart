@@ -9,6 +9,12 @@
 // here, so consumers of package:zuraffa_ui/zfa.dart can write Zfa names
 // only. The engine itself keeps the upstream Shad* spelling.
 //
+// An alias is the engine name with its first Shad replaced by Zfa: a
+// leading Shad gives a Zfa* name (ShadShadows -> ZfaShadows), while the
+// engine's showShad*/GlobalShad*/RestorableShad* shapes keep their
+// prefix (showShadDialog -> showZfaDialog, GlobalShadLocalizations ->
+// GlobalZfaLocalizations).
+//
 // Already identified elsewhere (not re-aliased here):
 //   ShadButton, ShadCard, ShadDialog, ShadInput, ShadSheet, ShadToaster,
 //   ShadTheme, ShadThemeData — certified wrappers and the theme alias seam
@@ -203,7 +209,7 @@ typedef ZfaAnimationBuilder = ShadAnimationBuilder;
 typedef ZfaAnimate = ShadAnimate;
 
 // src/theme/themes/shadows.dart
-typedef ZfaZfaows = ShadShadows;
+typedef ZfaShadows = ShadShadows;
 
 // src/theme/themes/default_theme_variant.dart
 typedef ZfaDefaultThemeVariant = ShadDefaultThemeVariant;

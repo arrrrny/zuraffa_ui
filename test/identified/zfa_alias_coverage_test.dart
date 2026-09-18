@@ -33,12 +33,23 @@ final _typeDeclaration = RegExp(
   '(?:class|mixin|enum|typedef)\\s+($_identifier+)',
 );
 final _extensionDeclaration = RegExp('^extension\\s+($_identifier+)');
+// Mirrors `_variableDeclaration` in `scripts/generate_zfa_aliases.dart`: the
+// generator emits a `final ZfaX = ShadX;` alias for a top-level `Shad*`
+// const/final, so the guard has to model that kind or it reports a valid alias
+// as stale drift.
+final _variableDeclaration = RegExp(
+  r'^(?:const|final|var|late)\s+(?:[A-Za-z_$][A-Za-z0-9_<>,?\. ]*\s+)?'
+  '($_identifier+)\\s*[=;]',
+);
 final _functionDeclaration = RegExp(
   '^[A-Za-z_\$][A-Za-z0-9_<>,?\\. ]*\\s+([a-z]$_identifier*)'
   r'(?:<[^>]*>)?\s*\(',
 );
 
 const _mappingPath = 'lib/src/identified/mapping/zfa_engine_aliases.dart';
+
+/// [_mappingPath] as the export walk spells paths (relative to `lib/`).
+const _mappingExportPath = 'src/identified/mapping/zfa_engine_aliases.dart';
 
 void main() {
   final mapping = File(_mappingPath).readAsStringSync();
@@ -60,7 +71,7 @@ void main() {
       final missing = <String>[];
       for (final name in engine.types) {
         if (_alreadyIdentified.contains(name)) continue;
-        if (aliases[name.replaceAll('Shad', 'Zfa')] != name) missing.add(name);
+        if (aliases[_aliasFor(name)] != name) missing.add(name);
       }
       expect(
         missing,
@@ -75,7 +86,7 @@ void main() {
     test('aliases every public Shad* function and variable', () {
       final missing = <String>[];
       for (final name in engine.values) {
-        if (aliases[name.replaceAll('Shad', 'Zfa')] != name) missing.add(name);
+        if (aliases[_aliasFor(name)] != name) missing.add(name);
       }
       expect(
         missing,
@@ -90,9 +101,7 @@ void main() {
 
     test('contains no alias the engine no longer declares', () {
       final engineNames = {...engine.types, ...engine.values};
-      final known = {
-        for (final name in engineNames) name.replaceAll('Shad', 'Zfa'),
-      };
+      final known = {for (final name in engineNames) _aliasFor(name)};
       final stale = <String>[];
       for (final alias in aliases.keys) {
         if (!known.contains(alias)) stale.add(alias);
@@ -103,6 +112,35 @@ void main() {
         reason:
             'aliases without an engine counterpart are drift — regenerate '
             '$_mappingPath. Stale: $stale',
+      );
+    });
+
+    test('uses only the documented alias shapes', () {
+      // `_aliasFor` replaces the *first* Shad only, so every alias is either a
+      // Zfa* name (a leading Shad) or one of the engine's shape-prefixed names
+      // (showShad*/GlobalShad*/RestorableShad*). Anything else is a mid-name
+      // rewrite — the `ShadShadows` -> `ZfaZfaows` bug class.
+      const shapes = ['show', 'Global', 'Restorable'];
+      final unexpected = <String>[];
+      for (final entry in aliases.entries) {
+        if (entry.key.startsWith('Zfa')) continue;
+        String? shape;
+        for (final candidate in shapes) {
+          if (entry.key.startsWith(candidate)) {
+            shape = candidate;
+            break;
+          }
+        }
+        if (shape == null || !entry.value.startsWith('${shape}Shad')) {
+          unexpected.add('${entry.key} = ${entry.value}');
+        }
+      }
+      expect(
+        unexpected,
+        isEmpty,
+        reason:
+            'every alias must be `Zfa*` or keep a documented engine shape '
+            'prefix (showShad*/GlobalShad*/RestorableShad*). Got: $unexpected',
       );
     });
 
@@ -182,6 +220,11 @@ _EngineDeclarations _engineDeclarations() {
         types.add(type.group(1)!);
         continue;
       }
+      final variable = _variableDeclaration.firstMatch(line);
+      if (variable != null) {
+        values.add(variable.group(1)!);
+        continue;
+      }
       final function = _functionDeclaration.firstMatch(line);
       if (function != null) {
         values.add(function.group(1)!);
@@ -202,41 +245,65 @@ _EngineDeclarations _engineDeclarations() {
   );
 }
 
+/// The `Zfa*` alias the generator writes for [name] — mirrors `_aliasFor` in
+/// `scripts/generate_zfa_aliases.dart`. Keep the two in sync.
+String _aliasFor(String name) => name.replaceFirst('Shad', 'Zfa');
+
 /// Every engine file reachable from [source], following relative `export` and
 /// `part` directives.
+///
+/// Every *relative* `export` is followed, not only the `src/` ones, so a barrel
+/// re-export such as `lib/zfa.dart`'s own `export 'zuraffa_ui.dart';` cannot
+/// hide an engine name from the guard. `package:`/`dart:` exports are skipped.
 Set<String> _exportedEngineFiles(String source) {
   final files = <String>{};
   final pending = <String>[
     for (final match in RegExp(
-      "export '(src/[^']+)'",
+      "export '([^']+)'",
       multiLine: true,
     ).allMatches(source))
-      match.group(1)!,
+      if (!_isExternalExport(match.group(1)!)) match.group(1)!,
   ];
   while (pending.isNotEmpty) {
     final file = pending.removeLast();
+    // The generated map is output, not engine input — its own `Zfa*`
+    // declarations (e.g. `ZfaShadows`) must not be read back as engine names,
+    // exactly as `scripts/generate_zfa_aliases.dart` skips it.
+    if (file == _mappingExportPath) continue;
     if (!files.add(file)) continue;
     final path = File('lib/$file');
     if (!path.existsSync()) continue;
     final content = path.readAsStringSync();
-    final directory = file.substring(0, file.lastIndexOf('/'));
+    final directory = _directoryOf(file);
     final relative = RegExp(
       "^(?:part|export) '([^']+)'",
       multiLine: true,
     );
     for (final match in relative.allMatches(content)) {
       final target = match.group(1)!;
-      if (target.startsWith('package:') || target.startsWith('dart:')) continue;
+      if (_isExternalExport(target)) continue;
       pending.add(_normalize(directory, target));
     }
   }
   return files;
 }
 
+/// Whether [path] leaves the engine tree (`package:` / `dart:` imports).
+bool _isExternalExport(String path) =>
+    path.startsWith('package:') || path.startsWith('dart:');
+
+/// The directory part of [file], or `''` for a top-level `lib/` file — whose
+/// `lastIndexOf('/')` is `-1`, not a usable offset.
+String _directoryOf(String file) {
+  final cut = file.lastIndexOf('/');
+  return cut < 0 ? '' : file.substring(0, cut);
+}
+
 String _normalize(String directory, String path) {
   final stacked = <String>[];
   for (final part in [...directory.split('/'), ...path.split('/')]) {
     switch (part) {
+      case '':
       case '.':
         break;
       case '..':

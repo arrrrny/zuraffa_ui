@@ -16,8 +16,10 @@
 #      `test/identified/zfa_alias_coverage_test.dart` guards the drift. The
 #      regenerated map is committed on top of the merge, then pushed.
 #
-# `master` is also covered by `.github/workflows/flutter-test.yaml` on push, so
-# the merged tree is verified by the full suite right after this job pushes.
+# `.github/workflows/flutter-test.yaml` runs on a push to `master`, but a
+# `github.token` push does **not** trigger other workflows — so the merged tree
+# is verified by the full suite only when `SYNC_PAT` is set. With the default
+# job token the merge lands on `master` unverified: re-run the suite by hand.
 
 name: Sync Upstream
 
@@ -46,9 +48,11 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-          # A PAT is only needed when the merge touches `.github/workflows/**`
-          # — the job token cannot push workflow files. Everything else works
-          # with `github.token`, so the secret is optional.
+          # Two reasons to set the PAT: the job token cannot push
+          # `.github/workflows/**`, and a `github.token` push does not trigger
+          # workflows — so without it a clean merge lands on `master` without
+          # the flutter-test run that would verify it. The sync works without
+          # the secret; it just loses those two things.
           token: ${{ secrets.SYNC_PAT || github.token }}
 
       - name: Configure git
@@ -103,11 +107,18 @@ jobs:
       - name: Open sync-conflict issue
         if: steps.merge.outputs.merge_state == 'conflicts'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v7.0.1
+        env:
+          # Passed through the environment, never interpolated into the script:
+          # a conflicted path may contain a backtick or `${`, either of which
+          # would break out of the JS template literal below.
+          CONFLICTED_FILES: ${{ steps.merge.outputs.conflicts }}
+          LOCAL_SHA: ${{ steps.check.outputs.local }}
+          UPSTREAM_SHA: ${{ steps.check.outputs.upstream }}
         with:
           script: |
-            const conflicts = `${{ steps.merge.outputs.conflicts }}`.trim().split('\n').filter(Boolean);
-            const local = '${{ steps.check.outputs.local }}';
-            const upstream = '${{ steps.check.outputs.upstream }}';
+            const conflicts = (process.env.CONFLICTED_FILES || '').trim().split('\n').filter(Boolean);
+            const local = process.env.LOCAL_SHA;
+            const upstream = process.env.UPSTREAM_SHA;
             const body = [
               'The daily upstream sync encountered **' + conflicts.length + '** merge conflict(s) and aborted per the fork-upstream-sync policy (see `.github/workflows/sync-upstream.yml` and AGENTS.md).',
               '',
@@ -207,10 +218,15 @@ jobs:
       - name: Open fork-owned-marker issue
         if: steps.verify.outputs.guard_state == 'fail'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v7.0.1
+        env:
+          # Environment, not interpolation: a path containing a backtick or
+          # `${` would otherwise break out of the JS template literal below.
+          MISSING_FILES: ${{ steps.verify.outputs.missing_files }}
+          FILES_WITHOUT_MARKERS: ${{ steps.verify.outputs.marker_missing }}
         with:
           script: |
-            const missing = `${{ steps.verify.outputs.missing_files }}`.trim();
-            const markerMissing = `${{ steps.verify.outputs.marker_missing }}`.trim();
+            const missing = (process.env.MISSING_FILES || '').trim();
+            const markerMissing = (process.env.FILES_WITHOUT_MARKERS || '').trim();
             const body = [
               'The daily upstream sync completed a clean merge, but the fork-owned-file guardrail (`.github/FORK_OWNED_FILES`) found that upstream silently dropped fork-owned code.',
               '',

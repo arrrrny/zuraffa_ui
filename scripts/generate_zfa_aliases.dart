@@ -12,6 +12,10 @@
 // the map drifts from the engine.
 import 'dart:io';
 
+/// The generated map, relative to `lib/`. The generator writes it and the
+/// export walk skips it — it is output, not engine input.
+const _mappingPath = 'src/identified/mapping/zfa_engine_aliases.dart';
+
 /// Shad* names that already carry a Zfa identity elsewhere in the identified
 /// layer; the map must not alias them a second time.
 ///
@@ -126,6 +130,20 @@ void main() {
     )
     ..writeln('// only. The engine itself keeps the upstream Shad* spelling.')
     ..writeln('//')
+    ..writeln(
+      '// An alias is the engine name with its first Shad replaced by Zfa: a',
+    )
+    ..writeln(
+      '// leading Shad gives a Zfa* name (ShadShadows -> ZfaShadows), while the',
+    )
+    ..writeln(
+      "// engine's showShad*/GlobalShad*/RestorableShad* shapes keep their",
+    )
+    ..writeln(
+      '// prefix (showShadDialog -> showZfaDialog, GlobalShadLocalizations ->',
+    )
+    ..writeln('// GlobalZfaLocalizations).')
+    ..writeln('//')
     ..writeln('// Already identified elsewhere (not re-aliased here):');
   for (final line in _wrap(
     '${_alreadyIdentified.join(', ')} — certified wrappers and '
@@ -155,7 +173,7 @@ void main() {
   for (final file in declarationsByLibrary.keys) {
     buffer.writeln('// $file');
     for (final declaration in declarationsByLibrary[file]!) {
-      final alias = declaration.name.replaceAll('Shad', 'Zfa');
+      final alias = _aliasFor(declaration.name);
       final parameters = declaration.typeParameters;
       final aliasParameters = parameters == null
           ? ''
@@ -179,7 +197,7 @@ void main() {
   }
 
   final output = File(
-    'lib/src/identified/mapping/zfa_engine_aliases.dart',
+    'lib/$_mappingPath',
   );
   output.parent.createSync(recursive: true);
   output.writeAsStringSync('${buffer.toString().trimRight()}\n');
@@ -196,20 +214,46 @@ void main() {
   }
 }
 
+/// The `Zfa*` alias for an engine declaration named [name].
+///
+/// The engine name's **first** `Shad` becomes `Zfa`; every later occurrence is
+/// left alone (`ShadShadows` -> `ZfaShadows`, never `ZfaZfaows`). Two shapes
+/// come out of that rule:
+///
+///   - a leading `Shad` gives a `Zfa*` name — `ShadButton` -> `ZfaButton`;
+///   - the engine's `showShad*` / `GlobalShad*` / `RestorableShad*` names keep
+///     their prefix, with the `Shad` after it becoming `Zfa` —
+///     `showShadDialog` -> `showZfaDialog`, `GlobalShadLocalizations` ->
+///     `GlobalZfaLocalizations`, `RestorableShadTabsController` ->
+///     `RestorableZfaTabsController`.
+///
+/// `test/identified/zfa_alias_coverage_test.dart` asserts the map matches this
+/// rule, so an engine name that would break it fails the guard.
+String _aliasFor(String name) => name.replaceFirst('Shad', 'Zfa');
+
 /// Every engine file reachable from `lib/zfa.dart`, mapped to the library file
 /// that must be imported to reach its declarations (a `part` file is imported
 /// through the library it belongs to).
+///
+/// Every *relative* `export` is followed, not only the `src/` ones, so a barrel
+/// re-export such as `lib/zfa.dart`'s own `export 'zuraffa_ui.dart';` cannot
+/// hide a public `Shad*` name from the map. `package:`/`dart:` exports leave
+/// the engine tree and are skipped.
 Map<String, String> _exportedEngineFiles(String source) {
   final libraries = <String, String>{};
   final pending = <String>[
     for (final match in RegExp(
-      "export '(src/[^']+)'",
+      "export '([^']+)'",
       multiLine: true,
     ).allMatches(source))
-      match.group(1)!,
+      if (!_isExternalExport(match.group(1)!)) match.group(1)!,
   ];
   while (pending.isNotEmpty) {
     final file = pending.removeLast();
+    // Never walk the map itself: it is the generator's output, so its own
+    // `Zfa*` declarations (e.g. `ZfaShadows`) would otherwise be read back as
+    // engine names and re-aliased on every run.
+    if (file == _mappingPath) continue;
     if (libraries.containsKey(file)) continue;
     final path = File('lib/$file');
     if (!path.existsSync()) {
@@ -218,7 +262,7 @@ Map<String, String> _exportedEngineFiles(String source) {
     }
     libraries[file] = file;
     final content = path.readAsStringSync();
-    final directory = file.substring(0, file.lastIndexOf('/'));
+    final directory = _directoryOf(file);
     for (final match in RegExp(
       "^part '([^']+)'",
       multiLine: true,
@@ -230,11 +274,22 @@ Map<String, String> _exportedEngineFiles(String source) {
       multiLine: true,
     ).allMatches(content)) {
       final target = match.group(1)!;
-      if (target.startsWith('package:') || target.startsWith('dart:')) continue;
+      if (_isExternalExport(target)) continue;
       pending.add(_normalize(directory, target));
     }
   }
   return libraries;
+}
+
+/// Whether [path] leaves the engine tree (`package:` / `dart:` imports).
+bool _isExternalExport(String path) =>
+    path.startsWith('package:') || path.startsWith('dart:');
+
+/// The directory part of [file], or `''` for a top-level `lib/` file — whose
+/// `lastIndexOf('/')` is `-1`, not a usable offset.
+String _directoryOf(String file) {
+  final cut = file.lastIndexOf('/');
+  return cut < 0 ? '' : file.substring(0, cut);
 }
 
 String _normalize(String directory, String path) {
@@ -242,6 +297,7 @@ String _normalize(String directory, String path) {
   final stacked = <String>[];
   for (final part in parts) {
     switch (part) {
+      case '':
       case '.':
         break;
       case '..':
