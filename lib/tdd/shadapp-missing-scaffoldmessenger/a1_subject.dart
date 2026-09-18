@@ -8,7 +8,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:zuraffa_ui/zuraffa_ui.dart';
+import 'package:zuraffa_ui/src/identified/app/zuraffa_app.dart';
 
 /// Runs the A1 scenario and returns the resolved [ScaffoldMessengerState].
 ///

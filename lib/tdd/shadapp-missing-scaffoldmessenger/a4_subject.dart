@@ -9,8 +9,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:zuraffa_ui/shad.dart' show ShadSonner, ShadToaster;
-import 'package:zuraffa_ui/zuraffa_ui.dart';
+import 'package:zuraffa_ui/src/components/sonner.dart';
+import 'package:zuraffa_ui/src/components/toast.dart';
+import 'package:zuraffa_ui/src/identified/app/zuraffa_app.dart';
+import 'package:zuraffa_ui/src/identified/components/zfa_button.dart';
+import 'package:zuraffa_ui/src/identified/contract/skin_contract_kit.dart';
 
 /// The wiring evidence collected by the A4 scenario.
 class A4Evidence {

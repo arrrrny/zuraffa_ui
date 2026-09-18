@@ -18,10 +18,13 @@ jobs:
           echo "Checking for prohibited Material, Cupertino and package-barrel imports in lib directory..."
 
           # App-level shells wrap MaterialApp/CupertinoApp and need their
-          # imports; the component and theme layers below them must not.
+          # imports; the component and theme layers below them must not. The
+          # TDD lane's acceptance subjects boot the shell and drive Material
+          # feedback APIs (Scaffold, SnackBar); they never ship (.pubignore).
           EXCLUDED_FILES=(
             "lib/src/app.dart"
             "lib/src/identified/app/zuraffa_app.dart"
+            "lib/tdd"
           )
 
           # Build grep exclusion pattern

@@ -8,7 +8,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:zuraffa_ui/zuraffa_ui.dart';
+import 'package:zuraffa_ui/src/identified/app/zuraffa_app.dart';
+import 'package:zuraffa_ui/src/identified/components/zfa_button.dart';
 
 /// Runs the A3 scenario and returns the [ScaffoldMessengerState] resolved
 /// from the pushed route's context.
