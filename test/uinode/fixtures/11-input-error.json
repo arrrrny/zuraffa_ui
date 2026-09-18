@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "padding",
+    "padding": {
+      "all": 16
+    },
+    "child": {
+      "widgetType": "input",
+      "label": "Email",
+      "value": "not-an-email",
+      "errorText": "Enter a valid address"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "padding",
+    "padding": {
+      "all": 16
+    },
+    "child": {
+      "widgetType": "tabs",
+      "value": "account",
+      "tabs": [
+        {
+          "value": "account",
+          "label": "Account"
+        },
+        {
+          "value": "password",
+          "label": "Password"
+        }
+      ],
+      "panes": [
+        {
+          "value": "account",
+          "content": [
+            {
+              "widgetType": "text",
+              "text": "account settings"
+            }
+          ]
+        },
+        {
+          "value": "password",
+          "content": [
+            {
+              "widgetType": "text",
+              "text": "password settings"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "center",
+    "child": {
+      "widgetType": "button",
+      "label": "Delete",
+      "variant": "destructive",
+      "size": "lg"
+    }
+  }
+}

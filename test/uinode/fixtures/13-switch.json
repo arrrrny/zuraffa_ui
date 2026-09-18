@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "column",
+    "crossAxisAlignment": "start",
+    "children": [
+      {
+        "widgetType": "switch",
+        "label": "Dark mode",
+        "value": true
+      },
+      {
+        "widgetType": "switch",
+        "label": "Notifications",
+        "value": false
+      }
+    ]
+  }
+}

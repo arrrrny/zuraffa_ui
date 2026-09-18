@@ -98,6 +98,10 @@ class ShadNodeParser {
     }
   }
 
+  /// The wire types this runtime knows (the certified v1 vocabulary,
+  /// spec 1100 A4). Unknown types parse as [UnknownNode] instead.
+  Set<String> get supportedWidgetTypes => _decoders.keys.toSet();
+
   /// Parses [json] — an encoded JSON string or an already-decoded map —
   /// into a tree.
   ///

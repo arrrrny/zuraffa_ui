@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "center",
+    "child": {
+      "widgetType": "image",
+      "src": "https://invalid.invalid/none.png",
+      "width": 120,
+      "height": 80,
+      "alt": "unavailable"
+    }
+  }
+}

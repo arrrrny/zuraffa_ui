@@ -27,9 +27,9 @@ matching implementation task starts. Behavior ids refer to
 
 **Purpose**: Dependencies, layer skeleton, codegen proof
 
-- [ ] T001 Add `zorphy_annotation` to `pubspec.yaml` dependencies and `zorphy` to dev_dependencies; run `flutter pub get`
-- [ ] T002 [P] Create the layer skeleton: `lib/src/uinode/uinode.dart` (internal barrel), `lib/uinode.dart` (public export), and add the re-export line to `lib/zfa.dart`
-- [ ] T003 Create `lib/src/uinode/nodes/shad_node.dart` with the `$$ShadNode` sealed base (`widgetType`, `id`) and `UnknownNode` (`widgetType`, `raw`); run `dart run build_runner build --delete-conflicting-outputs` and prove generation is clean [behavior-impl: U1, U2]
+- [x] T001 Add `zorphy_annotation` to `pubspec.yaml` dependencies and `zorphy` to dev_dependencies; run `flutter pub get`
+- [x] T002 [P] Create the layer skeleton: `lib/src/uinode/uinode.dart` (internal barrel), `lib/uinode.dart` (public export), and add the re-export line to `lib/zfa.dart`
+- [x] T003 Create `lib/src/uinode/nodes/shad_node.dart` with the `$$ShadNode` sealed base (`widgetType`, `id`) and `UnknownNode` (`widgetType`, `raw`); run `dart run build_runner build --delete-conflicting-outputs` and prove generation is clean [behavior-impl: U1, U2]
 
 ---
 
@@ -37,9 +37,9 @@ matching implementation task starts. Behavior ids refer to
 
 **Purpose**: Types every story depends on — no behavior yet
 
-- [ ] T004 Create `lib/src/uinode/tree/ui_errors.dart`: sealed `UiParseException` (`path`), `UiTreeTooLarge` (`cap`), `UiVersionError` (`found`), `UiParseError` (`kind`), `UiCapKind` + `UiParseErrorKind` enums, and `UiNodeEvent`
-- [ ] T005 [P] Create `lib/src/uinode/actions/ui_action_handler.dart`: `UiActionHandler` typedef and `UiActionRegistry` with the handlers map + `register`/`unregister` (no dispatch yet)
-- [ ] T006 [P] Create `lib/src/uinode/tree/shad_node_tree.dart`: `ShadNodeTree` Zorphy entity (`schemaVersion`, `root: $$ShadNode`); regenerate codegen
+- [x] T004 Create `lib/src/uinode/tree/ui_errors.dart`: sealed `UiParseException` (`path`), `UiTreeTooLarge` (`cap`), `UiVersionError` (`found`), `UiParseError` (`kind`), `UiCapKind` + `UiParseErrorKind` enums, and `UiNodeEvent`
+- [x] T005 [P] Create `lib/src/uinode/actions/ui_action_handler.dart`: `UiActionHandler` typedef and `UiActionRegistry` with the handlers map + `register`/`unregister` (no dispatch yet)
+- [x] T006 [P] Create `lib/src/uinode/tree/shad_node_tree.dart`: `ShadNodeTree` Zorphy entity (`schemaVersion`, `root: $$ShadNode`); regenerate codegen
 
 **Checkpoint**: Foundation ready — US1 can begin
 
@@ -53,22 +53,22 @@ matching implementation task starts. Behavior ids refer to
 
 ### Behavior tests for US1 (MANDATORY — write first, prove red)
 
-- [ ] T007 [US1] **TEST** Failing union-contract tests in `test/uinode/nodes/union_test.dart`: every node class reports its const `widgetType`, optional `id`, exhaustive switch; `UnknownNode` preserves raw JSON through parse → canonical → parse [behavior: U1, U2]
-- [ ] T008 [US1] **TEST** Failing parse-entry tests in `test/uinode/parse_entry_test.dart`: JSON string or decoded map → `ShadNodeTree`; schema violations (unknown key, wrong type, bad enum, bad arity) → `UiParseError` naming the path; unknown `widgetType` → `UnknownNode`, siblings unaffected [behavior: U3, U4, U5]
-- [ ] T009 [US1] **TEST** Failing layout-mapping tests in `test/uinode/renderer_base_test.dart`: row/column/stack/padding/expanded/sized-box/list-view fixtures map to the expected engine widgets with correct arrangement props [behavior: U11]
-- [ ] T010 [P] [US1] **TEST** Failing basic-component tests in `test/uinode/renderer_basic_test.dart`: text (style tokens h1–h4/p/muted), badge variants, button variants/sizes, card with header/footer, progress, separator, icon (Lucide name), image — correct engine widget + token-resolved styling; a token restyle changes the render with zero tree edits [behavior: U12, U13]
-- [ ] T011 [P] [US1] **TEST** Failing form tests in `test/uinode/renderer_form_test.dart`: input, select, checkbox, switch, radio-group, form-item render; toggling/selecting updates renderer-scoped state; two renderers of the same tree hold independent state [behavior: U14]
-- [ ] T012 [P] [US1] **TEST** Failing overlay tests in `test/uinode/renderer_overlay_test.dart`: tabs render with active pane and switch on tap; tooltip wraps child; sheet/dialog/popover render trigger+content (open prop honored); toast surfaces via its action [behavior: U15]
+- [x] T007 [US1] **TEST** Failing union-contract tests in `test/uinode/nodes/union_test.dart`: every node class reports its const `widgetType`, optional `id`, exhaustive switch; `UnknownNode` preserves raw JSON through parse → canonical → parse [behavior: U1, U2]
+- [x] T008 [US1] **TEST** Failing parse-entry tests in `test/uinode/parse_entry_test.dart`: JSON string or decoded map → `ShadNodeTree`; schema violations (unknown key, wrong type, bad enum, bad arity) → `UiParseError` naming the path; unknown `widgetType` → `UnknownNode`, siblings unaffected [behavior: U3, U4, U5]
+- [x] T009 [US1] **TEST** Failing layout-mapping tests in `test/uinode/renderer_base_test.dart`: row/column/stack/padding/expanded/sized-box/list-view fixtures map to the expected engine widgets with correct arrangement props [behavior: U11]
+- [x] T010 [P] [US1] **TEST** Failing basic-component tests in `test/uinode/renderer_basic_test.dart`: text (style tokens h1–h4/p/muted), badge variants, button variants/sizes, card with header/footer, progress, separator, icon (Lucide name), image — correct engine widget + token-resolved styling; a token restyle changes the render with zero tree edits [behavior: U12, U13]
+- [x] T011 [P] [US1] **TEST** Failing form tests in `test/uinode/renderer_form_test.dart`: input, select, checkbox, switch, radio-group, form-item render; toggling/selecting updates renderer-scoped state; two renderers of the same tree hold independent state [behavior: U14]
+- [x] T012 [P] [US1] **TEST** Failing overlay tests in `test/uinode/renderer_overlay_test.dart`: tabs render with active pane and switch on tap; tooltip wraps child; sheet/dialog/popover render trigger+content (open prop honored); toast surfaces via its action [behavior: U15]
 
 ### Implementation for US1
 
-- [ ] T013 [US1] Create `lib/src/uinode/nodes/layout_nodes.dart`: RowNode, ColumnNode, StackNode, PaddingNode, ExpandedNode, SizedBoxNode, ListViewNode, ImageNode, IconNode (per data-model.md); regenerate codegen [behavior-impl: U11]
-- [ ] T014 [P] [US1] Create `lib/src/uinode/nodes/basic_nodes.dart`: TextNode, BadgeNode, ButtonNode, CardNode + CardHeaderNode + CardFooterNode, ProgressNode, SeparatorNode; regenerate [behavior-impl: U12, U13]
-- [ ] T015 [P] [US1] Create `lib/src/uinode/nodes/form_nodes.dart`: InputNode, SelectNode + SelectOptionNode, CheckboxNode, SwitchNode, RadioGroupNode + RadioOptionNode, FormItemNode; regenerate [behavior-impl: U14]
-- [ ] T016 [P] [US1] Create `lib/src/uinode/nodes/overlay_nodes.dart`: TabsNode + TabNode + TabPaneNode, TooltipNode, SheetNode, DialogNode, PopoverNode, ToastNode; regenerate [behavior-impl: U15]
-- [ ] T017 [US1] Create `lib/src/uinode/tree/shad_node_parser.dart`: `parse(Object? json)` (String or Map), `widgetType` ↔ `__typename` translation, schema validation with path-naming `UiParseError`s, unknown `widgetType` → `UnknownNode` (caps/version come in US4); regenerate [behavior-impl: U3, U4, U5]
-- [ ] T018 [US1] Create `lib/src/uinode/render/shad_node_renderer.dart` + `renderer_scope.dart` + `node_mappers.dart`: StatelessWidget entry (`tree`, `actions`, `debugFallbacks`), path-keyed lifted state, one mapper per node type mirroring canonical usage, theme-token resolution via `ShadTheme` [behavior-impl: U11, U12, U13, U14, U15]
-- [ ] T019 [US1] Complete the barrels: export all public uinode names from `lib/src/uinode/uinode.dart`; verify `lib/uinode.dart` and the `lib/zfa.dart` re-export surface them; `flutter analyze` clean
+- [x] T013 [US1] Create `lib/src/uinode/nodes/layout_nodes.dart`: RowNode, ColumnNode, StackNode, PaddingNode, ExpandedNode, SizedBoxNode, ListViewNode, ImageNode, IconNode (per data-model.md); regenerate codegen [behavior-impl: U11]
+- [x] T014 [P] [US1] Create `lib/src/uinode/nodes/basic_nodes.dart`: TextNode, BadgeNode, ButtonNode, CardNode + CardHeaderNode + CardFooterNode, ProgressNode, SeparatorNode; regenerate [behavior-impl: U12, U13]
+- [x] T015 [P] [US1] Create `lib/src/uinode/nodes/form_nodes.dart`: InputNode, SelectNode + SelectOptionNode, CheckboxNode, SwitchNode, RadioGroupNode + RadioOptionNode, FormItemNode; regenerate [behavior-impl: U14]
+- [x] T016 [P] [US1] Create `lib/src/uinode/nodes/overlay_nodes.dart`: TabsNode + TabNode + TabPaneNode, TooltipNode, SheetNode, DialogNode, PopoverNode, ToastNode; regenerate [behavior-impl: U15]
+- [x] T017 [US1] Create `lib/src/uinode/tree/shad_node_parser.dart`: `parse(Object? json)` (String or Map), `widgetType` ↔ `__typename` translation, schema validation with path-naming `UiParseError`s, unknown `widgetType` → `UnknownNode` (caps/version come in US4); regenerate [behavior-impl: U3, U4, U5]
+- [x] T018 [US1] Create `lib/src/uinode/render/shad_node_renderer.dart` + `renderer_scope.dart` + `node_mappers.dart`: StatelessWidget entry (`tree`, `actions`, `debugFallbacks`), path-keyed lifted state, one mapper per node type mirroring canonical usage, theme-token resolution via `ShadTheme` [behavior-impl: U11, U12, U13, U14, U15]
+- [x] T019 [US1] Complete the barrels: export all public uinode names from `lib/src/uinode/uinode.dart`; verify `lib/uinode.dart` and the `lib/zfa.dart` re-export surface them; `flutter analyze` clean
 
 **Checkpoint**: US1 independently functional — MVP demo possible
 
@@ -82,11 +82,11 @@ matching implementation task starts. Behavior ids refer to
 
 ### Behavior tests for US2 (MANDATORY — write first, prove red)
 
-- [ ] T020 [US2] **TEST** Failing tests in `test/uinode/actions_test.dart`: (a) resolved handler invoked with args from a rendered button tap; (b) unknown action name → `onUnknownAction`, no throw; (c) throwing handler → `onHandlerError`, siblings still interactive [behavior: U17, U18, U19]
+- [x] T020 [US2] **TEST** Failing tests in `test/uinode/actions_test.dart`: (a) resolved handler invoked with args from a rendered button tap; (b) unknown action name → `onUnknownAction`, no throw; (c) throwing handler → `onHandlerError`, siblings still interactive [behavior: U17, U18, U19]
 
 ### Implementation for US2
 
-- [ ] T021 [US2] Implement `dispatch` + `onUnknownAction`/`onHandlerError` in `lib/src/uinode/actions/ui_action_handler.dart`; wire button/checkbox/switch/tabs/sheet/dialog/popover/toast trigger interactions in `node_mappers.dart` through the registry [behavior-impl: U17, U18, U19]
+- [x] T021 [US2] Implement `dispatch` + `onUnknownAction`/`onHandlerError` in `lib/src/uinode/actions/ui_action_handler.dart`; wire button/checkbox/switch/tabs/sheet/dialog/popover/toast trigger interactions in `node_mappers.dart` through the registry [behavior-impl: U17, U18, U19]
 
 **Checkpoint**: US1 + US2 both functional
 
@@ -100,14 +100,14 @@ matching implementation task starts. Behavior ids refer to
 
 ### Behavior tests for US3 (MANDATORY — write first, prove red)
 
-- [ ] T022 [P] [US3] **TEST** Failing round-trip tests in `test/uinode/nodes/round_trip_test.dart` with the seeded generator helper `test/uinode/helpers/gen.dart`: every node type × seeded prop variations satisfy `parse(canonical(t)) == t` [behavior: A1, U2]
-- [ ] T023 [P] [US3] **TEST** Failing canonical tests in `test/uinode/canonical_json_test.dart`: same tree twice → identical bytes; fixed key order matches the documented schema order; the contract example in `contracts/uinode-api.md` round-trips byte-exact [behavior: U9, U10]
-- [ ] T024 [P] [US3] **TEST** Failing validation-mode tests in `test/uinode/parser_test.dart` (validation section): `validate()` reports ok for a valid tree and every typed error for invalid ones — without building any widgets [behavior: U8]
+- [x] T022 [P] [US3] **TEST** Failing round-trip tests in `test/uinode/nodes/round_trip_test.dart` with the seeded generator helper `test/uinode/helpers/gen.dart`: every node type × seeded prop variations satisfy `parse(canonical(t)) == t` [behavior: A1, U2]
+- [x] T023 [P] [US3] **TEST** Failing canonical tests in `test/uinode/canonical_json_test.dart`: same tree twice → identical bytes; fixed key order matches the documented schema order; the contract example in `contracts/uinode-api.md` round-trips byte-exact [behavior: U9, U10]
+- [x] T024 [P] [US3] **TEST** Failing validation-mode tests in `test/uinode/parser_test.dart` (validation section): `validate()` reports ok for a valid tree and every typed error for invalid ones — without building any widgets [behavior: U8]
 
 ### Implementation for US3
 
-- [ ] T025 [US3] Implement `lib/src/uinode/tree/canonical_json.dart` (`canonicalJson`) with the fixed key-order table; ensure the parser accepts canonical output [behavior-impl: A1, U9, U10]
-- [ ] T026 [US3] Implement `validate()` + `UiParseReport` in `lib/src/uinode/tree/shad_node_parser.dart` reusing the same walk (parse = validate + build-tree) [behavior-impl: U8]
+- [x] T025 [US3] Implement `lib/src/uinode/tree/canonical_json.dart` (`canonicalJson`) with the fixed key-order table; ensure the parser accepts canonical output [behavior-impl: A1, U9, U10]
+- [x] T026 [US3] Implement `validate()` + `UiParseReport` in `lib/src/uinode/tree/shad_node_parser.dart` reusing the same walk (parse = validate + build-tree) [behavior-impl: U8]
 
 **Checkpoint**: US1–US3 functional
 
@@ -121,12 +121,12 @@ matching implementation task starts. Behavior ids refer to
 
 ### Behavior tests for US4 (MANDATORY — write first, prove red)
 
-- [ ] T027 [P] [US4] **TEST** Failing caps/version tests in `test/uinode/parser_test.dart` (caps section): depth 33 / 501 nodes / oversized text → `UiTreeTooLarge` naming cap+path; newer major `schemaVersion` → `UiVersionError`; missing version accepted as current [behavior: U6, U7]
-- [ ] T028 [P] [US4] **TEST** Failing unknown-node render tests in `test/uinode/renderer_unknown_test.dart`: debug (`debugFallbacks: true`) shows a visible placeholder; release (`false`) omits and reports a `UiNodeEvent`; a tree containing `UnknownNode` still renders its siblings [behavior: U16]
+- [x] T027 [P] [US4] **TEST** Failing caps/version tests in `test/uinode/parser_test.dart` (caps section): depth 33 / 501 nodes / oversized text → `UiTreeTooLarge` naming cap+path; newer major `schemaVersion` → `UiVersionError`; missing version accepted as current [behavior: U6, U7]
+- [x] T028 [P] [US4] **TEST** Failing unknown-node render tests in `test/uinode/renderer_unknown_test.dart`: debug (`debugFallbacks: true`) shows a visible placeholder; release (`false`) omits and reports a `UiNodeEvent`; a tree containing `UnknownNode` still renders its siblings [behavior: U16]
 
 ### Implementation for US4
 
-- [ ] T029 [US4] Implement caps (32/500/10000 defaults) + version policy in `lib/src/uinode/tree/shad_node_parser.dart`; wire the release/debug fallback + event reporting in `lib/src/uinode/render/` (`debugFallbacks`, `UiNodeEvent` channel) [behavior-impl: U6, U7, U16, A3]
+- [x] T029 [US4] Implement caps (32/500/10000 defaults) + version policy in `lib/src/uinode/tree/shad_node_parser.dart`; wire the release/debug fallback + event reporting in `lib/src/uinode/render/` (`debugFallbacks`, `UiNodeEvent` channel) [behavior-impl: U6, U7, U16, A3]
 
 **Checkpoint**: All four stories functional
 
@@ -134,11 +134,11 @@ matching implementation task starts. Behavior ids refer to
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T030 Author ≥20 fixture trees in `test/uinode/fixtures/*.json` (one per node type minimum, several composed) and `test/uinode/golden_test.dart` rendering them with the fixed-view harness, platform-gated per research D7; generate goldens **on Linux only** (`--update-goldens`) [behavior: A2]
-- [ ] T031 [P] **TEST+GATE** Write the prop-purity gate in `test/uinode/prop_purity_test.dart`: static check that no node prop type accepts `Color`/`int` color encodings, and the parser rejects color-shaped style values with `UiParseErrorKind.colorRejected` [behavior: U20, A5]
-- [ ] T032 [P] Write `specs/1100-uinode-system/coverage-audit.md`: every public component family from `docs/src/content/docs/Components/` mapped to node status — covered (27) or excluded with tier + reason (research D8); add `test/uinode/uinode_surface_test.dart` asserting the v1 `widgetType` vocabulary set [behavior: A4]
-- [ ] T033 [P] Add the CHANGELOG.md entry for the new public `package:zuraffa_ui/uinode.dart` surface
-- [ ] T034 Run the full quickstart gate: `flutter analyze` (zero issues) and `flutter test` (suite green with documented platform skips) [behavior: A5]
+- [x] T030 Author ≥20 fixture trees in `test/uinode/fixtures/*.json` (one per node type minimum, several composed) and `test/uinode/golden_test.dart` rendering them with the fixed-view harness, platform-gated per research D7; generate goldens **on Linux only** (`--update-goldens`) [behavior: A2]
+- [x] T031 [P] **TEST+GATE** Write the prop-purity gate in `test/uinode/prop_purity_test.dart`: static check that no node prop type accepts `Color`/`int` color encodings, and the parser rejects color-shaped style values with `UiParseErrorKind.colorRejected` [behavior: U20, A5]
+- [x] T032 [P] Write `specs/1100-uinode-system/coverage-audit.md`: every public component family from `docs/src/content/docs/Components/` mapped to node status — covered (27) or excluded with tier + reason (research D8); add `test/uinode/uinode_surface_test.dart` asserting the v1 `widgetType` vocabulary set [behavior: A4]
+- [x] T033 [P] Add the CHANGELOG.md entry for the new public `package:zuraffa_ui/uinode.dart` surface
+- [x] T034 Run the full quickstart gate: `flutter analyze` (zero issues) and `flutter test` (suite green with documented platform skips) [behavior: A5]
 
 ---
 

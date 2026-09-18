@@ -1,3 +1,22 @@
+## 0.4.0 (unreleased)
+
+- **FEAT**: the UINode layer — every certified component as serializable
+  data (`json → node tree → widget tree`, and back). 34 node kinds
+  (`ShadNode` sealed union: 24 component + 9 structural + `unknown`) with a
+  Zorphy entity model, `ShadNodeParser` (schema validation, composition
+  caps depth 32 / 500 nodes / 10k text, typed `UiTreeTooLarge` /
+  `UiVersionError` / `UiParseError`, unknown-widget tolerance), byte-stable
+  `canonicalJson`, `validate()` CI self-check, `ShadNodeRenderer` mapping
+  every node to its engine component with theme-token styling and lifted
+  interaction state, and `UiActionRegistry` resolving semantic action IDs
+  (unknown actions and throwing handlers surface as typed events, never
+  crashes). Import `package:zuraffa_ui/uinode.dart` (also re-exported from
+  `zfa.dart`). The wire contract is cross-repo (zuraffa, zuraffa_agent);
+  see `specs/1100-uinode-system/contracts/uinode-api.md` and the coverage
+  audit for the v1 vocabulary and exclusions. Spec 1100 / issue #4
+  (ZikZak Wave U foundation). Zorphy sealed-base codegen workaround:
+  arrrrny/zuraffa#1717.
+
 ## 0.3.0
 
 - **BREAKING**: the raw engine library is `lib/zfa.dart` (was `lib/shad.dart`);
