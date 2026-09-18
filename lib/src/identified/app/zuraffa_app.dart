@@ -13,6 +13,9 @@ import 'package:zuraffa_ui/src/identified/theme/zfa_theme.dart';
 /// - the shared [ZfaAuditBus] driving both the observer and the chrome;
 /// - the violation chrome ([ZfaViolationChrome]) overlaid on the navigator
 ///   through [builder] — disable it with [showViolationChrome];
+/// - a [ScaffoldMessenger] above the navigator, so Material feedback APIs
+///   (`showSnackBar`, undo bars) resolve for every widget under the shell
+///   (the wrapped [ShadApp] mounts none of its own);
 /// - theme, toaster and sonner through the wrapped [ShadApp] (the engine
 ///   mounts `ShadToaster` and `ShadSonner` inside its own builder chain).
 ///
@@ -141,10 +144,12 @@ class _ZuraffaAppState extends State<ZuraffaApp> {
       navigatorObservers: [...widget.navigatorObservers, _observer],
       builder: (context, child) {
         final inner = widget.builder?.call(context, child) ?? child;
-        return ZfaViolationChrome(
-          bus: _bus,
-          enabled: widget.showViolationChrome,
-          child: inner ?? const SizedBox.shrink(),
+        return ScaffoldMessenger(
+          child: ZfaViolationChrome(
+            bus: _bus,
+            enabled: widget.showViolationChrome,
+            child: inner ?? const SizedBox.shrink(),
+          ),
         );
       },
     );

@@ -1,3 +1,10 @@
+# NOTE: `zfa build` — and therefore `zfa tdd refactor`'s build pass — refuses
+# this file because it does not register the zorphy builder. zuraffa_ui is not
+# a zuraffa code-generation project: it has zero @Zorphy entities and no zorphy
+# dependency, so that builder has nothing to produce.
+# Tracking issue: https://github.com/arrrrny/zuraffa/issues/1709
+# Workaround: the refactor's substantive passes (dart format / analyze) are run
+# manually for this repo; the build pass is not applicable here.
 targets:
   $default:
     builders:
