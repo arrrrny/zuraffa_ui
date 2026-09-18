@@ -68,7 +68,7 @@ dependencies:
 Use the `ShadApp` widget if you want to use just the ShadcnUI components, without Material or Cupertino.
 
 ```diff lang="dart"
-+ import 'package:zuraffa_ui/shad.dart';
++ import 'package:zuraffa_ui/zfa.dart';
 
 void main() {
   runApp(const MyApp());
@@ -93,7 +93,7 @@ We are the first Flutter UI library to allow shadcn components to be used simult
 The setup is simple:
 
 ```diff lang="dart"
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 + import 'package:flutter/material.dart';
 
 void main() {
@@ -187,7 +187,7 @@ Use `Theme.of(context).copyWith(...)` to override the default theme, without los
 If you need to use shadcn components with Cupertino components, use `CupertinoApp` instead of `MaterialApp`, like you are already used to.
 
 ```diff lang="dart"
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 + import 'package:flutter/cupertino.dart';
 + import 'package:flutter_localizations/flutter_localizations.dart';
 

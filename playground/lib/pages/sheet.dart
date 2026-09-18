@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 enum SheetStyle { primary, side, expandable }
 

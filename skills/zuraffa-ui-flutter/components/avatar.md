@@ -16,7 +16,7 @@ ShadAvatar(
 import 'package:example/common/base_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class AvatarPage extends StatelessWidget {
   const AvatarPage({super.key});

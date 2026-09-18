@@ -6,7 +6,7 @@ import 'package:example/common/base_scaffold.dart';
 import 'package:example/common/properties/bool_property.dart';
 import 'package:example/common/properties/enum_property.dart';
 import 'package:flutter/material.dart';
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class CheckboxFormFieldPage extends StatefulWidget {
   const CheckboxFormFieldPage({super.key});

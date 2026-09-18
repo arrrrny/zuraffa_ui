@@ -277,7 +277,7 @@ String _generateSkillMd(
     'Here is a complete example of a Counter App using `zuraffa_ui`, including light and dark theme support.',
   );
   buffer.writeln('```dart');
-  buffer.writeln("import 'package:zuraffa_ui/shad.dart';");
+  buffer.writeln("import 'package:zuraffa_ui/zfa.dart';");
   buffer.writeln();
   buffer.writeln('void main() {');
   buffer.writeln('  runApp(const MyApp());');

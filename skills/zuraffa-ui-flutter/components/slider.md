@@ -19,7 +19,7 @@ import 'package:example/common/properties/enum_property.dart';
 import 'package:example/common/properties/string_property.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class SliderPage extends StatefulWidget {
   const SliderPage({super.key});

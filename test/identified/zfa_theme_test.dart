@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:zuraffa_ui/shad.dart';
-import 'package:zuraffa_ui/zuraffa_ui.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 // Theme alias tests: skins type ZfaTheme/ZfaThemeData and never a Shad name.
 // The engine import exists only to prove the alias IS the engine type (the

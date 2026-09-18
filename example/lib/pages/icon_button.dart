@@ -1,7 +1,7 @@
 import 'package:example/common/base_scaffold.dart';
 import 'package:example/common/properties/bool_property.dart';
 import 'package:flutter/material.dart';
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class IconButtonPage extends StatefulWidget {
   const IconButtonPage({super.key});

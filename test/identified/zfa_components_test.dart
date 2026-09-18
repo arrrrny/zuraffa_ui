@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:zuraffa_ui/shad.dart';
-import 'package:zuraffa_ui/zuraffa_ui.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 // Identification tests: every certified Zfa component answers the typed
 // contract protocol (contractId + contractEnabled) and renders the Shad engine

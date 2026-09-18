@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class TimePickerPage extends StatelessWidget {
   const TimePickerPage({super.key, required this.style});

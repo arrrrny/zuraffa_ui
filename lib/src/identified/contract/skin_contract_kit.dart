@@ -130,7 +130,7 @@ class SkinContractKit {
   /// The certified contract ids of the identified vocabulary.
   ///
   /// Components beyond this list are engine-only (reachable through
-  /// `package:zuraffa_ui/shad.dart`) until a later spec identifies them.
+  /// `package:zuraffa_ui/zfa.dart`) until a later spec identifies them.
   static const List<String> certifiedIds = [
     'zfa.app',
     'zfa.button',

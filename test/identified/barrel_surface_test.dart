@@ -43,11 +43,11 @@ void main() {
       );
     });
 
-    test('raw engine library is lib/shad.dart, not lib/shadcn_ui.dart', () {
+    test('raw engine library is lib/zfa.dart, not lib/shadcn_ui.dart', () {
       expect(
-        File('lib/shad.dart').existsSync(),
+        File('lib/zfa.dart').existsSync(),
         isTrue,
-        reason: 'raw Shad* engine must live at lib/shad.dart',
+        reason: 'raw Shad* engine must live at lib/zfa.dart',
       );
       expect(
         File('lib/shadcn_ui.dart').existsSync(),

@@ -37,9 +37,9 @@ jobs:
           CUPERTINO_IMPORTS=$(eval "grep -r \"import.*cupertino\.dart\" lib/ $GREP_EXCLUDE || true")
 
           # The engine must reach its own code by granular path, never through
-          # the package barrels: lib/shad.dart (raw engine) or
+          # the package barrels: lib/zfa.dart (raw engine) or
           # lib/zuraffa_ui.dart (certified surface).
-          BARREL_IMPORTS=$(grep -rE "import.*zuraffa_ui/(shad|zuraffa_ui)\.dart" lib/ || true)
+          BARREL_IMPORTS=$(grep -rE "import.*zuraffa_ui/(zfa|zuraffa_ui)\.dart" lib/ || true)
 
           # Report all findings first
           FOUND_VIOLATIONS=false

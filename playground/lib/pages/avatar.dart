@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class AvatarPage extends StatelessWidget {
   const AvatarPage({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 /// Sample product data for the sticky section list demo.
 class Product {
