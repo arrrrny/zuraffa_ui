@@ -1,3 +1,38 @@
+## 0.3.0
+
+- **BREAKING**: the raw engine library is `lib/zfa.dart` (was `lib/shad.dart`);
+  `package:zuraffa_ui/shad.dart` no longer resolves. That library also carries
+  a generated `Zfa*` alias for every public engine name (256 aliases across 120
+  libraries — `scripts/generate_zfa_aliases.dart`) and re-exports the certified
+  barrel, so `import 'package:zuraffa_ui/zfa.dart';` reaches the whole Zfa
+  vocabulary from one line. Consumer code never types a `Shad*` name;
+  `test/identified/zfa_alias_coverage_test.dart` fails on drift.
+- **FEAT**: `ZfaButton` gains the engine's variants — `raw`, `destructive`,
+  `outline`, `secondary`, `ghost`, `link` — plus `mainAxisAlignment`;
+  `ZfaInput` gains `padding`/`leading` and takes the engine's `Widget`
+  `placeholder`; `ZfaToaster.of(context).show(ZfaToast(...))` mirrors
+  `ShadToaster.of`. A skin can now build its screens without spelling a single
+  engine name.
+- **FEAT**: `.github/workflows/sync-upstream.yml` subscribes the fork to
+  `nank1ro/flutter-shadcn-ui` daily (03:00 UTC + manual dispatch). Conflicts
+  are never auto-resolved: the job aborts, opens a `sync`-labelled issue with
+  the resolution procedure, and fails. A clean merge must keep every entry of
+  `.github/FORK_OWNED_FILES` (the identified layer, the package identity, the
+  check-imports gate), and the brand map + `cli/hashes.json` are regenerated on
+  top of the merge. `AGENTS.md` records the policy.
+- **FIX**: engine synced to upstream `b7c4ad0` (`shadcn_ui` 0.57.0). A
+  `ShadDialog` no longer bakes status-bar/navigation-bar padding into a centred
+  card (`SafeArea` moves to the route level — this is what `ZfaDialog` renders
+  now; pass `useSafeArea: false` to restore the old behaviour), the same fix
+  lands for non-expandable `ShadSheet`s, and cross-axis safe-area insets no
+  longer leak into constrained sheets (#681, #685).
+- **FIX**: the `check-imports` gate ignores matches inside comments, so a doc
+  example may show an import line again while every real import is still
+  caught (line numbers included in the report).
+- **CHORE**: `cli/hashes.json` follows the merged tree; the generated agent
+  skill's Basic Setup example reads the Zfa surface.
+- **Base fork SHA**: `b7c4ad0` (upstream `shadcn_ui` 0.57.0).
+
 ## 0.2.0
 
 - **FEAT**: `ShadStickySectionList` (with `ShadListSection` and the matching
