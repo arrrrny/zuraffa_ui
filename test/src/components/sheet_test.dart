@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +20,12 @@ Positioned findClosePositioned(WidgetTester tester) {
   );
   return tester.widget<Positioned>(positioned.first);
 }
+
+// The expandable-sheet goldens are rendered on Linux in CI; macOS draws
+// the resize handle/shadow slightly differently (~0.2% pixel drift), so
+// those six comparisons are only asserted where the goldens are
+// produced. Non-expandable goldens match on both platforms. See #7.
+final bool skipExpandableGoldens = !Platform.isLinux;
 
 void main() {
   // Helper method to create a test widget wrapped in ShadApp and Scaffold
@@ -1244,7 +1251,7 @@ void main() {
         find.byType(ShadSheet),
         matchesGoldenFile('goldens/sheet_expandable_bottom_initial.png'),
       );
-    });
+    }, skip: skipExpandableGoldens);
 
     // Golden: bottom sheet dragged to maxSize
     testWidgets('golden: expandable bottom sheet at maxSize', (tester) async {
@@ -1273,7 +1280,7 @@ void main() {
         find.byType(ShadSheet),
         matchesGoldenFile('goldens/sheet_expandable_bottom_expanded.png'),
       );
-    });
+    }, skip: skipExpandableGoldens);
 
     // Golden: top sheet
     testWidgets('golden: expandable top sheet', (tester) async {
@@ -1296,7 +1303,7 @@ void main() {
         find.byType(ShadSheet),
         matchesGoldenFile('goldens/sheet_expandable_top.png'),
       );
-    });
+    }, skip: skipExpandableGoldens);
 
     // Golden: left sheet
     testWidgets('golden: expandable left sheet', (tester) async {
@@ -1319,7 +1326,7 @@ void main() {
         find.byType(ShadSheet),
         matchesGoldenFile('goldens/sheet_expandable_left.png'),
       );
-    });
+    }, skip: skipExpandableGoldens);
 
     // Golden: right sheet
     testWidgets('golden: expandable right sheet', (tester) async {
@@ -1342,7 +1349,7 @@ void main() {
         find.byType(ShadSheet),
         matchesGoldenFile('goldens/sheet_expandable_right.png'),
       );
-    });
+    }, skip: skipExpandableGoldens);
 
     // Expandable decoration fills the entire composite (pill +
     // dialog) so the sheet background paints behind the resize handle
@@ -1935,7 +1942,7 @@ void main() {
         find.byType(ShadSheet),
         matchesGoldenFile('goldens/sheet_expandable_custom_handle.png'),
       );
-    });
+    }, skip: skipExpandableGoldens);
 
     // ── Fling-snap tests (issue #655) ──────────────────────────────────────
     //
