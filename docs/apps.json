@@ -181,5 +181,21 @@
       "target": "_blank",
       "rel": "noopener noreferrer"
     }
+  },
+  {
+    "label": "SPEND - Split & Track Expenses",
+    "link": "https://app.spendlab.net/",
+    "attrs": {
+      "target": "_blank",
+      "rel": "noopener noreferrer"
+    }
+  },
+  {
+    "label": "CASE | Be Heard",
+    "link": "https://casebeheard.com/",
+    "attrs": {
+      "target": "_blank",
+      "rel": "noopener noreferrer"
+    }
   }
 ]
