@@ -36,7 +36,74 @@ class ShadNodeParser {
   /// into a tree.
   ///
   /// Throws a [UiParseException] subtype on any violation.
+  /// Parses and checks [json] without building any widget (FR-14).
+  ///
+  /// All violations are collected (parse stops at the first of the same
+  /// kind to keep paths meaningful); the report is the agent/CI contract.
+  UiParseReport validate(Object? json) {
+    final errors = <UiParseException>[];
+    try {
+      final map = _decodePayload(json);
+      final version = map['schemaVersion'];
+      final hasVersion = version == null || (version is int && version >= 1);
+      if (!hasVersion || (version is int && version > currentSchemaVersion)) {
+        errors.add(
+          UiParseError(
+            kind: UiParseErrorKind.malformed,
+            path: 'root',
+            message: 'unsupported schemaVersion $version',
+          ),
+        );
+        return UiParseReport(errors);
+      }
+      if (!map.containsKey('root')) {
+        errors.add(
+          UiParseError(
+            kind: UiParseErrorKind.arity,
+            path: 'root',
+            message: 'envelope requires a "root" node',
+          ),
+        );
+        return UiParseReport(errors);
+      }
+      _collect(map['root'], 'root', errors);
+    } on UiParseException catch (e) {
+      errors.add(e);
+    }
+    return UiParseReport(errors);
+  }
+
+  /// Walks [json] recording every violation instead of stopping at the
+  /// first: validation is a report, parse is a gate.
+  void _collect(Object? json, String path, List<UiParseException> errors) {
+    _visitedNodes = 0;
+    try {
+      _decodeNode(json, path);
+    } on UiParseException catch (e) {
+      final duplicate = errors.any(
+        (x) => x.path == e.path && x.message == e.message,
+      );
+      if (!duplicate) errors.add(e);
+    }
+    if (json is Map) {
+      json.forEach((key, value) {
+        if (value is List) {
+          for (var i = 0; i < value.length; i++) {
+            _collect(value[i], '$path/$key[$i]', errors);
+          }
+        } else if (value is Map) {
+          _collect(value, '$path/$key', errors);
+        }
+      });
+    }
+  }
+
+  /// Parses [json] — an encoded JSON string or an already-decoded map —
+  /// into a tree.
+  ///
+  /// Throws a [UiParseException] subtype on any violation.
   ShadNodeTree parse(Object? json) {
+    _visitedNodes = 0;
     final map = _decodePayload(json);
     final version = map['schemaVersion'];
     final int schemaVersion;
@@ -51,13 +118,11 @@ class ShadNodeParser {
         message: 'schemaVersion must be a positive integer, got $version',
       );
     }
-    if (schemaVersion != currentSchemaVersion) {
-      // US4 replaces this with the typed version policy (newer majors fail,
-      // older minors stay parseable).
-      throw UiParseError(
-        kind: UiParseErrorKind.malformed,
-        path: 'root',
-        message: 'unsupported schemaVersion $schemaVersion',
+    if (schemaVersion > currentSchemaVersion) {
+      // FR-8: never silently misparse a future wire.
+      throw UiVersionError(
+        found: schemaVersion,
+        supported: currentSchemaVersion,
       );
     }
     if (!map.containsKey('root')) {
@@ -98,7 +163,24 @@ class ShadNodeParser {
 
   // ── node dispatch ────────────────────────────────────────────────────
 
-  ShadNode _decodeNode(Object? json, String path) {
+  int _visitedNodes = 0;
+
+  ShadNode _decodeNode(Object? json, String path, {int depth = 0}) {
+    if (depth > maxDepth) {
+      throw UiTreeTooLarge(
+        cap: UiCapKind.depth,
+        path: path,
+        message: 'tree exceeds the maximum depth of $maxDepth',
+      );
+    }
+    _visitedNodes += 1;
+    if (_visitedNodes > maxNodes) {
+      throw UiTreeTooLarge(
+        cap: UiCapKind.nodes,
+        path: path,
+        message: 'tree exceeds the maximum node count of $maxNodes',
+      );
+    }
     if (json is! Map) {
       throw UiParseError(
         kind: UiParseErrorKind.malformed,
@@ -124,7 +206,7 @@ class ShadNodeParser {
       );
     }
     _checkKeys(type, node, path);
-    return decoder(node, path);
+    return decoder(node, path, depth);
   }
 
   String? _optId(Map<String, dynamic> node, String path) {
@@ -160,7 +242,10 @@ class ShadNodeParser {
 
   String _reqStr(Map<String, dynamic> node, String key, String path) {
     final value = node[key];
-    if (value is String && value.isNotEmpty) return value;
+    if (value is String && value.isNotEmpty) {
+      _checkTextLength(value, key, path);
+      return value;
+    }
     throw UiParseError(
       kind: UiParseErrorKind.schema,
       path: path,
@@ -171,7 +256,10 @@ class ShadNodeParser {
   String? _optStr(Map<String, dynamic> node, String key, String path) {
     final value = node[key];
     if (value == null) return null;
-    if (value is String) return value;
+    if (value is String) {
+      _checkTextLength(value, key, path);
+      return value;
+    }
     throw UiParseError(
       kind: UiParseErrorKind.schema,
       path: path,
@@ -194,8 +282,18 @@ class ShadNodeParser {
     return value;
   }
 
+  void _checkTextLength(String value, String key, String path) {
+    if (value.length > maxTextLength) {
+      throw UiTreeTooLarge(
+        cap: UiCapKind.textLength,
+        path: path,
+        message: '"$key" exceeds the maximum text length of $maxTextLength',
+      );
+    }
+  }
+
   static final RegExp _colorPattern = RegExp(
-    r'^($#[0-9a-fA-F]{3,8}|0x[0-9a-fA-F]{6,8}|(rgba?)\(\s*[\d.,\s]+\))$',
+    r'^(#[0-9a-fA-F]{3,8}|0x[0-9a-fA-F]{6,8}|rgba?\(\s*[\d.,\s]+\))$',
   );
 
   bool? _optBool(Map<String, dynamic> node, String key, String path) {
@@ -284,7 +382,12 @@ class ShadNodeParser {
   }
 
   /// A required child (data-model arity: exactly one).
-  ShadNode _reqChild(Map<String, dynamic> node, String key, String path) {
+  ShadNode _reqChild(
+    Map<String, dynamic> node,
+    String key,
+    String path, {
+    int depth = 0,
+  }) {
     final value = node[key];
     if (value == null) {
       throw UiParseError(
@@ -293,10 +396,14 @@ class ShadNodeParser {
         message: '$node requires a "$key" child',
       );
     }
-    return _decodeNode(value, '$path/$key');
+    return _decodeNode(value, '$path/$key', depth: depth + 1);
   }
 
-  List<ShadNode> _childrenList(Object? value, String path) {
+  List<ShadNode> _childrenList(
+    Object? value,
+    String path, {
+    int depth = 0,
+  }) {
     if (value is! List) {
       throw UiParseError(
         kind: UiParseErrorKind.schema,
@@ -305,7 +412,8 @@ class ShadNodeParser {
       );
     }
     return [
-      for (var i = 0; i < value.length; i++) _decodeNode(value[i], '$path[$i]'),
+      for (var i = 0; i < value.length; i++)
+        _decodeNode(value[i], '$path[$i]', depth: depth + 1),
     ];
   }
 
@@ -478,48 +586,56 @@ class ShadNodeParser {
     'icon': {'name', 'size', 'style', 'id'},
   };
 
-  late final Map<String, ShadNode Function(Map<String, dynamic>, String)>
+  late final Map<String, ShadNode Function(Map<String, dynamic>, String, int)>
   _decoders = {
-    'button': (n, p) => ButtonNode(
+    'button': (n, p, depth) => ButtonNode(
       id: _optId(n, p),
       label: _optStr(n, 'label', p),
       variant: _optEnum(n, 'variant', p, _buttonVariants),
       size: _optEnum(n, 'size', p, const {'sm', 'md', 'lg'}),
       action: _optAction(n, 'action', p),
     ),
-    'badge': (n, p) => BadgeNode(
+    'badge': (n, p, depth) => BadgeNode(
       id: _optId(n, p),
       label: _reqStr(n, 'label', p),
       variant: _optEnum(n, 'variant', p, _badgeVariants),
     ),
-    'text': (n, p) => TextNode(
+    'text': (n, p, depth) => TextNode(
       id: _optId(n, p),
       text: _reqStr(n, 'text', p),
       style: _optStyleToken(n, 'style', p, _textStyles),
       align: _optEnum(n, 'align', p, _textAligns),
     ),
-    'card': (n, p) => CardNode(
+    'card': (n, p, depth) => CardNode(
       id: _optId(n, p),
       title: _optStr(n, 'title', p),
       description: _optStr(n, 'description', p),
-      content: _childrenList(n['content'] ?? const [], p),
+      content: _childrenList(
+        n['content'] ?? const [],
+        '$p/content',
+        depth: depth,
+      ),
       header: n['header'] == null
           ? null
-          : _decodeNode(n['header'], '$p/header'),
+          : _decodeNode(n['header'], '$p/header', depth: depth),
       footer: n['footer'] == null
           ? null
-          : _decodeNode(n['footer'], '$p/footer'),
+          : _decodeNode(n['footer'], '$p/footer', depth: depth),
     ),
-    'cardHeader': (n, p) => CardHeaderNode(
+    'cardHeader': (n, p, depth) => CardHeaderNode(
       id: _optId(n, p),
       title: _optStr(n, 'title', p),
       description: _optStr(n, 'description', p),
     ),
-    'cardFooter': (n, p) => CardFooterNode(
+    'cardFooter': (n, p, depth) => CardFooterNode(
       id: _optId(n, p),
-      content: _childrenList(n['content'] ?? const [], p),
+      content: _childrenList(
+        n['content'] ?? const [],
+        '$p/content',
+        depth: depth,
+      ),
     ),
-    'input': (n, p) => InputNode(
+    'input': (n, p, depth) => InputNode(
       id: _optId(n, p),
       value: _optStr(n, 'value', p),
       placeholder: _optStr(n, 'placeholder', p),
@@ -531,7 +647,7 @@ class ShadNodeParser {
       keyboard: _optEnum(n, 'keyboard', p, _keyboards),
       action: _optAction(n, 'action', p),
     ),
-    'select': (n, p) => SelectNode(
+    'select': (n, p, depth) => SelectNode(
       id: _optId(n, p),
       options: _options(
         n,
@@ -549,27 +665,27 @@ class ShadNodeParser {
       label: _optStr(n, 'label', p),
       enabled: _optBool(n, 'enabled', p),
     ),
-    'selectOption': (n, p) => SelectOptionNode(
+    'selectOption': (n, p, depth) => SelectOptionNode(
       id: _optId(n, p),
       value: _reqStr(n, 'value', p),
       label: _reqStr(n, 'label', p),
       enabled: _optBool(n, 'enabled', p),
     ),
-    'checkbox': (n, p) => CheckboxNode(
+    'checkbox': (n, p, depth) => CheckboxNode(
       id: _optId(n, p),
       value: _optBool(n, 'value', p),
       label: _optStr(n, 'label', p),
       enabled: _optBool(n, 'enabled', p),
       action: _optAction(n, 'action', p),
     ),
-    'switch': (n, p) => SwitchNode(
+    'switch': (n, p, depth) => SwitchNode(
       id: _optId(n, p),
       value: _optBool(n, 'value', p),
       label: _optStr(n, 'label', p),
       enabled: _optBool(n, 'enabled', p),
       action: _optAction(n, 'action', p),
     ),
-    'radioGroup': (n, p) => RadioGroupNode(
+    'radioGroup': (n, p, depth) => RadioGroupNode(
       id: _optId(n, p),
       options: _options(
         n,
@@ -586,21 +702,21 @@ class ShadNodeParser {
       enabled: _optBool(n, 'enabled', p),
       action: _optAction(n, 'action', p),
     ),
-    'radioOption': (n, p) => RadioOptionNode(
+    'radioOption': (n, p, depth) => RadioOptionNode(
       id: _optId(n, p),
       value: _reqStr(n, 'value', p),
       label: _reqStr(n, 'label', p),
       enabled: _optBool(n, 'enabled', p),
     ),
-    'formItem': (n, p) => FormItemNode(
+    'formItem': (n, p, depth) => FormItemNode(
       id: _optId(n, p),
       label: _reqStr(n, 'label', p),
-      field: _reqChild(n, 'field', p),
+      field: _reqChild(n, 'field', p, depth: depth),
       helper: _optStr(n, 'helper', p),
       errorText: _optStr(n, 'errorText', p),
       required_: _optBool(n, 'required', p),
     ),
-    'tabs': (n, p) => TabsNode(
+    'tabs': (n, p, depth) => TabsNode(
       id: _optId(n, p),
       tabs: _options(
         n,
@@ -614,23 +730,27 @@ class ShadNodeParser {
           action: _optAction(o, 'action', op),
         ),
       ),
-      panes: _panes(n, p),
+      panes: _panes(n, p, depth),
       value: _optStr(n, 'value', p),
       action: _optAction(n, 'action', p),
     ),
-    'tab': (n, p) => TabNode(
+    'tab': (n, p, depth) => TabNode(
       id: _optId(n, p),
       value: _reqStr(n, 'value', p),
       label: _reqStr(n, 'label', p),
       enabled: _optBool(n, 'enabled', p),
       action: _optAction(n, 'action', p),
     ),
-    'tabPane': (n, p) => TabPaneNode(
+    'tabPane': (n, p, depth) => TabPaneNode(
       id: _optId(n, p),
       value: _reqStr(n, 'value', p),
-      content: _childrenList(n['content'] ?? const [], p),
+      content: _childrenList(
+        n['content'] ?? const [],
+        '$p/content',
+        depth: depth,
+      ),
     ),
-    'progress': (n, p) {
+    'progress': (n, p, depth) {
       final value = _optDouble(n, 'value', p);
       if (value == null) {
         throw UiParseError(
@@ -652,7 +772,7 @@ class ShadNodeParser {
         indeterminate: _optBool(n, 'indeterminate', p),
       );
     },
-    'separator': (n, p) => SeparatorNode(
+    'separator': (n, p, depth) => SeparatorNode(
       id: _optId(n, p),
       orientation: _optEnum(
         n,
@@ -661,94 +781,124 @@ class ShadNodeParser {
         const {'horizontal', 'vertical'},
       ),
     ),
-    'tooltip': (n, p) => TooltipNode(
+    'tooltip': (n, p, depth) => TooltipNode(
       id: _optId(n, p),
       message: _reqStr(n, 'message', p),
-      child: _reqChild(n, 'child', p),
+      child: _reqChild(n, 'child', p, depth: depth),
     ),
-    'sheet': (n, p) => SheetNode(
+    'sheet': (n, p, depth) => SheetNode(
       id: _optId(n, p),
       side: _optEnum(n, 'side', p, _sides),
       title: _optStr(n, 'title', p),
       description: _optStr(n, 'description', p),
       open: _optBool(n, 'open', p),
-      content: _childrenList(n['content'] ?? const [], p),
+      content: _childrenList(
+        n['content'] ?? const [],
+        '$p/content',
+        depth: depth,
+      ),
       trigger: n['trigger'] == null
           ? null
-          : _decodeNode(n['trigger'], '$p/trigger'),
+          : _decodeNode(n['trigger'], '$p/trigger', depth: depth),
       action: _optAction(n, 'action', p),
     ),
-    'dialog': (n, p) => DialogNode(
+    'dialog': (n, p, depth) => DialogNode(
       id: _optId(n, p),
       title: _optStr(n, 'title', p),
       description: _optStr(n, 'description', p),
       open: _optBool(n, 'open', p),
       actions: _buttonActions(n, p),
-      content: _childrenList(n['content'] ?? const [], p),
+      content: _childrenList(
+        n['content'] ?? const [],
+        '$p/content',
+        depth: depth,
+      ),
       trigger: n['trigger'] == null
           ? null
-          : _decodeNode(n['trigger'], '$p/trigger'),
+          : _decodeNode(n['trigger'], '$p/trigger', depth: depth),
       action: _optAction(n, 'action', p),
     ),
-    'popover': (n, p) => PopoverNode(
+    'popover': (n, p, depth) => PopoverNode(
       id: _optId(n, p),
       open: _optBool(n, 'open', p),
-      content: _childrenList(n['content'] ?? const [], p),
+      content: _childrenList(
+        n['content'] ?? const [],
+        '$p/content',
+        depth: depth,
+      ),
       trigger: n['trigger'] == null
           ? null
-          : _decodeNode(n['trigger'], '$p/trigger'),
+          : _decodeNode(n['trigger'], '$p/trigger', depth: depth),
       action: _optAction(n, 'action', p),
     ),
-    'toast': (n, p) => ToastNode(
+    'toast': (n, p, depth) => ToastNode(
       id: _optId(n, p),
       title: _reqStr(n, 'title', p),
       description: _optStr(n, 'description', p),
       variant: _optEnum(n, 'variant', p, _toastVariants),
       action: _optAction(n, 'action', p),
     ),
-    'row': (n, p) => RowNode(
+    'row': (n, p, depth) => RowNode(
       id: _optId(n, p),
-      children: _childrenList(n['children'] ?? const [], p),
+      children: _childrenList(
+        n['children'] ?? const [],
+        '$p/children',
+        depth: depth,
+      ),
       mainAxisAlignment: _optEnum(n, 'mainAxisAlignment', p, _mainAxis),
       crossAxisAlignment: _optEnum(n, 'crossAxisAlignment', p, _crossAxis),
       gap: _optDouble(n, 'gap', p),
     ),
-    'column': (n, p) => ColumnNode(
+    'column': (n, p, depth) => ColumnNode(
       id: _optId(n, p),
-      children: _childrenList(n['children'] ?? const [], p),
+      children: _childrenList(
+        n['children'] ?? const [],
+        '$p/children',
+        depth: depth,
+      ),
       mainAxisAlignment: _optEnum(n, 'mainAxisAlignment', p, _mainAxis),
       crossAxisAlignment: _optEnum(n, 'crossAxisAlignment', p, _crossAxis),
       gap: _optDouble(n, 'gap', p),
     ),
-    'stack': (n, p) => StackNode(
+    'stack': (n, p, depth) => StackNode(
       id: _optId(n, p),
-      children: _childrenList(n['children'] ?? const [], p),
+      children: _childrenList(
+        n['children'] ?? const [],
+        '$p/children',
+        depth: depth,
+      ),
       alignment: _optEnum(n, 'alignment', p, _stackAlignment),
     ),
-    'padding': (n, p) => PaddingNode(
+    'padding': (n, p, depth) => PaddingNode(
       id: _optId(n, p),
       padding: _padding(n, 'padding', p),
-      child: _reqChild(n, 'child', p),
+      child: _reqChild(n, 'child', p, depth: depth),
     ),
-    'expanded': (n, p) => ExpandedNode(
+    'expanded': (n, p, depth) => ExpandedNode(
       id: _optId(n, p),
-      child: _reqChild(n, 'child', p),
+      child: _reqChild(n, 'child', p, depth: depth),
       flex: _optInt(n, 'flex', p),
     ),
-    'sizedBox': (n, p) => SizedBoxNode(
+    'sizedBox': (n, p, depth) => SizedBoxNode(
       id: _optId(n, p),
-      child: n['child'] == null ? null : _decodeNode(n['child'], '$p/child'),
+      child: n['child'] == null
+          ? null
+          : _decodeNode(n['child'], '$p/child', depth: depth),
       width: _optDouble(n, 'width', p),
       height: _optDouble(n, 'height', p),
     ),
-    'listView': (n, p) => ListViewNode(
+    'listView': (n, p, depth) => ListViewNode(
       id: _optId(n, p),
-      children: _childrenList(n['children'] ?? const [], p),
+      children: _childrenList(
+        n['children'] ?? const [],
+        '$p/children',
+        depth: depth,
+      ),
       spacing: _optDouble(n, 'spacing', p),
       shrinkWrap: _optBool(n, 'shrinkWrap', p),
       reverse: _optBool(n, 'reverse', p),
     ),
-    'image': (n, p) => ImageNode(
+    'image': (n, p, depth) => ImageNode(
       id: _optId(n, p),
       src: _reqStr(n, 'src', p),
       fit: _optEnum(n, 'fit', p, _imageFits),
@@ -756,7 +906,7 @@ class ShadNodeParser {
       height: _optDouble(n, 'height', p),
       alt: _optStr(n, 'alt', p),
     ),
-    'icon': (n, p) => IconNode(
+    'icon': (n, p, depth) => IconNode(
       id: _optId(n, p),
       name: _reqStr(n, 'name', p),
       size: _optDouble(n, 'size', p),
@@ -843,7 +993,7 @@ class ShadNodeParser {
         '$p/actions',
       ).whereType<ButtonNode>().toList();
 
-  List<TabPaneNode> _panes(Map<String, dynamic> n, String p) {
+  List<TabPaneNode> _panes(Map<String, dynamic> n, String p, int depth) {
     final value = n['panes'];
     if (value == null) {
       throw UiParseError(
@@ -852,6 +1002,36 @@ class ShadNodeParser {
         message: 'tabs requires "panes"',
       );
     }
-    return _childrenList(value, '$p/panes').whereType<TabPaneNode>().toList();
+    if (value is! List) {
+      throw UiParseError(
+        kind: UiParseErrorKind.schema,
+        path: p,
+        message: '"panes" must be an array',
+      );
+    }
+    return [
+      for (var i = 0; i < value.length; i++)
+        () {
+          final item = value[i];
+          if (item is! Map) {
+            throw UiParseError(
+              kind: UiParseErrorKind.schema,
+              path: '$p/panes[$i]',
+              message: 'pane must be a JSON object',
+            );
+          }
+          final map = item.map((k, v) => MapEntry(k.toString(), v));
+          _checkKeys('tabPane', map, '$p/panes[$i]');
+          return TabPaneNode(
+            id: _optId(map, '$p/panes[$i]'),
+            value: _reqStr(map, 'value', '$p/panes[$i]'),
+            content: _childrenList(
+              map['content'] ?? const [],
+              '$p/panes[$i]',
+              depth: depth,
+            ),
+          );
+        }(),
+    ];
   }
 }

@@ -5,6 +5,8 @@
 /// typed callbacks, never as exceptions (research D6).
 library;
 
+import 'package:flutter/foundation.dart';
+
 /// A host-provided handler for one action name; registered on
 /// `UiActionRegistry` and invoked with the wire args verbatim.
 typedef UiActionHandler = void Function(String name, Map<String, dynamic> args);
@@ -49,4 +51,54 @@ class UiActionRegistry {
 
   /// Whether a handler is registered for [name].
   bool handles(String name) => _handlers.containsKey(name);
+
+  /// Resolves [name] against the registry and invokes the handler with
+  /// [args] (spec 1100 FR-6).
+  ///
+  /// Never throws (FR-7): an unknown name surfaces through
+  /// [onUnknownAction]; a throwing handler surfaces through
+  /// [onHandlerError]. With no observers installed the failure is swallowed
+  /// in release and reported through [FlutterError] in debug — the host
+  /// stays interactive either way (research D6).
+  void dispatch(String name, Map<String, dynamic> args) {
+    final handler = _handlers[name];
+    if (handler == null) {
+      final onUnknown = onUnknownAction;
+      if (onUnknown != null) {
+        onUnknown(name);
+      } else {
+        _debugReport('no handler registered for action "$name"');
+      }
+      return;
+    }
+    try {
+      handler(name, args);
+      // Handlers may throw Error or Exception — both are contained.
+      // ignore: avoid_catches_without_on_clauses
+    } catch (error, stackTrace) {
+      final onError = onHandlerError;
+      if (onError != null) {
+        onError(name, error, stackTrace);
+      } else {
+        _debugReport(
+          'action handler "$name" threw: $error',
+          error,
+          stackTrace,
+        );
+      }
+    }
+  }
+
+  void _debugReport(String message, [Object? error, StackTrace? stackTrace]) {
+    if (kDebugMode) {
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error ?? StateError(message),
+          stack: stackTrace,
+          library: 'zuraffa_ui/uinode',
+          informationCollector: () => [DiagnosticsNode.message(message)],
+        ),
+      );
+    }
+  }
 }

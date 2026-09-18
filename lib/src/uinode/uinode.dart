@@ -4,6 +4,8 @@
 export 'actions/ui_action_handler.dart';
 export 'nodes/nodes.dart';
 export 'nodes/props.dart';
+export 'render/renderer_scope.dart';
+export 'render/shad_node_renderer.dart';
 export 'tree/canonical_json.dart';
 export 'tree/shad_node_parser.dart';
 export 'tree/shad_node_tree.dart';

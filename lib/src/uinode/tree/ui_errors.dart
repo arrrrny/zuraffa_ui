@@ -85,6 +85,21 @@ class UiParseError extends UiParseException {
   final UiParseErrorKind kind;
 }
 
+/// The outcome of a validation-only run (FR-14): ok, or the collected
+/// violations. Never contains widgets.
+class UiParseReport {
+  UiParseReport(this.errors);
+
+  /// A successful validation (no errors).
+  UiParseReport.ok() : this(const []);
+
+  /// Every violation found, in walk order.
+  final List<UiParseException> errors;
+
+  /// Whether the tree is valid.
+  bool get ok => errors.isEmpty;
+}
+
 /// A render-time notice (FR-9): e.g. an `UnknownNode` omitted in release
 /// mode. Events never throw; hosts observe them through the renderer.
 class UiNodeEvent {
