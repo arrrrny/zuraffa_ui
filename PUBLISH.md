@@ -57,6 +57,13 @@ this package's own 0.x timeline.
   `.pubignore`; still, delete that directory or publish from a clean checkout.
   `0.2.0` stays published as-is (cosmetic only — the fix applies from the next
   release, since a published version cannot be re-uploaded).
+- **The TDD lane stays out of the archive.** `lib/tdd/**` holds the acceptance
+  subjects; they drive widget tests, so they import `flutter_test` (a dev
+  dependency), and `test/tdd/**` imports those subjects back through
+  `package:zuraffa_ui/tdd/...`. Both are listed in `.pubignore` so the published
+  package ships neither — otherwise pana flags a test-only import under `lib/`
+  and consumers resolve test-runner code into their cache. The lane still runs
+  locally, where the mutation audit mutates the subjects in place.
 - **Golden tests are Linux artefacts.** `flutter test` reports `+369 -6` on
   macOS x64: the six `ShadSheet` expandable goldens drift by 0.17–0.25% there,
   while the same commit passes all 375 tests on `ubuntu-latest`. Regenerate
