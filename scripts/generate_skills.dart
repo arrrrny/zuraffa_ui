@@ -250,7 +250,7 @@ String _generateSkillMd(
   buffer.writeln();
   buffer.writeln('### Applying a Theme');
   buffer.writeln(
-    'Use `ShadThemeData` within `ShadApp` to define your light and dark themes.',
+    'Use `ZfaThemeData` within `ZfaApp` to define your light and dark themes.',
   );
   buffer.writeln();
   buffer.writeln('### Detailed Guides');
@@ -288,15 +288,15 @@ String _generateSkillMd(
   buffer.writeln();
   buffer.writeln('  @override');
   buffer.writeln('  Widget build(BuildContext context) {');
-  buffer.writeln('    return ShadApp(');
+  buffer.writeln('    return ZfaApp(');
   buffer.writeln('      debugShowCheckedModeBanner: false,');
-  buffer.writeln('      theme: ShadThemeData(');
+  buffer.writeln('      theme: ZfaThemeData(');
   buffer.writeln('        brightness: Brightness.light,');
-  buffer.writeln('        colorScheme: const ShadZincColorScheme.light(),');
+  buffer.writeln('        colorScheme: const ZfaZincColorScheme.light(),');
   buffer.writeln('      ),');
-  buffer.writeln('      darkTheme: ShadThemeData(');
+  buffer.writeln('      darkTheme: ZfaThemeData(');
   buffer.writeln('        brightness: Brightness.dark,');
-  buffer.writeln('        colorScheme: const ShadZincColorScheme.dark(),');
+  buffer.writeln('        colorScheme: const ZfaZincColorScheme.dark(),');
   buffer.writeln('      ),');
   buffer.writeln('      themeMode: ThemeMode.system,');
   buffer.writeln('      home: const CounterPage(),');
@@ -322,7 +322,7 @@ String _generateSkillMd(
   buffer.writeln();
   buffer.writeln('  @override');
   buffer.writeln('  Widget build(BuildContext context) {');
-  buffer.writeln('    final theme = ShadTheme.of(context);');
+  buffer.writeln('    final theme = ZfaTheme.of(context);');
   buffer.writeln('    return Scaffold(');
   buffer.writeln("      appBar: AppBar(title: const Text('Zuraffa Counter')),");
   buffer.writeln('      body: Center(');
@@ -342,7 +342,7 @@ String _generateSkillMd(
   buffer.writeln('          ],');
   buffer.writeln('        ),');
   buffer.writeln('      ),');
-  buffer.writeln('      floatingActionButton: ShadButton(');
+  buffer.writeln('      floatingActionButton: ZfaButton(');
   buffer.writeln('        onPressed: _incrementCounter,');
   buffer.writeln('        child: const Icon(LucideIcons.plus),');
   buffer.writeln('      ),');

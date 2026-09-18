@@ -11,7 +11,7 @@ This skill provides documentation and examples for using the `zuraffa_ui` packag
 Zuraffa UI provides a powerful theming system. You can use built-in color schemes (blue, gray, green, neutral, orange, red, rose, slate, stone, violet, yellow, zinc) or create your own.
 
 ### Applying a Theme
-Use `ShadThemeData` within `ShadApp` to define your light and dark themes.
+Use `ZfaThemeData` within `ZfaApp` to define your light and dark themes.
 
 ### Detailed Guides
 - [Theming](guides/theming.md)
@@ -74,15 +74,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShadApp(
+    return ZfaApp(
       debugShowCheckedModeBanner: false,
-      theme: ShadThemeData(
+      theme: ZfaThemeData(
         brightness: Brightness.light,
-        colorScheme: const ShadZincColorScheme.light(),
+        colorScheme: const ZfaZincColorScheme.light(),
       ),
-      darkTheme: ShadThemeData(
+      darkTheme: ZfaThemeData(
         brightness: Brightness.dark,
-        colorScheme: const ShadZincColorScheme.dark(),
+        colorScheme: const ZfaZincColorScheme.dark(),
       ),
       themeMode: ThemeMode.system,
       home: const CounterPage(),
@@ -108,7 +108,7 @@ class _CounterPageState extends State<CounterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
+    final theme = ZfaTheme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Zuraffa Counter')),
       body: Center(
@@ -126,7 +126,7 @@ class _CounterPageState extends State<CounterPage> {
           ],
         ),
       ),
-      floatingActionButton: ShadButton(
+      floatingActionButton: ZfaButton(
         onPressed: _incrementCounter,
         child: const Icon(LucideIcons.plus),
       ),

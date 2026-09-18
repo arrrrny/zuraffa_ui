@@ -4,7 +4,11 @@
 
 **Created**: 2026-09-05
 
-**Status**: Approved
+**Status**: Approved (updated 2026-09-18: the raw engine library moved
+`lib/shad.dart` → `lib/zfa.dart` and every public engine name gained a `Zfa*`
+alias — see PR #15, `AGENTS.md` "Fork upstream sync policy", and
+`lib/src/identified/mapping/zfa_engine_aliases.dart`. The body below records the
+2026-09-05 design as it was approved.)
 
 **Input**: GitHub issue #1099 (spec context supplied by the SPEC 1099 harness; the
 GitHub issue record itself returns 404 on `arrrrny/zuraffa-ui` at the time of this
