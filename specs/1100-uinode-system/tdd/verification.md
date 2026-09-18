@@ -6,7 +6,8 @@ behavior artifacts; its receipt-driven mutation phase reports
 `not_assessed (no behavior artifacts registered)` and was supplemented by a
 deliberate-mutant pass (the 1099 precedent).
 
-**Verdict: PASS_WITH_GAPS**
+**Verdict: PASS_WITH_GAPS** (gap 1 closed on CI — remaining gaps are
+infrastructure-only)
 
 ## Gate summary
 
@@ -39,11 +40,11 @@ mutants over the layer's core logic, each run against its owning test file:
 
 ## Gaps (why not full PASS)
 
-1. **A2 golden compares execute on Linux CI only.** The 21 fixture trees
-   render without exception on macOS (render-only mode); the PNG
-   comparisons + `--update-goldens` need the Linux run (policy: research
-   D7, issue #7). One manual/CI step remains: merge → CI green, or run
-   `flutter test test/uinode/golden_test.dart --update-goldens` on Linux.
+1. ~~A2 golden compares execute on Linux CI only~~ **CLOSED**: CI run
+   35376918127 passed all 498 tests including the 22 golden comparisons
+   (goldens regenerated in a Flutter-3.47.4 Linux environment matching
+   CI; a container-version mismatch initially caused a 0.06% drift on
+   06-card, diagnosed and fixed by pinning to CI's exact SDK).
 2. **Mutation score is deliberate-mutant-based, not tool-driven** — the
    receipt/behavior-artifact registration (`zfa` init) is not wired for
    this repo; when it is, re-run `zfa tdd verify` for a tool-computed

@@ -54,8 +54,11 @@
 - **A2** goldens: fixtures authored (21 trees) + golden_test written with
   the Linux-only compare gate (research D7, issue #7 policy). On macOS all
   22 tests pass in render-only mode; the PNG comparisons complete on the
-  Linux CI run (`--update-goldens` there only). **State: DONE-pending-CI**
-  — the platform-gated compare is the one piece a macOS run cannot prove.
+  Linux CI run (`--update-goldens` there only). **State: DONE** — goldens were
+  regenerated in a Linux environment pinned to CI's exact Flutter
+  (3.47.4 via the official SDK tarball) after the first CI run exposed a
+  0.06% glyph drift from a mismatched container version, and CI run
+  35376918127 passed all 498 tests including the 22 comparisons.
 
 ## Misfires (AGENTS.md rule)
 
