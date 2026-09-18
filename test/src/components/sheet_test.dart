@@ -28,6 +28,18 @@ Positioned findClosePositioned(WidgetTester tester) {
 final bool skipExpandableGoldens = !Platform.isLinux;
 
 void main() {
+  // flutter_test's testWidgets types skip as bool?, so the skip itself
+  // cannot carry a reason string. Print it once instead so macOS runs
+  // show why the six expandable goldens report as skipped, not that
+  // they regressed. See #7.
+  if (skipExpandableGoldens) {
+    // ignore: avoid_print
+    print(
+      'sheet_test: 6 expandable goldens skipped — Linux-rendered; '
+      'macOS drifts ~0.2% (#7)',
+    );
+  }
+
   // Helper method to create a test widget wrapped in ShadApp and Scaffold
   Widget createTestWidget(Widget child) {
     return ShadApp(home: Scaffold(body: child));
