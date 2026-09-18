@@ -146,4 +146,3 @@ extension CustomColorExtension on ShadColorScheme {
 ```
 
 In this way you can access it like other colors `ShadTheme.of(context).colorScheme.myCustomColor`.
-
