@@ -185,5 +185,8 @@ export 'src/utils/text_editing_controller.dart';
 // vocabulary both.
 export 'zuraffa_ui.dart';
 
+// The UINode layer (generative-UI substrate) under its contract names.
+export 'uinode.dart';
+
 typedef AnimateEffect<T> = _animate.Effect<T>;
 typedef IntlTextDirection = intl.TextDirection;
