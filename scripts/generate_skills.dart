@@ -76,7 +76,7 @@ void main() async {
     final compFile = File(
       'skills/zuraffa-ui-flutter/components/${comp.fileName}',
     );
-    await compFile.writeAsString('# ${comp.name}\n\n${comp.content}');
+    await _writeCanonical(compFile, '# ${comp.name}\n\n${comp.content}');
   }
 
   print('Parsing guides...');
@@ -150,7 +150,7 @@ void main() async {
     final guideFile = File(
       'skills/zuraffa-ui-flutter/guides/${guide.fileName}',
     );
-    await guideFile.writeAsString(guide.content);
+    await _writeCanonical(guideFile, guide.content);
   }
 
   print('Generating SKILL.md...');
@@ -159,9 +159,16 @@ void main() async {
     packagesContent = _cleanMdx(await packagesFile.readAsString());
   }
   final skillMd = _generateSkillMd(components, guides, packagesContent);
-  await File('skills/zuraffa-ui-flutter/SKILL.md').writeAsString(skillMd);
+  await _writeCanonical(File('skills/zuraffa-ui-flutter/SKILL.md'), skillMd);
 
   print('Done!');
+}
+
+// Every generated file ends with exactly one trailing newline so the
+// output is byte-stable at the EOF boundary regardless of whether the
+// source MDX ends with a blank line or the trimmed content ends with none.
+Future<void> _writeCanonical(File file, String content) async {
+  await file.writeAsString('${content.replaceAll(RegExp(r'[\r\n]+$'), '')}\n');
 }
 
 String? _extractTitle(String content) {
