@@ -36,8 +36,11 @@ jobs:
           # Comment lines are documentation, not imports: a doc example may
           # legitimately show `import 'package:flutter/material.dart'` or the
           # barrel paths below. `-n` adds line numbers to the report, the
-          # second grep drops commented matches (`path:LINE:// ...`).
-          COMMENT_FILTER='grep -vE ":[0-9]+:[[:space:]]*//"'
+          # second grep drops commented matches (`path:LINE:` + optional
+          # whitespace + `//`, `///`, a `/*` opener, or a ` * ` continuation
+          # inside a block comment). No real Dart statement starts with
+          # `//`, `/*` or `*`, so nothing real is masked.
+          COMMENT_FILTER='grep -vE ":[0-9]+:[[:space:]]*(//|/\*|\*)"'
 
           # Check for material.dart imports (excluding specified files)
           MATERIAL_IMPORTS=$(eval "grep -rn \"import.*material\.dart\" lib/ $GREP_EXCLUDE || true" | eval "$COMMENT_FILTER" || true)
