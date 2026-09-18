@@ -30,15 +30,11 @@ void main() {
   });
 
   test('UnknownNode raw objects survive the round-trip', () {
-    final unknown = trees
-        .map((t) => t.root)
-        .whereType<UnknownNode>()
-        .first;
+    final unknown = trees.map((t) => t.root).whereType<UnknownNode>().first;
     final canonical = canonicalJson(
       ShadNodeTree(schemaVersion: 1, root: unknown),
     );
-    final reparsed =
-        ShadNodeParser().parse(canonical).root as UnknownNode;
+    final reparsed = ShadNodeParser().parse(canonical).root as UnknownNode;
     expect(reparsed.widgetType, unknown.widgetType);
     expect(reparsed.raw['level'], unknown.raw['level']);
   });

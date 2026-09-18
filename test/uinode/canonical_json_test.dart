@@ -62,15 +62,16 @@ void main() {
       },
     };
     final tree = ShadNodeParser().parse(example);
-    expect(
-      canonicalJson(tree),
-      '{"schemaVersion":1,"root":{"widgetType":"card","title":"Sign in",'
-      '"content":['
-      '{"widgetType":"text","text":"Welcome back","style":"h2"},'
-      '{"widgetType":"input","id":"email","placeholder":"Email"},'
-      '{"widgetType":"button","label":"Continue","variant":"primary",'
-      '"action":{"action":"submit_selection","args":{"form":"signin"}}}'
+    final expected = [
+      '{"schemaVersion":1,',
+      '"root":{"widgetType":"card","title":"Sign in",',
+      '"content":[',
+      '{"widgetType":"text","text":"Welcome back","style":"h2"},',
+      '{"widgetType":"input","id":"email","placeholder":"Email"},',
+      '{"widgetType":"button","label":"Continue","variant":"primary",',
+      '"action":{"action":"submit_selection","args":{"form":"signin"}}}',
       ']}}',
-    );
+    ].join();
+    expect(canonicalJson(tree), expected);
   });
 }

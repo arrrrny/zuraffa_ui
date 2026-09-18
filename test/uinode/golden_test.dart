@@ -16,26 +16,27 @@ import 'package:zuraffa_ui/zfa.dart';
 final bool _isGoldenPlatform = Platform.isLinux;
 
 Widget _harness(Widget child, Size size) => ShadApp(
-      home: Scaffold(
-        body: Align(
-          alignment: Alignment.topLeft,
-          child: SizedBox(
-            width: size.width,
-            height: size.height,
-            child: child,
-          ),
-        ),
+  home: Scaffold(
+    body: Align(
+      alignment: Alignment.topLeft,
+      child: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: child,
       ),
-    );
+    ),
+  ),
+);
 
 void main() {
   final fixtureDir = Directory('test/uinode/fixtures');
-  final fixtures = fixtureDir
-      .listSync()
-      .whereType<File>()
-      .where((f) => f.path.endsWith('.json'))
-      .toList()
-    ..sort((a, b) => a.path.compareTo(b.path));
+  final fixtures =
+      fixtureDir
+          .listSync()
+          .whereType<File>()
+          .where((f) => f.path.endsWith('.json'))
+          .toList()
+        ..sort((a, b) => a.path.compareTo(b.path));
 
   test('there are at least 20 fixture trees (SC-3)', () {
     expect(fixtures.length, greaterThanOrEqualTo(20));

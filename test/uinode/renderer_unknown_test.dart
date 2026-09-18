@@ -27,7 +27,6 @@ void main() {
         home: Scaffold(
           body: ShadNodeRenderer(
             tree: _tree(),
-            debugFallbacks: true,
             onNodeEvent: events.add,
           ),
         ),

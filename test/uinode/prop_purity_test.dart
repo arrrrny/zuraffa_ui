@@ -25,8 +25,11 @@ void main() {
         }
       }
     }
-    expect(offenders, isEmpty,
-        reason: 'node/tree layers must stay color-free (FR-16)');
+    expect(
+      offenders,
+      isEmpty,
+      reason: 'node/tree layers must stay color-free (FR-16)',
+    );
   });
 
   test('parser rejects hex colors in token props', () {

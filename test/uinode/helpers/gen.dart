@@ -16,9 +16,8 @@ String _slug(String prefix, int i) => '$prefix-$i';
 
 /// A random prop-filled instance of every node kind.
 List<ShadNode> generateEveryNodeType({int variationsPerType = 3}) => [
-      for (var v = 0; v < variationsPerType; v++)
-        ..._oneOfEach(v),
-    ];
+  for (var v = 0; v < variationsPerType; v++) ..._oneOfEach(v),
+];
 
 List<ShadNode> _oneOfEach(int v) {
   final flag = _pick(2) == 0;
@@ -27,7 +26,14 @@ List<ShadNode> _oneOfEach(int v) {
     ButtonNode(
       id: _slug('btn', v),
       label: _slug('Go', n),
-      variant: ['primary', 'secondary', 'destructive', 'outline', 'ghost', 'link'][_pick(6)],
+      variant: [
+        'primary',
+        'secondary',
+        'destructive',
+        'outline',
+        'ghost',
+        'link',
+      ][_pick(6)],
       size: ['sm', 'md', 'lg'][_pick(3)],
       action: ActionId('a$v', args: {'k': n}),
     ),
@@ -37,7 +43,17 @@ List<ShadNode> _oneOfEach(int v) {
     ),
     TextNode(
       text: _slug('text', v),
-      style: ['h1', 'h2', 'h3', 'h4', 'p', 'muted', 'small', 'large', 'bold'][_pick(9)],
+      style: [
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'p',
+        'muted',
+        'small',
+        'large',
+        'bold',
+      ][_pick(9)],
       align: ['start', 'center', 'end', 'justify'][_pick(4)],
     ),
     CardHeaderNode(title: _slug('h', v), description: _slug('d', v)),
@@ -93,8 +109,14 @@ List<ShadNode> _oneOfEach(int v) {
         TabNode(value: 'u$v', label: 'U$v'),
       ],
       panes: [
-        TabPaneNode(value: 't$v', content: [TextNode(text: _slug('tp', v))]),
-        TabPaneNode(value: 'u$v', content: [TextNode(text: _slug('up', v))]),
+        TabPaneNode(
+          value: 't$v',
+          content: [TextNode(text: _slug('tp', v))],
+        ),
+        TabPaneNode(
+          value: 'u$v',
+          content: [TextNode(text: _slug('up', v))],
+        ),
       ],
       value: 't$v',
     ),
@@ -103,9 +125,15 @@ List<ShadNode> _oneOfEach(int v) {
       value: _slug('p', v),
       content: [TextNode(text: _slug('pc', v))],
     ),
-    ProgressNode(value: _pick(101) / 100, indeterminate: flag),
+    ProgressNode(
+      value: _pick(101) / 100,
+      indeterminate: flag,
+    ),
     SeparatorNode(orientation: flag ? 'horizontal' : 'vertical'),
-    TooltipNode(message: _slug('tip', v), child: TextNode(text: _slug('tc', v))),
+    TooltipNode(
+      message: _slug('tip', v),
+      child: TextNode(text: _slug('tc', v)),
+    ),
     SheetNode(
       side: ['top', 'bottom', 'left', 'right'][_pick(4)],
       title: _slug('sheet', v),
@@ -128,7 +156,13 @@ List<ShadNode> _oneOfEach(int v) {
     ToastNode(
       title: _slug('toast', v),
       description: _slug('td', v),
-      variant: ['default', 'destructive', 'success', 'warning', 'info'][_pick(5)],
+      variant: [
+        'default',
+        'destructive',
+        'success',
+        'warning',
+        'info',
+      ][_pick(5)],
     ),
     RowNode(
       children: [TextNode(text: _slug('r', v))],
@@ -146,10 +180,15 @@ List<ShadNode> _oneOfEach(int v) {
       alignment: ['center', 'topLeft', 'bottomRight'][_pick(3)],
     ),
     PaddingNode(
-      padding: flag ? const PaddingSpec.all(8) : const PaddingSpec.only(left: 2),
+      padding: flag
+          ? const PaddingSpec.all(8)
+          : const PaddingSpec.only(left: 2),
       child: TextNode(text: _slug('pd', v)),
     ),
-    ExpandedNode(child: TextNode(text: _slug('ex', v)), flex: 1 + _pick(4)),
+    ExpandedNode(
+      child: TextNode(text: _slug('ex', v)),
+      flex: 1 + _pick(4),
+    ),
     SizedBoxNode(width: n.toDouble(), height: _pick(50).toDouble()),
     ListViewNode(
       children: [TextNode(text: _slug('lv', v))],

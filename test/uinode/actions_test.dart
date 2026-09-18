@@ -40,10 +40,10 @@ void main() {
     () {
       final registry = UiActionRegistry(
         onUnknownAction: (_) {},
-        onHandlerError: (_, __, ___) {},
+        onHandlerError: (_, _, _) {},
       );
-      registry.register('save', (_, __) {});
-      registry.register('boom', (_, __) {});
+      registry.register('save', (_, _) {});
+      registry.register('boom', (_, _) {});
       expect(registry.handles('save'), isTrue);
       expect(registry.handles('does_not_exist'), isFalse);
       registry.unregister('save');
@@ -73,8 +73,8 @@ void main() {
   ) async {
     final unknown = <String>[];
     final registry = UiActionRegistry(
-      onUnknownAction: (name) => unknown.add(name),
-    )..register('save', (_, __) {});
+      onUnknownAction: unknown.add,
+    )..register('save', (_, _) {});
 
     await tester.pumpWidget(_harness(tree, registry));
     await tester.tap(find.text('Unknown'));
@@ -93,10 +93,10 @@ void main() {
     var saveCount = 0;
     final registry =
         UiActionRegistry(
-            onHandlerError: (name, _, __) => errors.add(name),
+            onHandlerError: (name, _, _) => errors.add(name),
           )
-          ..register('boom', (_, __) => throw StateError('boom'))
-          ..register('save', (_, __) => saveCount++);
+          ..register('boom', (_, _) => throw StateError('boom'))
+          ..register('save', (_, _) => saveCount++);
 
     await tester.pumpWidget(_harness(tree, registry));
     await tester.tap(find.text('Boom'));

@@ -7,19 +7,22 @@ import 'package:zuraffa_ui/uinode.dart';
 
 void main() {
   test('the certified v1 widgetType vocabulary is complete', () {
-    expect(ShadNodeParser().supportedWidgetTypes, equals(
-      <String>{
-        // components (spec 1100 FR-1)
-        'button', 'badge', 'text', 'card', 'cardHeader', 'cardFooter',
-        'input', 'select', 'selectOption', 'checkbox', 'switch',
-        'radioGroup', 'radioOption', 'formItem', 'tabs', 'tab', 'tabPane',
-        'progress', 'separator', 'tooltip', 'sheet', 'dialog', 'popover',
-        'toast',
-        // structural primitives (FR-2)
-        'row', 'column', 'stack', 'padding', 'expanded', 'sizedBox',
-        'listView', 'image', 'icon',
-      },
-    ));
+    expect(
+      ShadNodeParser().supportedWidgetTypes,
+      equals(
+        <String>{
+          // components (spec 1100 FR-1)
+          'button', 'badge', 'text', 'card', 'cardHeader', 'cardFooter',
+          'input', 'select', 'selectOption', 'checkbox', 'switch',
+          'radioGroup', 'radioOption', 'formItem', 'tabs', 'tab', 'tabPane',
+          'progress', 'separator', 'tooltip', 'sheet', 'dialog', 'popover',
+          'toast',
+          // structural primitives (FR-2)
+          'row', 'column', 'stack', 'padding', 'expanded', 'sizedBox',
+          'listView', 'image', 'icon',
+        },
+      ),
+    );
   });
 
   test('the public barrels surface the contract names', () {

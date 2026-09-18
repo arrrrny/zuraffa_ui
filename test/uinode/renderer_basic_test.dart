@@ -36,7 +36,7 @@ void main() {
       _harness(
         tree,
         theme: ShadThemeData(
-          textTheme: ShadTextTheme(h1: TextStyle(fontSize: 33)),
+          textTheme: ShadTextTheme(h1: const TextStyle(fontSize: 33)),
         ),
       ),
     );
@@ -167,7 +167,7 @@ void main() {
       _harness(
         tree,
         theme: ShadThemeData(
-          textTheme: ShadTextTheme(h1: TextStyle(fontSize: 99)),
+          textTheme: ShadTextTheme(h1: const TextStyle(fontSize: 99)),
         ),
       ),
     );
