@@ -168,7 +168,7 @@ void main() async {
 // output is byte-stable at the EOF boundary regardless of whether the
 // source MDX ends with a blank line or the trimmed content ends with none.
 Future<void> _writeCanonical(File file, String content) async {
-  await file.writeAsString('${content.replaceAll(RegExp(r'\n+$'), '')}\n');
+  await file.writeAsString('${content.replaceAll(RegExp(r'[\r\n]+$'), '')}\n');
 }
 
 String? _extractTitle(String content) {
