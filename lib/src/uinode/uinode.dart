@@ -2,7 +2,9 @@
 //
 // Every public name of the layer must be exported here exactly once.
 export 'actions/ui_action_handler.dart';
-export 'nodes/nodes.dart';
+// $$ShadNode is the codegen-only written abstract; the sealed
+// ShadNode it generates is the public union type.
+export 'nodes/nodes.dart' hide $$ShadNode;
 export 'nodes/props.dart';
 export 'render/renderer_scope.dart';
 export 'render/shad_node_renderer.dart';

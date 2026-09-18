@@ -237,7 +237,13 @@ _EngineDeclarations _engineDeclarations() {
     }
   }
 
-  bool mapped(String name) => name.contains('Shad') && !name.startsWith('_');
+  // Mirrors the generator's skip: zorphy's written `$$X` abstracts are
+  // codegen-only seams, not public surface (the generated sealed `X` is
+  // what consumers see — and what the brand map aliases).
+  bool mapped(String name) =>
+      name.contains('Shad') &&
+      !name.startsWith('_') &&
+      !name.startsWith(r'$$');
   return _EngineDeclarations(
     types.where(mapped).toSet(),
     values.where(mapped).toSet(),
