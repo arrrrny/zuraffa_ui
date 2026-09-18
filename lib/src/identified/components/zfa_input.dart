@@ -30,6 +30,8 @@ class ZfaInput extends StatelessWidget with ZfaContract {
     this.keyboardType,
     this.autofocus = false,
     this.focusNode,
+    this.padding,
+    this.leading,
     this.contractEnabled = true,
   });
 
@@ -66,6 +68,12 @@ class ZfaInput extends StatelessWidget with ZfaContract {
   /// The focus node of the input.
   final FocusNode? focusNode;
 
+  /// The padding around the input's content.
+  final EdgeInsetsGeometry? padding;
+
+  /// The widget displayed before the input's text.
+  final Widget? leading;
+
   @override
   String get contractId => 'zfa.input';
 
@@ -88,6 +96,8 @@ class ZfaInput extends StatelessWidget with ZfaContract {
       keyboardType: keyboardType,
       autofocus: autofocus,
       focusNode: focusNode,
+      padding: padding,
+      leading: leading,
     );
   }
 }

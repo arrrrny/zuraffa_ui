@@ -54,6 +54,45 @@ void main() {
       expect(find.byType(ZfaButton), findsOneWidget);
       expect(find.text('engine beneath'), findsOneWidget);
     });
+
+    testWidgets('every variant constructor renders its engine variant', (
+      tester,
+    ) async {
+      final variants = <ZfaButtonVariant, ZfaButton>{
+        ZfaButtonVariant.primary: const ZfaButton(child: Text('go')),
+        ZfaButtonVariant.destructive: const ZfaButton.destructive(
+          child: Text('go'),
+        ),
+        ZfaButtonVariant.outline: const ZfaButton.outline(child: Text('go')),
+        ZfaButtonVariant.secondary: const ZfaButton.secondary(
+          child: Text('go'),
+        ),
+        ZfaButtonVariant.ghost: const ZfaButton.ghost(child: Text('go')),
+        ZfaButtonVariant.link: const ZfaButton.link(child: Text('go')),
+      };
+      for (final entry in variants.entries) {
+        await tester.pumpWidget(wrap(entry.value));
+        final engine = tester.widget<ShadButton>(find.byType(ShadButton));
+        expect(engine.variant, entry.key, reason: '${entry.key}');
+        expect(entry.value.contractId, 'zfa.button');
+      }
+    });
+
+    testWidgets('raw variant construction mirrors ShadButton.raw', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrap(
+          const ZfaButton.raw(
+            variant: ZfaButtonVariant.ghost,
+            child: Text('raw ghost'),
+          ),
+        ),
+      );
+      final engine = tester.widget<ShadButton>(find.byType(ShadButton));
+      expect(engine.variant, ZfaButtonVariant.ghost);
+      expect(find.text('raw ghost'), findsOneWidget);
+    });
   });
 
   group('ZfaInput', () {
@@ -82,6 +121,18 @@ void main() {
       await tester.enterText(find.byType(ZfaInput), 'skin lane');
       expect(controller.text, 'skin lane');
       expect(changed, 'skin lane');
+    });
+
+    testWidgets('forwards padding and leading to the engine', (tester) async {
+      const padding = EdgeInsets.all(4);
+      await tester.pumpWidget(
+        wrap(
+          const ZfaInput(padding: padding, leading: Text('lead')),
+        ),
+      );
+      final engine = tester.widget<ShadInput>(find.byType(ShadInput));
+      expect(engine.padding, padding);
+      expect(find.text('lead'), findsOneWidget);
     });
   });
 
@@ -201,6 +252,31 @@ void main() {
         findsNothing,
         reason: 'the toaster must honor the default toast duration',
       );
+    });
+
+    testWidgets('of(context) shows a ZfaToast through the certified seam', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ZuraffaApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ZfaButton(
+                child: const Text('fire certified toast'),
+                onPressed: () => ZfaToaster.of(context).show(
+                  const ZfaToast(title: Text('certified toast fired')),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('fire certified toast'));
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('certified toast fired'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 6));
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('certified toast fired'), findsNothing);
     });
   });
 
