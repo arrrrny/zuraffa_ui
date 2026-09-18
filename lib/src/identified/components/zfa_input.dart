@@ -11,7 +11,7 @@ import 'package:zuraffa_ui/src/identified/contract/skin_contract_kit.dart';
 /// ```dart
 /// ZfaInput(
 ///   controller: email,
-///   placeholder: 'you@skin.lane',
+///   placeholder: const Text('you@skin.lane'),
 ///   onChanged: audit,
 /// )
 /// ```
@@ -41,8 +41,9 @@ class ZfaInput extends StatelessWidget with ZfaContract {
   /// The initial text, used when no [controller] is provided.
   final String? initialValue;
 
-  /// The placeholder text shown when the input is empty.
-  final String? placeholder;
+  /// The placeholder shown when the input is empty — a widget, mirroring
+  /// [ShadInput.placeholder].
+  final Widget? placeholder;
 
   /// Called when the text changes.
   final ValueChanged<String>? onChanged;
@@ -85,9 +86,7 @@ class ZfaInput extends StatelessWidget with ZfaContract {
     return ShadInput(
       controller: controller,
       initialValue: initialValue,
-      placeholder: placeholder == null
-          ? null
-          : Text(placeholder!, key: const Key('zfa.input.placeholder')),
+      placeholder: placeholder,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       enabled: enabled,

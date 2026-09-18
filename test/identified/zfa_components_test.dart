@@ -113,7 +113,7 @@ void main() {
           ZfaInput(
             controller: controller,
             onChanged: (value) => changed = value,
-            placeholder: 'type here',
+            placeholder: const Text('type here'),
           ),
         ),
       );
