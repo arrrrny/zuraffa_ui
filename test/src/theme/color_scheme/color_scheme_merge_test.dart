@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 void main() {
   group('ShadColorScheme.merge', () {

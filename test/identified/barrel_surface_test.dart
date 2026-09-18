@@ -43,11 +43,11 @@ void main() {
       );
     });
 
-    test('raw engine library is lib/shad.dart, not lib/shadcn_ui.dart', () {
+    test('raw engine library is lib/zfa.dart, not lib/shadcn_ui.dart', () {
       expect(
-        File('lib/shad.dart').existsSync(),
+        File('lib/zfa.dart').existsSync(),
         isTrue,
-        reason: 'raw Shad* engine must live at lib/shad.dart',
+        reason: 'raw Shad* engine must live at lib/zfa.dart',
       );
       expect(
         File('lib/shadcn_ui.dart').existsSync(),
@@ -117,7 +117,7 @@ void main() {
           startsWith('src/identified/'),
           reason:
               'barrel must only export lib/src/identified/*, got export of '
-              '"$path" — raw Shad* names are internal (lib/shad.dart), never '
+              '"$path" — raw Shad* names are internal (lib/zfa.dart), never '
               'the package barrel',
         );
       }
@@ -127,7 +127,7 @@ void main() {
       expect(barrel, isNot(contains("export 'src/app.dart'")));
       expect(barrel, isNot(contains("export 'src/components/")));
       expect(barrel, isNot(contains("export 'src/theme/")));
-      expect(barrel, isNot(contains("export 'shad.dart'")));
+      expect(barrel, isNot(contains("export 'zfa.dart'")));
     });
 
     test('certified vocabulary compiles from the barrel', () {

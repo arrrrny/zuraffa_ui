@@ -21,7 +21,7 @@ If, for example, you want to just show an image as child, wrap it with `ShadGest
 ```dart
 import 'package:example/common/base_scaffold.dart';
 import 'package:flutter/widgets.dart';
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class TooltipPage extends StatefulWidget {
   const TooltipPage({super.key});

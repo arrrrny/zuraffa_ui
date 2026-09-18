@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:zuraffa_ui/src/components/toast.dart';
 import 'package:zuraffa_ui/src/identified/contract/skin_contract_kit.dart';
+import 'package:zuraffa_ui/src/identified/mapping/zfa_engine_aliases.dart';
 
 /// The certified toaster of the skin lane.
 ///
@@ -28,6 +29,14 @@ class ZfaToaster extends StatelessWidget with ZfaContract {
 
   /// The widget below the toaster, over which toasts are displayed.
   final Widget child;
+
+  /// The [ZfaToasterState] of the nearest [ZfaToaster] ancestor — the same
+  /// seam as [ShadToaster.of], so toasts go through certified names:
+  ///
+  /// ```dart
+  /// ZfaToaster.of(context).show(ZfaToast(title: const Text('Saved')));
+  /// ```
+  static ZfaToasterState of(BuildContext context) => ShadToaster.of(context);
 
   @override
   String get contractId => 'zfa.toaster';

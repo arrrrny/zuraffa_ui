@@ -4,7 +4,7 @@
 /// (ZuraffaApp), the certified components, the theme aliases
 /// (ZfaTheme/ZfaThemeData) and the contract kit. Raw `Shad*` engine names
 /// are internal: they are reachable through the engine library
-/// `package:zuraffa_ui/shad.dart`, never through this barrel. Skins import
+/// `package:zuraffa_ui/zfa.dart`, never through this barrel. Skins import
 /// only this file.
 library;
 

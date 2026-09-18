@@ -25,8 +25,27 @@ ZuraffaApp(
 `ZfaButton`, `ZfaInput`, `ZfaCard`, `ZfaSheet`, `ZfaDialog`, `ZfaToaster` each
 carry the typed contract protocol (`contractId` / `contractEnabled`), so
 runtime contract auditors, xray decks and slice manifests can identify them
-without grepping. Raw `Shad*` engine names are internal — reachable through
-`package:zuraffa_ui/shad.dart`, never the package barrel.
+without grepping.
+
+## Zfa surface (full vocabulary)
+
+`package:zuraffa_ui/zfa.dart` carries the certified components plus a generated
+`Zfa*` alias for every public engine name
+(`scripts/generate_zfa_aliases.dart`), so consuming code never types a `Shad*`
+name:
+
+```dart
+import 'package:zuraffa_ui/zfa.dart';
+
+ZfaTooltip(
+  builder: (context) => const Text('Refresh the list'),
+  child: ZfaButton(onPressed: refresh, child: const Text('Refresh')),
+);
+```
+
+The engine keeps the upstream `Shad*` spelling underneath — that is what keeps
+upstream merges mechanical — and a skin that wants the certified vocabulary
+without the engine names imports `package:zuraffa_ui/zuraffa_ui.dart` alone.
 
 ## Engine (upstream lineage)
 

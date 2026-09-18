@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 enum ShadInputOTPVariant { primary, pattern }
 

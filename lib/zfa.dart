@@ -1,3 +1,19 @@
+/// The Zfa surface: every engine name under a `Zfa*` alias, plus the
+/// certified `Zfa` vocabulary.
+///
+/// Consumers of `package:zuraffa_ui/zfa.dart` write Zfa names only:
+///
+/// ```dart
+/// ZuraffaApp(home: ZfaButton(onPressed: submit, child: const Text('Go')));
+/// ```
+///
+/// The engine itself keeps the upstream `Shad*` spelling so upstream merges
+/// stay mechanical; the `Zfa*` names are generated aliases
+/// (`src/identified/mapping/zfa_engine_aliases.dart`). A skin that wants the
+/// certified vocabulary without the raw engine names imports
+/// `package:zuraffa_ui/zuraffa_ui.dart` instead.
+library;
+
 // App
 // ignore: no_leading_underscores_for_library_prefixes
 import 'package:flutter_animate/flutter_animate.dart' as _animate show Effect;
@@ -72,6 +88,8 @@ export 'src/components/tooltip.dart';
 // Localizations
 export 'src/i18n/localizations_delegate.dart';
 export 'src/i18n/strings.g.dart';
+// The Zfa brand map: one Zfa* alias per public Shad* engine name.
+export 'src/identified/mapping/zfa_engine_aliases.dart';
 // Raw Components
 export 'src/raw_components/focusable.dart';
 export 'src/raw_components/keyboard_toolbar.dart';
@@ -160,6 +178,10 @@ export 'src/utils/provider_index.dart';
 export 'src/utils/responsive.dart';
 export 'src/utils/states_controller.dart';
 export 'src/utils/text_editing_controller.dart';
+
+// The certified surface, so a single import reaches engine and certified
+// vocabulary both.
+export 'zuraffa_ui.dart';
 
 typedef AnimateEffect<T> = _animate.Effect<T>;
 typedef IntlTextDirection = intl.TextDirection;

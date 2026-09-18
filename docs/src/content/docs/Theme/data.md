@@ -24,7 +24,7 @@ The supported color schemes are:
 ## Usage
 
 ```diff lang="dart"
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 @override
 Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ Widget build(BuildContext context) {
 You can override specific properties of the selected theme/color scheme:
 
 ```diff lang="dart"
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 @override
 Widget build(BuildContext context) {
@@ -94,7 +94,7 @@ In this way you can easily create a select to change the color scheme, for examp
 
 ```dart
 import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 // Somewhere in your app
 ShadSelect<String>(

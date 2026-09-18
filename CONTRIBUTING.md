@@ -46,7 +46,7 @@ The name of the widget must be prefixed with `Shad`, so we have `ShadAvatar` and
 
 Each component should have a corresponding theme, which is put at the path `lib/src/theme/components` with the same name of the component you provided early.
 
-The component and the component's theme must be exported from the `lib/shad.dart` file.
+The component and the component's theme must be exported from the `lib/zfa.dart` file.
 
 The parameters of the component should be as customizable as possible, ideally they must be put in both the component and component's theme.
 

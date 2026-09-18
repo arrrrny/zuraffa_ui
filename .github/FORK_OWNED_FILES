@@ -1,0 +1,31 @@
+# Fork-owned files for `.github/workflows/sync-upstream.yml`.
+#
+# Format:   <path> :: <survival marker>
+#
+# After a clean upstream merge the sync job checks that every path below still
+# exists and still contains its marker. A miss means the merge silently dropped
+# fork-owned code: the job opens a `sync`-labelled issue and fails.
+#
+# The engine underneath keeps upstream spelling on purpose (spec 1099,
+# "upstream sync stays mechanical"); everything listed here is the fork's own
+# surface and must survive every sync.
+#
+# Comments (#) and blank lines are ignored. Update this list when a fork-owned
+# piece is intentionally retired.
+
+pubspec.yaml :: name: zuraffa_ui
+README.md :: Skin lane usage (certified surface)
+PUBLISH.md :: Publish Configuration for
+lib/zfa.dart :: export 'src/identified/mapping/zfa_engine_aliases.dart';
+lib/zuraffa_ui.dart :: export 'src/identified/app/zuraffa_app.dart';
+lib/src/identified/app/zuraffa_app.dart :: class ZuraffaApp
+lib/src/identified/components/zfa_button.dart :: class ZfaButton
+lib/src/identified/components/zfa_input.dart :: class ZfaInput
+lib/src/identified/components/zfa_toaster.dart :: class ZfaToaster
+lib/src/identified/contract/skin_contract_kit.dart :: mixin ZfaContract
+lib/src/identified/theme/zfa_theme.dart :: typedef ZfaTheme = ShadTheme;
+lib/src/identified/mapping/zfa_engine_aliases.dart :: GENERATED FILE — do not edit by hand.
+scripts/generate_zfa_aliases.dart :: dart run scripts/generate_zfa_aliases.dart
+test/identified/zfa_alias_coverage_test.dart :: Zfa brand map
+test/identified/barrel_surface_test.dart :: raw engine library is lib/zfa.dart
+.github/workflows/check-imports.yaml :: BARREL_IMPORTS

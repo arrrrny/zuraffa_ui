@@ -64,7 +64,7 @@ this package's own 0.x timeline.
 - **`check-imports` ban.** `lib/` must not import Material or Cupertino except
   for the app-level shells listed in `EXCLUDED_FILES`
   (`lib/src/app.dart`, `lib/src/identified/app/zuraffa_app.dart`) and must never
-  import the package barrels `zuraffa_ui/shad.dart` or `zuraffa_ui/zuraffa_ui.dart`
+  import the package barrels `zuraffa_ui/zfa.dart` or `zuraffa_ui/zuraffa_ui.dart`
   from inside `lib/`. Omitting a shell from that list fails the whole
   "Flutter test" workflow on every push (issue #9).
 - `CHANGELOG.md` entries carry no date, matching the inherited upstream style.

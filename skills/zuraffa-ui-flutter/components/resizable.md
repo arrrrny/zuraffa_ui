@@ -181,7 +181,7 @@ class HandleResizable extends StatelessWidget {
 import 'package:example/common/base_scaffold.dart';
 import 'package:example/common/properties/bool_property.dart';
 import 'package:flutter/material.dart';
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class ResizablePage extends StatefulWidget {
   const ResizablePage({super.key});

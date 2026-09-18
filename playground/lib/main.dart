@@ -4,7 +4,7 @@ import 'package:web/web.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 import 'package:flutter_solidart/flutter_solidart.dart';
 
 import 'package:playground/router.dart';

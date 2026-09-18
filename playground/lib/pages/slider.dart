@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class SliderPage extends StatelessWidget {
   const SliderPage({super.key});

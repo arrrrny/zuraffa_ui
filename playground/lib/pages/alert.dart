@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:zuraffa_ui/shad.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class AlertPage extends StatelessWidget {
   const AlertPage({super.key, required this.style});
