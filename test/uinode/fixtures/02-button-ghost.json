@@ -1,11 +1,8 @@
 {
   "schemaVersion": 1,
   "root": {
-    "widgetType": "center",
-    "child": {
-      "widgetType": "button",
-      "label": "Cancel",
-      "variant": "ghost"
-    }
+    "widgetType": "button",
+    "label": "Cancel",
+    "variant": "ghost"
   }
 }

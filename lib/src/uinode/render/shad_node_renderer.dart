@@ -103,115 +103,128 @@ class ShadNodeMapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (node) {
       ButtonNode() => _button(context),
-      BadgeNode() => ShadBadgeMapper(
-        label: (node as BadgeNode).label,
-        variant: (node as BadgeNode).variant,
+      BadgeNode(:final label, :final variant) => ShadBadgeMapper(
+        label: label,
+        variant: variant,
       ),
-      TextNode() => ShadTextMapper(
-        text: (node as TextNode).text,
-        style: (node as TextNode).style,
-        align: (node as TextNode).align,
+      TextNode(:final text, :final style, :final align) => ShadTextMapper(
+        text: text,
+        style: style,
+        align: align,
       ),
       CardNode() => _card(context),
-      CardHeaderNode() => ShadCardHeaderMapper(
-        title: (node as CardHeaderNode).title,
-        description: (node as CardHeaderNode).description,
+      CardHeaderNode(:final title, :final description) => ShadCardHeaderMapper(
+        title: title,
+        description: description,
       ),
-      CardFooterNode() => ShadCardFooterMapper(
-        content: _children(
-          context,
-          (node as CardFooterNode).content,
-          'content',
-        ),
+      CardFooterNode(:final content) => ShadCardFooterMapper(
+        content: _children(context, content, 'content'),
       ),
       InputNode() => _input(context),
       SelectNode() => _select(context),
-      SelectOptionNode() => ShadTextMapper(
-        text: (node as SelectOptionNode).label,
-      ),
+      SelectOptionNode(:final label) => ShadTextMapper(text: label),
       CheckboxNode() => _checkbox(context),
       SwitchNode() => _switch(context),
       RadioGroupNode() => _radioGroup(context),
-      RadioOptionNode() => ShadTextMapper(
-        text: (node as RadioOptionNode).label,
-      ),
+      RadioOptionNode(:final label) => ShadTextMapper(text: label),
       FormItemNode() => _formItem(context),
       TabsNode() => _tabs(context),
-      TabNode() => ShadTextMapper(text: (node as TabNode).label),
-      TabPaneNode() => ShadColumnMapper(
-        children: _children(context, (node as TabPaneNode).content, 'content'),
+      TabNode(:final label) => ShadTextMapper(text: label),
+      TabPaneNode(:final content) => ShadColumnMapper(
+        children: _children(context, content, 'content'),
       ),
-      ProgressNode() => ShadProgressMapper(
-        value: (node as ProgressNode).indeterminate ?? false
-            ? null
-            : (node as ProgressNode).value,
+      ProgressNode(:final value, :final indeterminate) => ShadProgressMapper(
+        value: indeterminate ?? false ? null : value,
       ),
-      SeparatorNode() => ShadSeparatorMapper(
-        orientation: (node as SeparatorNode).orientation,
+      SeparatorNode(:final orientation) => ShadSeparatorMapper(
+        orientation: orientation,
       ),
       TooltipNode() => _tooltip(context),
       SheetNode() => _sheet(context),
       DialogNode() => _dialog(context),
       PopoverNode() => _popover(context),
-      ToastNode() => ShadToastMapper(
-        title: (node as ToastNode).title,
-        description: (node as ToastNode).description,
-        variant: (node as ToastNode).variant,
+      ToastNode(:final title, :final description, :final variant) =>
+        ShadToastMapper(
+          title: title,
+          description: description,
+          variant: variant,
+        ),
+      RowNode(
+        :final mainAxisAlignment,
+        :final crossAxisAlignment,
+        :final gap,
+        :final children,
+      ) =>
+        ShadRowMapper(
+          mainAxisAlignment: mainAxisAlignment,
+          crossAxisAlignment: crossAxisAlignment,
+          gap: gap,
+          children: _children(context, children, 'children'),
+        ),
+      ColumnNode(
+        :final mainAxisAlignment,
+        :final crossAxisAlignment,
+        :final gap,
+        :final children,
+      ) =>
+        ShadColumnMapper(
+          mainAxisAlignment: mainAxisAlignment,
+          crossAxisAlignment: crossAxisAlignment,
+          gap: gap,
+          children: _children(context, children, 'children'),
+        ),
+      StackNode(:final alignment, :final children) => ShadStackMapper(
+        alignment: alignment,
+        children: _children(context, children, 'children'),
       ),
-      RowNode() => ShadRowMapper(
-        mainAxisAlignment: (node as RowNode).mainAxisAlignment,
-        crossAxisAlignment: (node as RowNode).crossAxisAlignment,
-        gap: (node as RowNode).gap,
-        children: _children(context, (node as RowNode).children, 'children'),
+      PaddingNode(:final padding, :final child) => ShadPaddingMapper(
+        padding: padding,
+        child: _child(context, child, 'child'),
       ),
-      ColumnNode() => ShadColumnMapper(
-        mainAxisAlignment: (node as ColumnNode).mainAxisAlignment,
-        crossAxisAlignment: (node as ColumnNode).crossAxisAlignment,
-        gap: (node as ColumnNode).gap,
-        children: _children(context, (node as ColumnNode).children, 'children'),
-      ),
-      StackNode() => ShadStackMapper(
-        alignment: (node as StackNode).alignment,
-        children: _children(context, (node as StackNode).children, 'children'),
-      ),
-      PaddingNode() => ShadPaddingMapper(
-        padding: (node as PaddingNode).padding,
-        child: _child(context, (node as PaddingNode).child, 'child'),
-      ),
-      ExpandedNode() => ShadExpandedMapper(
-        flex: (node as ExpandedNode).flex,
+      ExpandedNode(:final flex, :final child) => ShadExpandedMapper(
+        flex: flex,
         child: ShadNodeMapper(
           renderer: renderer,
           path: '$path/child',
-          node: (node as ExpandedNode).child,
+          node: child,
         ),
       ),
-      SizedBoxNode() => ShadSizedBoxMapper(
-        width: (node as SizedBoxNode).width,
-        height: (node as SizedBoxNode).height,
-        child: _child(context, (node as SizedBoxNode).child, 'child'),
-      ),
-      ListViewNode() => ShadListViewMapper(
-        spacing: (node as ListViewNode).spacing,
-        shrinkWrap: (node as ListViewNode).shrinkWrap,
-        reverse: (node as ListViewNode).reverse,
-        children: _children(
-          context,
-          (node as ListViewNode).children,
-          'children',
+      SizedBoxNode(:final width, :final height, :final child) =>
+        ShadSizedBoxMapper(
+          width: width,
+          height: height,
+          child: _child(context, child, 'child'),
         ),
-      ),
-      ImageNode() => ShadImageMapper(
-        src: (node as ImageNode).src,
-        fit: (node as ImageNode).fit,
-        width: (node as ImageNode).width,
-        height: (node as ImageNode).height,
-        alt: (node as ImageNode).alt,
-      ),
-      IconNode() => ShadIconMapper(
-        name: (node as IconNode).name,
-        size: (node as IconNode).size,
-        style: (node as IconNode).style,
+      ListViewNode(
+        :final spacing,
+        :final shrinkWrap,
+        :final reverse,
+        :final children,
+      ) =>
+        ShadListViewMapper(
+          spacing: spacing,
+          shrinkWrap: shrinkWrap,
+          reverse: reverse,
+          children: _children(context, children, 'children'),
+        ),
+      ImageNode(
+        :final src,
+        :final fit,
+        :final width,
+        :final height,
+        :final alt,
+      ) =>
+        ShadImageMapper(
+          src: src,
+          fit: fit,
+          width: width,
+          height: height,
+          alt: alt,
+        ),
+      IconNode(:final name, :final size, :final style) => ShadIconMapper(
+        name: name,
+        size: size,
+        style: style,
       ),
       UnknownNode() => _unknown(context),
     };
@@ -366,8 +379,12 @@ class ShadNodeMapper extends StatelessWidget {
       initial: NodeRenderScope.state<String>(context, _stateKey) ?? n.value,
       tabs: {for (final t in n.tabs) t.value: t.label},
       paneContents: {
-        for (final pane in n.panes)
-          pane.value: _children(context, pane.content, 'panes'),
+        for (var i = 0; i < n.panes.length; i++)
+          n.panes[i].value: _children(
+            context,
+            n.panes[i].content,
+            'panes[$i]',
+          ),
       },
       onChanged: (v) {
         NodeRenderScope.put(context, _stateKey, v);
@@ -380,11 +397,9 @@ class ShadNodeMapper extends StatelessWidget {
     final n = node as TooltipNode;
     return ShadTooltipMapper(
       message: n.message,
-      child: ShadNodeMapper(
-        renderer: renderer,
-        path: '$path/child',
-        node: n.child!,
-      ),
+      // Hand-built trees may carry a null child (the entity allows it);
+      // degrade to an empty box instead of crashing the build.
+      child: _child(context, n.child, 'child') ?? const SizedBox.shrink(),
     );
   }
 

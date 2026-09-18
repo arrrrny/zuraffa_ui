@@ -73,6 +73,15 @@ class ShadNodeParser {
     return UiParseReport(errors);
   }
 
+  /// Keys whose values are child nodes — the multi-error walk descends
+  /// only into these. Every other key is a prop (`action`, `args`,
+  /// `padding`, an unknown node's `raw`, …) whose maps/lists are not
+  /// nodes; decoding them would report false errors on valid trees.
+  static const _childKeys = {
+    'content', 'children', 'child', 'header', 'footer', 'trigger',
+    'field', 'actions',
+  };
+
   /// Walks [json] recording every violation instead of stopping at the
   /// first: validation is a report, parse is a gate.
   void _collect(Object? json, String path, List<UiParseException> errors) {
@@ -85,17 +94,35 @@ class ShadNodeParser {
       );
       if (!duplicate) errors.add(e);
     }
-    if (json is Map) {
-      json.forEach((key, value) {
-        if (value is List) {
-          for (var i = 0; i < value.length; i++) {
-            _collect(value[i], '$path/$key[$i]', errors);
-          }
-        } else if (value is Map) {
-          _collect(value, '$path/$key', errors);
-        }
-      });
+    if (json is! Map) return;
+    final type = json['widgetType'];
+    if (type is! String || !_decoders.containsKey(type)) {
+      // Unknown nodes carry their raw payload verbatim and option entries
+      // (tabs/options) are not nodes — there is nothing valid to walk.
+      return;
     }
+    void walk(Object? value, String prefix) {
+      if (value is List) {
+        for (var i = 0; i < value.length; i++) {
+          _collect(value[i], '$prefix[$i]', errors);
+        }
+      } else if (value is Map) {
+        _collect(value, prefix, errors);
+      }
+    }
+
+    json.forEach((key, value) {
+      if (key == 'panes' && value is List) {
+        // Pane entries carry no widgetType on the wire; their content
+        // children sit at <pane path>[j] (the _childrenList naming).
+        for (var i = 0; i < value.length; i++) {
+          final pane = value[i];
+          if (pane is Map) walk(pane['content'], '$path/panes[$i]');
+        }
+      } else if (_childKeys.contains(key)) {
+        walk(value, '$path/$key');
+      }
+    });
   }
 
   /// The wire types this runtime knows (the certified v1 vocabulary,
@@ -621,10 +648,10 @@ class ShadNodeParser {
       ),
       header: n['header'] == null
           ? null
-          : _decodeNode(n['header'], '$p/header', depth: depth),
+          : _decodeNode(n['header'], '$p/header', depth: depth + 1),
       footer: n['footer'] == null
           ? null
-          : _decodeNode(n['footer'], '$p/footer', depth: depth),
+          : _decodeNode(n['footer'], '$p/footer', depth: depth + 1),
     ),
     'cardHeader': (n, p, depth) => CardHeaderNode(
       id: _optId(n, p),
@@ -803,7 +830,7 @@ class ShadNodeParser {
       ),
       trigger: n['trigger'] == null
           ? null
-          : _decodeNode(n['trigger'], '$p/trigger', depth: depth),
+          : _decodeNode(n['trigger'], '$p/trigger', depth: depth + 1),
       action: _optAction(n, 'action', p),
     ),
     'dialog': (n, p, depth) => DialogNode(
@@ -811,7 +838,7 @@ class ShadNodeParser {
       title: _optStr(n, 'title', p),
       description: _optStr(n, 'description', p),
       open: _optBool(n, 'open', p),
-      actions: _buttonActions(n, p),
+      actions: _buttonActions(n, p, depth),
       content: _childrenList(
         n['content'] ?? const [],
         '$p/content',
@@ -819,7 +846,7 @@ class ShadNodeParser {
       ),
       trigger: n['trigger'] == null
           ? null
-          : _decodeNode(n['trigger'], '$p/trigger', depth: depth),
+          : _decodeNode(n['trigger'], '$p/trigger', depth: depth + 1),
       action: _optAction(n, 'action', p),
     ),
     'popover': (n, p, depth) => PopoverNode(
@@ -832,7 +859,7 @@ class ShadNodeParser {
       ),
       trigger: n['trigger'] == null
           ? null
-          : _decodeNode(n['trigger'], '$p/trigger', depth: depth),
+          : _decodeNode(n['trigger'], '$p/trigger', depth: depth + 1),
       action: _optAction(n, 'action', p),
     ),
     'toast': (n, p, depth) => ToastNode(
@@ -887,7 +914,7 @@ class ShadNodeParser {
       id: _optId(n, p),
       child: n['child'] == null
           ? null
-          : _decodeNode(n['child'], '$p/child', depth: depth),
+          : _decodeNode(n['child'], '$p/child', depth: depth + 1),
       width: _optDouble(n, 'width', p),
       height: _optDouble(n, 'height', p),
     ),
@@ -989,13 +1016,28 @@ class ShadNodeParser {
     'tabs': 'tab',
   };
 
-  // Dialog actions are buttons on the wire and in the entity; the walk
-  // yields ShadNode, so narrow with a checked cast per element.
-  List<ButtonNode> _buttonActions(Map<String, dynamic> n, String p) =>
-      _childrenList(
-        n['actions'] ?? const [],
-        '$p/actions',
-      ).whereType<ButtonNode>().toList();
+  // Dialog actions are buttons on the wire and in the entity. `_childrenList`
+  // decodes any node kind, so a non-button here is a schema violation —
+  // reject it instead of silently dropping data.
+  List<ButtonNode> _buttonActions(Map<String, dynamic> n, String p, int depth) {
+    final children = _childrenList(
+      n['actions'] ?? const [],
+      '$p/actions',
+      depth: depth,
+    );
+    for (var i = 0; i < children.length; i++) {
+      if (children[i] is! ButtonNode) {
+        throw UiParseError(
+          kind: UiParseErrorKind.schema,
+          path: '$p/actions[$i]',
+          message:
+              'dialog "actions" entries must be button nodes, '
+              'got "${children[i].widgetType}"',
+        );
+      }
+    }
+    return children.cast<ButtonNode>();
+  }
 
   List<TabPaneNode> _panes(Map<String, dynamic> n, String p, int depth) {
     final value = n['panes'];

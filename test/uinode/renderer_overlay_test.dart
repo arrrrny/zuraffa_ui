@@ -63,6 +63,58 @@ void main() {
     expect(find.text('hover me'), findsOneWidget);
   });
 
+  testWidgets('pane state keys do not collide across panes', (tester) async {
+    // Children used to derive state keys from the tabs node's path
+    // alone, so pane 0 child 0 and pane 1 child 0 shared one lifted-state
+    // slot and a remount re-seeded from the other pane's last value.
+    final tree = _tree({
+      'widgetType': 'tabs',
+      'value': 'a',
+      'tabs': [
+        {'value': 'a', 'label': 'A'},
+        {'value': 'b', 'label': 'B'},
+      ],
+      'panes': [
+        {
+          'value': 'a',
+          'content': [
+            {'widgetType': 'input', 'placeholder': 'first pane'},
+          ],
+        },
+        {
+          'value': 'b',
+          'content': [
+            {'widgetType': 'input', 'placeholder': 'second pane'},
+          ],
+        },
+      ],
+    });
+    await tester.pumpWidget(_harness(tree));
+
+    await tester.enterText(find.byType(ShadInput).first, 'from pane a');
+    await tester.pump();
+
+    await tester.tap(find.text('B'));
+    await tester.pumpAndSettle();
+    // Pane b's id-less input must not pick up pane a's value on mount.
+    expect(find.text('from pane a'), findsNothing);
+    final paneB = tester.widget<EditableText>(find.byType(EditableText));
+    expect(paneB.controller.text, isEmpty);
+  });
+
+  testWidgets('hand-built tooltip with a null child renders, not crashes', (
+    tester,
+  ) async {
+    // The entity allows a null child; only the parser enforces arity.
+    // A Dart-constructed tree used to hit a null-check crash.
+    final tree = ShadNodeTree(
+      schemaVersion: 1,
+      root: TooltipNode(message: 'hi'),
+    );
+    await tester.pumpWidget(_harness(tree));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('sheet with open=true shows natively', (tester) async {
     final tree = _tree({
       'widgetType': 'sheet',

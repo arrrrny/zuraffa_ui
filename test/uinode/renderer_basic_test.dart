@@ -119,6 +119,19 @@ void main() {
     final icon = tester.widget<Icon>(find.byType(Icon).first);
     expect(icon.size, 24);
     expect(icon.color, isNotNull);
+    // The glyph must be the real 'plus', not the circleAlert fallback.
+    expect(icon.icon, LucideIcons.plus);
+  });
+
+  testWidgets('icon resolves multi-word kebab wire names', (tester) async {
+    final tree = _tree({
+      'widgetType': 'icon',
+      'name': 'chevron-right',
+      'size': 24,
+    });
+    await tester.pumpWidget(_harness(tree));
+    final icon = tester.widget<Icon>(find.byType(Icon).first);
+    expect(icon.icon, LucideIcons.chevronRight);
   });
 
   testWidgets('image with unreachable src degrades to a placeholder box', (

@@ -92,6 +92,27 @@ void main() {
         throwsA(isA<UiTreeTooLarge>()),
       );
     });
+
+    test('depth counts through trigger chains too', () {
+      // sizedBox.child / card.header / *.trigger used to pass depth
+      // through unchanged, letting chains blow past the cap.
+      Map<String, dynamic> nest(int depth) {
+        var node = <String, dynamic>{
+          'widgetType': 'text',
+          'text': 'bottom',
+        };
+        for (var i = 0; i < depth; i++) {
+          node = {
+            'widgetType': 'sheet',
+            'trigger': node,
+          };
+        }
+        return node;
+      }
+
+      final err = catchTooLarge({'root': nest(33)});
+      expect(err.cap, UiCapKind.depth);
+    });
   });
 
   group('U7: schema version policy', () {
@@ -155,6 +176,58 @@ void main() {
         ),
         reason: 'variant mega is an enum miss',
         isTrue,
+      );
+    });
+
+    test('prop maps (padding, action) are not decoded as nodes', () {
+      // The multi-error walk used to descend into every Map and report
+      // spurious "widgetType" errors at <path>/padding, <path>/action, …
+      final wire = {
+        'root': {
+          'widgetType': 'padding',
+          'padding': {'all': 16},
+          'child': {
+            'widgetType': 'input',
+            'label': 'Email',
+            'action': {
+              'action': 'submit',
+              'args': {'source': 'keyboard'},
+            },
+          },
+        },
+      };
+      ShadNodeParser().parse(wire); // parse accepts it…
+      final report = ShadNodeParser().validate(wire);
+      expect(report.ok, isTrue, reason: report.errors.join('\n'));
+      expect(report.errors, isEmpty);
+    });
+
+    test('dialog actions must all be button nodes', () {
+      // A non-button used to be parsed fine and then silently dropped.
+      expect(
+        () => ShadNodeParser().parse({
+          'root': {
+            'widgetType': 'dialog',
+            'title': 'Confirm',
+            'actions': [
+              {'widgetType': 'button', 'label': 'OK'},
+              {'widgetType': 'text', 'text': 'stray'},
+            ],
+          },
+        }),
+        throwsA(
+          isA<UiParseError>()
+              .having(
+                (e) => e.path,
+                'path',
+                'root/actions[1]',
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                contains('must be button nodes'),
+              ),
+        ),
       );
     });
   });

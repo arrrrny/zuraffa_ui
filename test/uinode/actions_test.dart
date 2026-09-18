@@ -110,4 +110,18 @@ void main() {
     expect(saveCount, 1);
     expect(tester.takeException(), isNull);
   });
+
+  test('ActionId equality is deep on args, not instance-based', () {
+    // Map identity used to decide args equality, so structurally equal
+    // actions from separately-parsed nodes compared unequal. Map.of keeps
+    // the two instances distinct (a const literal would canonicalize).
+    final a = ActionId('save', args: Map.of(const {'id': 7}));
+    final b = ActionId('save', args: Map.of(const {'id': 7}));
+    expect(identical(a, b), isFalse);
+    expect(a, equals(b));
+    expect(a.hashCode, b.hashCode);
+    expect(a, isNot(equals(ActionId('save', args: Map.of(const {'id': 8})))));
+    expect(a, isNot(equals(const ActionId('save'))));
+    expect(const ActionId('x'), equals(const ActionId('x')));
+  });
 }

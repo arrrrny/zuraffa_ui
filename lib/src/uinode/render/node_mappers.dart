@@ -672,7 +672,15 @@ class ShadToastMapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShadToast(
+    // The engine `ShadToast` carries primary|destructive only; the other
+    // wire variants (success/warning/info) have no engine equivalent yet
+    // and fall back to primary — do not assume they are wired through.
+    // `action` is intentionally not mapped: overlay presentation through
+    // the host's ShadToaster is the host's choice (see the class doc).
+    return ShadToast.raw(
+      variant: variant == 'destructive'
+          ? ShadToastVariant.destructive
+          : ShadToastVariant.primary,
       title: Text(title),
       description: description == null ? null : Text(description!),
     );
@@ -945,12 +953,20 @@ class ShadIconMapper extends StatelessWidget {
 /// Resolves a wire icon name (kebab or snake case) to the Lucide glyph.
 /// Unknown names fall back to `circleAlert` and never throw.
 IconData resolveLucideIcon(String name) {
-  final camel = name
-      .split(RegExp('[-_]'))
-      .map(
-        (part) => part.isEmpty ? '' : part[0].toUpperCase() + part.substring(1),
-      )
-      .join();
+  // lowerCamel: the first word stays lowercase so 'chevron-right' becomes
+  // 'chevronRight' — the exact key shape of `_lucideByCamel`.
+  final parts = name.split(RegExp('[-_]'));
+  final camel = parts.isEmpty || parts.first.isEmpty
+      ? ''
+      : parts.first +
+            parts
+                .skip(1)
+                .map(
+                  (part) => part.isEmpty
+                      ? ''
+                      : part[0].toUpperCase() + part.substring(1),
+                )
+                .join();
   return _lucideByCamel[camel] ?? LucideIcons.circleAlert;
 }
 

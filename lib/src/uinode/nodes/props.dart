@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show immutable;
+import 'package:flutter/foundation.dart' show immutable, mapEquals;
 
 /// A semantic action reference: `{"action": name, "args": {...}}`.
 ///
@@ -23,10 +23,19 @@ class ActionId {
 
   @override
   bool operator ==(Object other) =>
-      other is ActionId && other.name == name && other.args == args;
+      other is ActionId &&
+      other.name == name &&
+      mapEquals(other.args, args);
 
+  // Deep like `==`: hash per-entry, order-insensitively, so structurally
+  // equal args produce equal hashes.
   @override
-  int get hashCode => Object.hash(name, args);
+  int get hashCode => Object.hash(
+    name,
+    Object.hashAllUnordered(
+      args.entries.map((entry) => Object.hash(entry.key, entry.value)),
+    ),
+  );
 
   @override
   String toString() => 'ActionId${toJson()}';
@@ -35,9 +44,10 @@ class ActionId {
 /// Edge insets as pure data (logical pixels per edge).
 ///
 /// Hand-written rather than generated so the canonical JSON key order is
-/// fixed by contract (research D2): emitted as
-/// `{"bottom":…,"left":…,"right":…,"top":…}` with only the non-zero edges
-/// present; an all-around inset collapses to `{"all":…}`.
+/// fixed by contract (research D2): an all-around inset collapses to
+/// `{"all":…}`; otherwise all four edges are emitted in the fixed order
+/// `{"bottom":…,"left":…,"right":…,"top":…}`, zeros included — stable keys
+/// matter more than a smaller payload.
 @immutable
 class PaddingSpec {
   const PaddingSpec.all(double value)

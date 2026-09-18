@@ -1,15 +1,12 @@
 {
   "schemaVersion": 1,
   "root": {
-    "widgetType": "center",
+    "widgetType": "sizedBox",
+    "width": 240,
     "child": {
-      "widgetType": "sizedBox",
-      "width": 240,
-      "child": {
-        "widgetType": "progress",
-        "value": 0.5,
-        "indeterminate": true
-      }
+      "widgetType": "progress",
+      "value": 0.5,
+      "indeterminate": true
     }
   }
 }
