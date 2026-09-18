@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:zuraffa_ui/src/components/badge.dart';
 import 'package:zuraffa_ui/src/components/button.dart';
