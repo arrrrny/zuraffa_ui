@@ -33,16 +33,22 @@ jobs:
             GREP_EXCLUDE="$GREP_EXCLUDE | grep -v \"$file\""
           done
 
+          # Comment lines are documentation, not imports: a doc example may
+          # legitimately show `import 'package:flutter/material.dart'` or the
+          # barrel paths below. `-n` adds line numbers to the report, the
+          # second grep drops commented matches (`path:LINE:// ...`).
+          COMMENT_FILTER='grep -vE ":[0-9]+:[[:space:]]*//"'
+
           # Check for material.dart imports (excluding specified files)
-          MATERIAL_IMPORTS=$(eval "grep -r \"import.*material\.dart\" lib/ $GREP_EXCLUDE || true")
+          MATERIAL_IMPORTS=$(eval "grep -rn \"import.*material\.dart\" lib/ $GREP_EXCLUDE || true" | eval "$COMMENT_FILTER" || true)
 
           # Check for cupertino.dart imports (excluding specified files)
-          CUPERTINO_IMPORTS=$(eval "grep -r \"import.*cupertino\.dart\" lib/ $GREP_EXCLUDE || true")
+          CUPERTINO_IMPORTS=$(eval "grep -rn \"import.*cupertino\.dart\" lib/ $GREP_EXCLUDE || true" | eval "$COMMENT_FILTER" || true)
 
           # The engine must reach its own code by granular path, never through
           # the package barrels: lib/zfa.dart (raw engine) or
           # lib/zuraffa_ui.dart (certified surface).
-          BARREL_IMPORTS=$(grep -rE "import.*zuraffa_ui/(zfa|zuraffa_ui)\.dart" lib/ || true)
+          BARREL_IMPORTS=$(grep -rnE "import.*zuraffa_ui/(zfa|zuraffa_ui)\.dart" lib/ | eval "$COMMENT_FILTER" || true)
 
           # Report all findings first
           FOUND_VIOLATIONS=false
