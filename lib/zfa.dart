@@ -181,6 +181,9 @@ export 'src/utils/responsive.dart';
 export 'src/utils/states_controller.dart';
 export 'src/utils/text_editing_controller.dart';
 
+// The UINode layer (generative-UI substrate) under its contract names.
+export 'uinode.dart';
+
 // The certified surface, so a single import reaches engine and certified
 // vocabulary both.
 export 'zuraffa_ui.dart';

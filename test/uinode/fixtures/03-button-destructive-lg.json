@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "button",
+    "label": "Delete",
+    "variant": "destructive",
+    "size": "lg"
+  }
+}

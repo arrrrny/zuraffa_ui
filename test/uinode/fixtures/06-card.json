@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "card",
+    "title": "Sign in",
+    "description": "Enter your credentials",
+    "content": [
+      {
+        "widgetType": "text",
+        "text": "We never share your data.",
+        "style": "muted"
+      }
+    ]
+  }
+}

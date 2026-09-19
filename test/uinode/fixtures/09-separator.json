@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "sizedBox",
+    "height": 200,
+    "child": {
+      "widgetType": "column",
+      "children": [
+        {
+          "widgetType": "text",
+          "text": "above"
+        },
+        {
+          "widgetType": "separator"
+        },
+        {
+          "widgetType": "text",
+          "text": "below"
+        }
+      ]
+    }
+  }
+}

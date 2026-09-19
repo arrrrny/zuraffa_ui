@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "column",
+    "gap": 8,
+    "crossAxisAlignment": "start",
+    "children": [
+      {
+        "widgetType": "text",
+        "text": "Heading one",
+        "style": "h1"
+      },
+      {
+        "widgetType": "text",
+        "text": "Heading two",
+        "style": "h2"
+      },
+      {
+        "widgetType": "text",
+        "text": "Body text",
+        "style": "p"
+      },
+      {
+        "widgetType": "text",
+        "text": "Muted footnote",
+        "style": "muted"
+      }
+    ]
+  }
+}
