@@ -94,7 +94,7 @@ existed and failed before the implementation.
 - green: strengthened tests pass against the real fix. Suite -> 401 passed,
   0 failed
 - refactor: n/a
-- commit: (remediation commit)
+- commit: `6c7018c`
 
 ## Cycle 6: component hardening — post-frame evaluation (found by the U5 test)
 
@@ -110,7 +110,7 @@ existed and failed before the implementation.
   the positions the user actually sees.
 - green: strengthened tests pass; suite -> 401 passed, 0 failed
 - refactor: none
-- commit: (remediation commit)
+- commit: `6c7018c`
 
 ## Notes and deviations (remediation round)
 
