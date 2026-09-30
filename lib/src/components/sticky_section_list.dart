@@ -146,6 +146,13 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
   late final ScrollController _scrollController;
   int _currentSectionIndex = 0;
 
+  /// Anchors header measurements to the list viewport rather than the whole
+  /// [Column]. Measuring from the viewport keeps header offsets independent
+  /// of the sticky bar's height, so a bar height change (e.g. an empty ad
+  /// section header) cannot shift the offsets and re-trigger the active
+  /// section calculation — the feedback loop that caused rapid flickering.
+  final GlobalKey _listViewportKey = GlobalKey();
+
   final Map<int, _InlineSectionHeaderState> _mountedHeaders = {};
 
   @override
@@ -199,43 +206,33 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
   void _updateCurrentSection() {
     if (!_scrollController.hasClients) return;
 
-    int? firstMountedIndex;
-    int? closestHeaderIndex;
-    double? closestOffset;
+    final listBox =
+        _listViewportKey.currentContext?.findRenderObject() as RenderBox?;
+    if (listBox == null || !listBox.attached) return;
 
-    final listBox = context.findRenderObject() as RenderBox?;
-    if (listBox == null) return;
+    // Scan in ascending section order so the result never depends on the
+    // order headers happened to mount (a zero-height header tied with the
+    // next one must not flip the outcome).
+    final indices = _mountedHeaders.keys.toList()..sort();
 
-    for (final entry in _mountedHeaders.entries) {
-      final idx = entry.key;
-      final renderObject = entry.value.renderObject;
+    // The active section is the last one whose inline header has reached the
+    // top of the list viewport. Headers above the top belong to sections
+    // that have been scrolled past.
+    int? lastCrossedIndex;
+    for (final idx in indices) {
+      final renderObject = _mountedHeaders[idx]?.renderObject;
       if (renderObject == null || !renderObject.attached) continue;
-
-      if (firstMountedIndex == null || idx < firstMountedIndex) {
-        firstMountedIndex = idx;
-      }
-
       final headerBox = renderObject as RenderBox;
-      final offsetInList = headerBox.localToGlobal(
-        Offset.zero,
-        ancestor: listBox,
-      );
-
-      // Find the header that is closest to the top of the viewport.
-      // A header becomes active when its top is at or near the viewport top.
-      // We track the header with the smallest positive offset (closest to top).
-      if (offsetInList.dy >= 0 &&
-          (closestOffset == null || offsetInList.dy < closestOffset)) {
-        closestOffset = offsetInList.dy;
-        closestHeaderIndex = idx < 1 ? 0 : idx - 1;
-      }
+      final dy = headerBox.localToGlobal(Offset.zero, ancestor: listBox).dy;
+      if (dy <= 0) lastCrossedIndex = idx;
     }
 
     int active;
-    if (closestHeaderIndex != null) {
-      active = closestHeaderIndex;
-    } else if (firstMountedIndex != null) {
-      active = firstMountedIndex;
+    if (lastCrossedIndex != null) {
+      active = lastCrossedIndex;
+    } else if (indices.isNotEmpty) {
+      // No header reached the viewport top yet: the list is at its start.
+      active = indices.first;
     } else {
       active = _currentSectionIndex;
     }
@@ -295,18 +292,21 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
             alignment: effectiveHeaderAlignment,
           ),
         Expanded(
-          child: ListView.builder(
-            controller: _scrollController,
-            physics: widget.physics,
-            clipBehavior: widget.clipBehavior,
-            padding: effectivePadding,
-            itemCount: _calculateTotalItemCount(),
-            itemBuilder: (context, index) => _buildItemAtIndex(
-              context,
-              index,
-              effectiveInlineHeaderPadding,
-              effectiveInlineHeaderBackgroundColor,
-              effectiveHeaderAlignment,
+          child: KeyedSubtree(
+            key: _listViewportKey,
+            child: ListView.builder(
+              controller: _scrollController,
+              physics: widget.physics,
+              clipBehavior: widget.clipBehavior,
+              padding: effectivePadding,
+              itemCount: _calculateTotalItemCount(),
+              itemBuilder: (context, index) => _buildItemAtIndex(
+                context,
+                index,
+                effectiveInlineHeaderPadding,
+                effectiveInlineHeaderBackgroundColor,
+                effectiveHeaderAlignment,
+              ),
             ),
           ),
         ),
