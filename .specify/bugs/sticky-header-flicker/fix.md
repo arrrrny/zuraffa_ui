@@ -21,8 +21,8 @@ top (deterministic ascending scan).
 
 | File | Change | Notes |
 |------|--------|-------|
-| `lib/src/components/sticky_section_list.dart` | modified | `_updateCurrentSection` rewritten: `GlobalKey`-anchored viewport measurement + direct "last crossed" rule (no `idx - 1`, no map-order dependence); `ListView` wrapped in `KeyedSubtree` |
-| `test/src/components/sticky_section_list_test.dart` | added tests | 4 new widget tests (see below); existing 3 untouched |
+| `lib/src/components/sticky_section_list.dart` | modified | `_updateCurrentSection` rewritten: `GlobalKey`-anchored viewport measurement + direct "last crossed" rule (no `idx - 1`, no map-order dependence); `ListView` wrapped in `KeyedSubtree`; evaluation moved to a deduped post-frame callback so decisions use the laid-out frame (scroll notifications measure the previous frame and could leave the title stale) |
+| `test/src/components/sticky_section_list_test.dart` | added tests | 5 new widget tests (see below); existing 3 untouched |
 | `example/lib/pages/sticky_section_list.dart` | modified | standalone repro: "Open Feed with Ads (flicker repro)" sheet — ad placeholder section with empty header between product sections |
 
 ## Diff Highlights
@@ -51,19 +51,28 @@ bar-height after it disappeared behind the bar).
   micro-scroll down then up across A→AD→B: `onSectionChanged` must be strictly
   monotonic per direction and end at B (down) / A (up)
 - `sticky bar size does not oscillate across the ad boundary` — 1px sweep
-  through the boundary zone with a trailing section C: the bar height sequence
-  (read from the list's y-offset) must have ≤ 3 runs; red evidence was
+  through the boundary zone with short sections (keeps the ad header mounted
+  through the zone) and a trailing section C: the bar height sequence (read
+  from the list's y-offset) must have ≤ 3 runs; red evidence was
   `[46.0, 32.0, 46.0, 32.0, ...]` (17 runs)
 - `switches title when the incoming header reaches the viewport top` — at the
   crossing offset B's title appears both inline and pinned (2 occurrences);
   60px before the top it is inline-only
+- `pins the section at the top even when a zero-height header crosses with
+  it` — a headerless section with no items and zero inline padding crosses at
+  exactly the same offset as the next header; the real section must win the
+  bar (kills the first-crossed and exclusive-boundary mutants, pins the tie
+  determinism)
 - `stays on the first section before any header crosses` — baseline guard
+- Deliberate mutants M1 (first-crossed), M2 (Column-relative measurement),
+  M3 (exclusive `dy < 0` boundary) all caught after strengthening; see
+  ./tdd/verification.md and ./tdd/cycle-log.md (cycles 5–6)
 
 ## Local Verification
 
-- `flutter test test/src/components/sticky_section_list_test.dart` → 7 passed
-  (3 pre-existing + 4 new)
-- `flutter test` (full suite) → 400 passed, 0 failed, ~6 skipped (baseline was
+- `flutter test test/src/components/sticky_section_list_test.dart` → 8 passed
+  (3 pre-existing + 5 new)
+- `flutter test` (full suite) → 401 passed, 0 failed, ~6 skipped (baseline was
   396; goldens untouched)
 - `flutter analyze` on the three changed files → No issues found
 - `dart format` applied to changed files
