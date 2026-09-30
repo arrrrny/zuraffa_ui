@@ -112,8 +112,13 @@ void main() {
       ),
       ShadListSection(
         header: const Text('Section B'),
+        // Seven items: B's inline header must be able to REACH the viewport
+        // top within maxScrollExtent. On the default test surface (600px tall
+        // — the SizedBox below does not constrain it) six items cap the
+        // scroll range just short of B's crossing, so the bar could only ever
+        // show B via the premature indices.first flip.
         items: [
-          for (var j = 0; j < 6; j++)
+          for (var j = 0; j < 7; j++)
             SizedBox(height: 80, child: Text('ad-item b$j')),
         ],
       ),
@@ -477,5 +482,70 @@ void main() {
       expect(find.text('Section A'), findsWidgets);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets(
+      'keeps the first section pinned deep inside it after its header is '
+      'recycled out of the cache extent',
+      (tester) async {
+        // A first section far taller than the default cache extent (250px):
+        // scrolled into its middle, its inline header has been disposed by
+        // the lazy list and the only mounted header is section B's, still
+        // below the top. The bar must keep section A — not flip to B up to
+        // viewport + cacheExtent early.
+        final sections = [
+          ShadListSection(
+            header: const Text('Section A'),
+            items: [
+              for (var j = 0; j < 10; j++)
+                SizedBox(height: 80, child: Text('tall item $j')),
+            ],
+          ),
+          ShadListSection(
+            header: const Text('Section B'),
+            items: [
+              for (var j = 0; j < 3; j++)
+                SizedBox(height: 80, child: Text('tail item $j')),
+            ],
+          ),
+        ];
+        final changes = <int>[];
+        final controller = ScrollController();
+        addTearDown(controller.dispose);
+        await tester.pumpWidget(
+          ShadApp(
+            home: SizedBox(
+              height: 400,
+              child: ShadStickySectionList(
+                sections: sections,
+                onSectionChanged: changes.add,
+                controller: controller,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Mid-section: A's header sits ~500px above the viewport top, well
+        // past the cache extent, so only B's header remains mounted.
+        controller.jumpTo(500);
+        await tester.pump();
+        // The post-frame evaluation runs within the pump above; pump once
+        // more so the pinned bar it scheduled is actually built.
+        await tester.pump();
+
+        expect(
+          find.text('Section A'),
+          findsOneWidget,
+          reason: 'A is still the active section: the bar must pin A',
+        );
+        expect(
+          find.text('Section B'),
+          findsOneWidget,
+          reason: 'B must not take the bar before its header reaches the top',
+        );
+        expect(changes, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

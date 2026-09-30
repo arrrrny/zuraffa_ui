@@ -244,8 +244,12 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
     if (lastCrossedIndex != null) {
       active = lastCrossedIndex;
     } else if (indices.isNotEmpty) {
-      // No header reached the viewport top yet: the list is at its start.
-      active = indices.first;
+      // Not necessarily the start of the list: the active section's own
+      // header may have been recycled out of the cache extent while the
+      // next section's header is already mounted below the top. The
+      // section before the first mounted header is active then; at the
+      // start of the list this degenerates to index 0.
+      active = indices.first > 0 ? indices.first - 1 : 0;
     } else {
       active = _currentSectionIndex;
     }
