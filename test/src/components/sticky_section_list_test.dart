@@ -144,6 +144,21 @@ void main() {
       return result;
     }
 
+    /// Walks forward until [match] is mounted or the step budget runs out.
+    /// Never clamps against `maxScrollExtent`: SliverList only *estimates*
+    /// it until mixed-height children build, and the estimate can clamp the
+    /// walk short of the target.
+    Future<void> walkForward(
+      WidgetTester tester,
+      ScrollController controller,
+      bool Function() match,
+    ) async {
+      for (var i = 0; i < 100 && !match(); i++) {
+        controller.jumpTo(controller.offset + 100);
+        await tester.pump();
+      }
+    }
+
     testWidgets(
       'no flicker past a headerless ad section (monotonic transitions)',
       (tester) async {
@@ -158,9 +173,11 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // Micro-scroll down through the ad and into section B.
-        final maxExtent = controller.position.maxScrollExtent;
-        while (controller.offset < maxExtent) {
+        // Micro-scroll down through the ad and into section B. Re-read the
+        // extent every step: SliverList's estimate grows as children build.
+        for (var i = 0; i < 200; i++) {
+          final maxExtent = controller.position.maxScrollExtent;
+          if (controller.offset >= maxExtent) break;
           controller.jumpTo(
             (controller.offset + 20).clamp(0.0, maxExtent),
           );
@@ -181,8 +198,10 @@ void main() {
 
         // Micro-scroll back up: strictly decreasing, ending on section A.
         changes.clear();
-        while (controller.offset > 0) {
-          controller.jumpTo((controller.offset - 20).clamp(0.0, maxExtent));
+        for (var i = 0; i < 200 && controller.offset > 0; i++) {
+          controller.jumpTo(
+            (controller.offset - 20).clamp(0.0, double.infinity),
+          );
           await tester.pump();
         }
         for (var i = 1; i < changes.length; i++) {
@@ -200,16 +219,39 @@ void main() {
     testWidgets('sticky bar size does not oscillate across the ad boundary', (
       tester,
     ) async {
-      // A trailing section C realizes the oscillation branch: when the empty
-      // ad bar makes B's header ineligible, the closest-header rule jumps to
-      // C and the bar regrows, which re-eligibilizes B — looping.
+      // Short sections keep several inline headers mounted past their
+      // crossing (within the cache extent) — that is the geometry where a
+      // Column-relative measurement closes the shrink/regrow feedback loop:
+      // the empty ad bar makes B's header ineligible, another section takes
+      // over, the bar regrows and B becomes eligible again, looping. A
+      // trailing section C keeps the rule from falling off the end of the
+      // list.
       final sections = [
-        ...buildAdSections(),
+        ShadListSection(
+          header: const Text('Section A'),
+          items: [
+            for (var j = 0; j < 2; j++)
+              SizedBox(height: 60, child: Text('ad-item a$j')),
+          ],
+        ),
+        const ShadListSection(
+          header: SizedBox.shrink(),
+          items: [
+            SizedBox(height: 100, child: Center(child: Text('Sponsored'))),
+          ],
+        ),
+        ShadListSection(
+          header: const Text('Section B'),
+          items: [
+            for (var j = 0; j < 4; j++)
+              SizedBox(height: 60, child: Text('ad-item b$j')),
+          ],
+        ),
         ShadListSection(
           header: const Text('Section C'),
           items: [
-            for (var j = 0; j < 3; j++)
-              SizedBox(height: 80, child: Text('ad-item c$j')),
+            for (var j = 0; j < 2; j++)
+              SizedBox(height: 60, child: Text('ad-item c$j')),
           ],
         ),
       ];
@@ -234,30 +276,31 @@ void main() {
       // zone at 1px resolution: locate B's inline header, then step through
       // its crossing of the viewport top pixel by pixel.
       final listTops = <double>[];
-      final maxExtent = controller.position.maxScrollExtent;
 
       Future<void> stepTo(double offset) async {
-        controller.jumpTo(offset.clamp(0.0, maxExtent));
+        controller.jumpTo(offset);
         await tester.pump();
         listTops.add(tester.getTopLeft(find.byType(ListView)).dy);
       }
 
-      final listViewTop = tester.getTopLeft(find.byType(ListView)).dy;
       // B's header is not built at offset 0 (lazy list): walk forward until
       // it mounts, then anchor the 1px sweep on its crossing.
-      while (!tester.any(find.text('Section B'))) {
-        await stepTo(controller.offset + 100);
-      }
-      final bHeaderTop = tester.getTopLeft(find.text('Section B')).dy;
+      await walkForward(
+        tester,
+        controller,
+        () => tester.any(find.text('Section B')),
+      );
+      final listViewTop = tester.getTopLeft(find.byType(ListView)).dy;
+      final bHeaderTop = tester.getTopLeft(find.text('Section B').last).dy;
       final bCrossing = controller.offset + (bHeaderTop - listViewTop);
 
-      while (controller.offset < bCrossing - 40) {
+      for (var i = 0; i < 100 && controller.offset < bCrossing - 40; i++) {
         await stepTo(controller.offset + 20);
       }
       for (var s = controller.offset; s <= bCrossing + 80; s += 1) {
         await stepTo(s);
       }
-      while (controller.offset < maxExtent) {
+      for (var i = 0; i < 100; i++) {
         await stepTo(controller.offset + 20);
       }
 
@@ -281,12 +324,13 @@ void main() {
         await tester.pumpAndSettle();
 
         // Locate B's inline header (walk forward — the lazy list does not
-        // build it at offset 0) and jump so it sits exactly at the top of the
-        // list viewport.
-        while (!tester.any(find.text('Section B'))) {
-          controller.jumpTo(controller.offset + 100);
-          await tester.pump();
-        }
+        // build it at offset 0) and jump so it sits exactly at the top of
+        // the list viewport.
+        await walkForward(
+          tester,
+          controller,
+          () => tester.any(find.text('Section B')),
+        );
         final listViewTop = tester.getTopLeft(find.byType(ListView)).dy;
         final bHeaderTop = tester.getTopLeft(find.text('Section B')).dy;
         final crossingOffset = controller.offset + (bHeaderTop - listViewTop);
@@ -304,8 +348,26 @@ void main() {
 
         // At the top: B's title is pinned in the bar AND rendered inline
         // (two occurrences). The bar must never fall back to an empty
-        // placeholder at this moment.
-        controller.jumpTo(crossingOffset);
+        // placeholder at this moment. Land the header top exactly on the
+        // viewport top: fractional text metrics make the first estimate
+        // land a fraction off, and the inclusive boundary is the contract.
+        var offset = crossingOffset;
+        for (var i = 0; i < 4; i++) {
+          controller.jumpTo(offset);
+          await tester.pump();
+          // The inline header is .last once B also appears in the bar.
+          final dy =
+              tester
+                  .getTopLeft(
+                    find.text('Section B').last,
+                  )
+                  .dy -
+              tester.getTopLeft(find.byType(ListView)).dy;
+          if (dy == 0.0) break;
+          offset += dy;
+        }
+        // The post-frame evaluation runs within the pump above; pump once
+        // more so the pinned bar it scheduled is actually built.
         await tester.pump();
         expect(
           find.text('Section B'),
@@ -313,6 +375,93 @@ void main() {
           reason: 'B header reached the viewport top: bar must pin B',
         );
         expect(find.text('Section A'), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'pins the section at the top even when a zero-height header crosses '
+      'with it',
+      (tester) async {
+        // A headerless ad section with no items and zero inline padding has
+        // zero extent: its header crosses the viewport top at exactly the
+        // same offset as the next section's header. The active section is
+        // the LAST one whose header crossed (the real listing), never the
+        // first mounted one — and the tie must not flip with map order.
+        final sections = [
+          for (var i = 0; i < 2; i++)
+            ShadListSection(
+              header: Text('Short $i'),
+              items: [SizedBox(height: 60, child: Text('short item $i'))],
+            ),
+          const ShadListSection(header: SizedBox.shrink(), items: []),
+          const ShadListSection(
+            header: Text('Short 2'),
+            items: [SizedBox(height: 60, child: Text('short item 2'))],
+          ),
+          ShadListSection(
+            header: const Text('Short 3'),
+            items: [
+              // Enough trailing content for Short 2's header to be able to
+              // reach the viewport top at all.
+              for (var j = 0; j < 6; j++)
+                SizedBox(height: 60, child: Text('short tail $j')),
+            ],
+          ),
+        ];
+        final controller = ScrollController();
+        addTearDown(controller.dispose);
+        await tester.pumpWidget(
+          ShadApp(
+            home: SizedBox(
+              height: 400,
+              child: ShadStickySectionList(
+                sections: sections,
+                inlineHeaderPadding: EdgeInsets.zero,
+                controller: controller,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Land Short 2's header (and the zero-height ad header with it)
+        // exactly at the viewport top. The walk is budgeted; the correction
+        // targets the inline header (.last once the bar also shows it) and
+        // never clamps against the unreliable extent estimate.
+        await walkForward(
+          tester,
+          controller,
+          () => tester.any(find.text('Short 2')),
+        );
+        var offset =
+            controller.offset +
+            (tester.getTopLeft(find.text('Short 2').last).dy -
+                tester.getTopLeft(find.byType(ListView)).dy);
+        for (var i = 0; i < 4; i++) {
+          controller.jumpTo(offset);
+          await tester.pump();
+          // The inline header is .last once Short 2 also appears in the bar.
+          final dy =
+              tester
+                  .getTopLeft(
+                    find.text('Short 2').last,
+                  )
+                  .dy -
+              tester.getTopLeft(find.byType(ListView)).dy;
+          if (dy == 0.0) break;
+          offset += dy;
+        }
+        // The post-frame evaluation runs within the pump above; pump once
+        // more so the pinned bar it scheduled is actually built.
+        await tester.pump();
+        expect(
+          find.text('Short 2'),
+          findsNWidgets(2),
+          reason:
+              'Short 2 header is at the top: the bar must pin Short 2, not '
+              'the empty header that crossed with it',
+        );
         expect(tester.takeException(), isNull);
       },
     );

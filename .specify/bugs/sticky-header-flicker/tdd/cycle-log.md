@@ -71,3 +71,54 @@ existed and failed before the implementation.
   stepped over the ~14px oscillation window; strengthened to a 1px sweep with
   a trailing section C before any fix landed, which exposed the loop
   ([46, 32] x 8+ alternations).
+
+## Cycle 5: U5 zero-height header tie — mutation remediation
+
+- trigger: deliberate-mutant audit (verify fallback). Three mutants were run
+  against the first fix; ALL THREE initially survived:
+  - M1 first-crossed selection — masked by tall sections scrolling fully out
+    of the cache extent before the distinction could show
+  - M2 Column-relative measurement — masked the same way: the ad header was
+    destroyed before the oscillation zone arrived, so the feedback loop could
+    not close
+  - M3 exclusive boundary (`dy < 0`) — unobservable because fractional text
+    metrics never landed the header exactly at dy = 0
+- test: `...::pins the section at the top even when a zero-height header
+  crosses with it` (new) + A2 harness rebuilt with short sections and a 1px
+  sweep + A3 exact-landing correction loop (targets the inline header, sign-
+  corrected `offset += dy`)
+- red (mutants after strengthening): M1 -> zero-height tie test fails
+  (`Expected: exactly 2 ... Found 1`); M2 -> A2 fails
+  (`bar height oscillated: [46.0, 32.0, ...]`); M3 -> zero-height tie test
+  fails. All three now caught.
+- green: strengthened tests pass against the real fix. Suite -> 401 passed,
+  0 failed
+- refactor: n/a
+- commit: (remediation commit)
+
+## Cycle 6: component hardening — post-frame evaluation (found by the U5 test)
+
+- finding: the strengthened U5 harness exposed a SECOND real defect: the
+  active-section evaluation ran synchronously in the scroll notification,
+  i.e. before the frame that lays out the scrolled content. A single program
+  matic jump left the pinned title stale (bar showed the previous section
+  while the next header sat exactly at the viewport top); nothing re
+  evaluated after layout changed the mounted-header set.
+- fix: `lib/src/components/sticky_section_list.dart` — evaluation moved to a
+  deduped post-frame callback (`_schedulePostFrameCheck`), armed on scroll,
+  header mount, init, and after each section change. Every decision now uses
+  the positions the user actually sees.
+- green: strengthened tests pass; suite -> 401 passed, 0 failed
+- refactor: none
+- commit: (remediation commit)
+
+## Notes and deviations (remediation round)
+
+- Test-harness pitfalls hit and fixed during remediation (documented for the
+  audit): `maxScrollExtent` in mixed-height builder lists is an average-based
+  ESTIMATE that can be far below the real extent (observed 100 vs ~420) —
+  clamping test walks against it spins or short-circuits; the walk/correction
+  loops are now budget-bounded and never clamp against it. `getTopLeft` on a
+  text that appears in both the bar and the list needs `.last` (inline). The
+  post-frame evaluation schedules a rebuild, so assertions need one extra
+  pump after landing exactly at the top.

@@ -7,7 +7,7 @@ loop: outside-in
 profile: .specify/memory/tdd-profile.md
 spec_criteria: 4
 planned_at: eaece98
-updated_at: fix/sticky-header-flicker WIP
+updated_at: 28a14a8
 suite_baseline: green
 ---
 ```
@@ -34,6 +34,7 @@ behaves correctly end to end through its real widget surface.
 | U2  | When no inline header has crossed the viewport top, the first mounted section stays active                 | AC-4     | example | BASELINE | `test/src/components/sticky_section_list_test.dart::unit: stays on the first section before any header crosses` |
 | U3  | Selection is independent of `_mountedHeaders` insertion order (zero-height headers tied at the same dy cannot flip the winner) | AC-1     | example | DONE    | `test/src/components/sticky_section_list_test.dart::unit: tied zero-height headers cannot flip the active section` |
 | U4  | Header dy measurement is taken in list-viewport coordinates, so it is unaffected by sticky-bar height changes | AC-2     | example | DONE    | covered jointly with A2 (no widget-observable difference beyond A2's bar-size probe)          |
+| U5  | When a zero-height header crosses the top simultaneously with the next header, the real section wins the bar (last-crossed, order-independent tie) | AC-1, AC-3 | example | DONE | `test/src/components/sticky_section_list_test.dart::pins the section at the top even when a zero-height header crosses with it` |
 
 ## Invariants and edge cases still to place
 

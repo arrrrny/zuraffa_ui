@@ -155,14 +155,20 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
 
   final Map<int, _InlineSectionHeaderState> _mountedHeaders = {};
 
+  /// Whether a post-frame re-evaluation is already scheduled. Scroll
+  /// notifications arrive before the frame that lays out the scrolled
+  /// content, and layout can mount/unmount inline headers — measuring during
+  /// the notification uses the previous frame's geometry and can leave the
+  /// pinned title stale. Evaluating after the frame instead makes every
+  /// decision use the positions the user actually sees.
+  bool _postFrameCheckScheduled = false;
+
   @override
   void initState() {
     super.initState();
     _scrollController = widget.controller ?? ScrollController();
     _scrollController.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _updateCurrentSection();
-    });
+    _schedulePostFrameCheck();
   }
 
   @override
@@ -184,12 +190,19 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
     super.dispose();
   }
 
-  void _onHeaderMounted(int sectionIndex, _InlineSectionHeaderState state) {
-    _mountedHeaders[sectionIndex] = state;
-    // Measure immediately after the frame when it's first laid out
+  void _schedulePostFrameCheck() {
+    if (_postFrameCheckScheduled) return;
+    _postFrameCheckScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _postFrameCheckScheduled = false;
       if (mounted) _updateCurrentSection();
     });
+  }
+
+  void _onHeaderMounted(int sectionIndex, _InlineSectionHeaderState state) {
+    _mountedHeaders[sectionIndex] = state;
+    // Re-measure once the new header has been laid out.
+    _schedulePostFrameCheck();
   }
 
   void _unregisterHeader(int sectionIndex, _InlineSectionHeaderState state) {
@@ -200,7 +213,7 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
 
   void _onScroll() {
     if (!_scrollController.hasClients) return;
-    _updateCurrentSection();
+    _schedulePostFrameCheck();
   }
 
   void _updateCurrentSection() {
@@ -240,6 +253,8 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
     if (_currentSectionIndex != active) {
       setState(() => _currentSectionIndex = active);
       widget.onSectionChanged?.call(active);
+      // Re-verify once the rebuilt sticky bar has been laid out.
+      _schedulePostFrameCheck();
     }
   }
 
