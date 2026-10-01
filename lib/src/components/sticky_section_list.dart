@@ -32,6 +32,12 @@ class ShadListSection {
 /// reaches the top of the scroll area — regardless of item heights,
 /// async image loads, or viewport resizes.
 ///
+/// The pinned header clears the ambient top safe-area inset: when the list
+/// reaches the top of the screen (e.g. a full-height sheet on iOS), the
+/// title renders below the status bar while the bar's background still
+/// extends behind it. In contexts that already consumed the inset (below an
+/// `AppBar`) this is a no-op.
+///
 /// Use as the `child` of a `ShadSheet` with `scrollable: false`:
 ///
 /// ```dart
@@ -300,12 +306,21 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
         ? widget.sections[_currentSectionIndex]
         : null;
 
+    // When the list reaches the top of the screen (e.g. a full-height sheet
+    // on iOS), the pinned title must clear the status bar clock/notch. The
+    // inset goes INSIDE the bar's padding so the bar's background and border
+    // still extend up behind the status bar, iOS-style. In contexts that
+    // already consumed the inset (e.g. below an AppBar) this is a no-op.
+    final safeAreaTop = MediaQuery.paddingOf(context).top;
+
     return Column(
       children: [
         if (currentSection != null)
           _StickyHeader(
             section: currentSection,
-            padding: effectiveHeaderPadding,
+            padding: effectiveHeaderPadding.add(
+              EdgeInsets.only(top: safeAreaTop),
+            ),
             backgroundColor: effectiveHeaderBackgroundColor,
             border: effectiveHeaderBorder,
             alignment: effectiveHeaderAlignment,

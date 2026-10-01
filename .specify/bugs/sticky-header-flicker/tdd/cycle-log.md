@@ -122,3 +122,18 @@ existed and failed before the implementation.
   text that appears in both the bar and the list needs `.last` (inline). The
   post-frame evaluation schedules a rebuild, so assertions need one extra
   pump after landing exactly at the top.
+
+## Cycle 7: follow-up — pinned header clears the top safe area
+
+- request: the pinned bar overlapped the iOS status bar clock/notch on
+  full-height sheets.
+- test: `...::pinned header stays below the top safe area inset` —
+  MediaQuery top padding 47 → red: title top 20.0 (under the clock), expected
+  67.
+- green: `build()` adds `MediaQuery.paddingOf(context).top` INSIDE the bar's
+  padding, so the title clears the inset while the bar's background/border
+  still extend behind the status bar; no-op below an AppBar (inset already
+  consumed). Suite -> 402 passed, 0 failed.
+- measurement note: the viewport-relative tracking is unaffected (the list
+  origin moves with the taller bar, header dy values are list-relative).
+- commit: (safe-area commit, next SHA)

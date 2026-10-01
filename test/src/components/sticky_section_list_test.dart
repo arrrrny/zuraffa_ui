@@ -40,6 +40,30 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('pinned header stays below the top safe area inset', (
+      tester,
+    ) async {
+      // Full-height sheets on iOS reach the status bar: the ambient top
+      // padding (clock/notch inset) must clear the pinned title.
+      await tester.pumpWidget(
+        ShadApp(
+          home: MediaQuery(
+            data: const MediaQueryData(padding: EdgeInsets.only(top: 47)),
+            child: SizedBox(
+              height: 400,
+              child: ShadStickySectionList(sections: buildSections()),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Bar top + 47 inset + the default headerPadding top (20).
+      final titleTop = tester.getTopLeft(find.text('Section 0').first).dy;
+      expect(titleTop, 67, reason: 'title must clear the top safe area');
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('reports and pins the active section as the list scrolls', (
       tester,
     ) async {
