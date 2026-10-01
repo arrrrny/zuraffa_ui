@@ -32,6 +32,12 @@ class ShadListSection {
 /// reaches the top of the scroll area — regardless of item heights,
 /// async image loads, or viewport resizes.
 ///
+/// The pinned header clears the ambient top safe-area inset: when the list
+/// reaches the top of the screen (e.g. a full-height sheet on iOS), the
+/// title renders below the status bar while the bar's background still
+/// extends behind it. In contexts that already consumed the inset (below an
+/// `AppBar`) this is a no-op.
+///
 /// Use as the `child` of a `ShadSheet` with `scrollable: false`:
 ///
 /// ```dart
@@ -146,16 +152,29 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
   late final ScrollController _scrollController;
   int _currentSectionIndex = 0;
 
+  /// Anchors header measurements to the list viewport rather than the whole
+  /// [Column]. Measuring from the viewport keeps header offsets independent
+  /// of the sticky bar's height, so a bar height change (e.g. an empty ad
+  /// section header) cannot shift the offsets and re-trigger the active
+  /// section calculation — the feedback loop that caused rapid flickering.
+  final GlobalKey _listViewportKey = GlobalKey();
+
   final Map<int, _InlineSectionHeaderState> _mountedHeaders = {};
+
+  /// Whether a post-frame re-evaluation is already scheduled. Scroll
+  /// notifications arrive before the frame that lays out the scrolled
+  /// content, and layout can mount/unmount inline headers — measuring during
+  /// the notification uses the previous frame's geometry and can leave the
+  /// pinned title stale. Evaluating after the frame instead makes every
+  /// decision use the positions the user actually sees.
+  bool _postFrameCheckScheduled = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = widget.controller ?? ScrollController();
     _scrollController.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _updateCurrentSection();
-    });
+    _schedulePostFrameCheck();
   }
 
   @override
@@ -177,12 +196,19 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
     super.dispose();
   }
 
-  void _onHeaderMounted(int sectionIndex, _InlineSectionHeaderState state) {
-    _mountedHeaders[sectionIndex] = state;
-    // Measure immediately after the frame when it's first laid out
+  void _schedulePostFrameCheck() {
+    if (_postFrameCheckScheduled) return;
+    _postFrameCheckScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _postFrameCheckScheduled = false;
       if (mounted) _updateCurrentSection();
     });
+  }
+
+  void _onHeaderMounted(int sectionIndex, _InlineSectionHeaderState state) {
+    _mountedHeaders[sectionIndex] = state;
+    // Re-measure once the new header has been laid out.
+    _schedulePostFrameCheck();
   }
 
   void _unregisterHeader(int sectionIndex, _InlineSectionHeaderState state) {
@@ -193,49 +219,43 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
 
   void _onScroll() {
     if (!_scrollController.hasClients) return;
-    _updateCurrentSection();
+    _schedulePostFrameCheck();
   }
 
   void _updateCurrentSection() {
     if (!_scrollController.hasClients) return;
 
-    int? firstMountedIndex;
-    int? closestHeaderIndex;
-    double? closestOffset;
+    final listBox =
+        _listViewportKey.currentContext?.findRenderObject() as RenderBox?;
+    if (listBox == null || !listBox.attached) return;
 
-    final listBox = context.findRenderObject() as RenderBox?;
-    if (listBox == null) return;
+    // Scan in ascending section order so the result never depends on the
+    // order headers happened to mount (a zero-height header tied with the
+    // next one must not flip the outcome).
+    final indices = _mountedHeaders.keys.toList()..sort();
 
-    for (final entry in _mountedHeaders.entries) {
-      final idx = entry.key;
-      final renderObject = entry.value.renderObject;
+    // The active section is the last one whose inline header has reached the
+    // top of the list viewport. Headers above the top belong to sections
+    // that have been scrolled past.
+    int? lastCrossedIndex;
+    for (final idx in indices) {
+      final renderObject = _mountedHeaders[idx]?.renderObject;
       if (renderObject == null || !renderObject.attached) continue;
-
-      if (firstMountedIndex == null || idx < firstMountedIndex) {
-        firstMountedIndex = idx;
-      }
-
       final headerBox = renderObject as RenderBox;
-      final offsetInList = headerBox.localToGlobal(
-        Offset.zero,
-        ancestor: listBox,
-      );
-
-      // Find the header that is closest to the top of the viewport.
-      // A header becomes active when its top is at or near the viewport top.
-      // We track the header with the smallest positive offset (closest to top).
-      if (offsetInList.dy >= 0 &&
-          (closestOffset == null || offsetInList.dy < closestOffset)) {
-        closestOffset = offsetInList.dy;
-        closestHeaderIndex = idx < 1 ? 0 : idx - 1;
-      }
+      final dy = headerBox.localToGlobal(Offset.zero, ancestor: listBox).dy;
+      if (dy <= 0) lastCrossedIndex = idx;
     }
 
     int active;
-    if (closestHeaderIndex != null) {
-      active = closestHeaderIndex;
-    } else if (firstMountedIndex != null) {
-      active = firstMountedIndex;
+    if (lastCrossedIndex != null) {
+      active = lastCrossedIndex;
+    } else if (indices.isNotEmpty) {
+      // Not necessarily the start of the list: the active section's own
+      // header may have been recycled out of the cache extent while the
+      // next section's header is already mounted below the top. The
+      // section before the first mounted header is active then; at the
+      // start of the list this degenerates to index 0.
+      active = indices.first > 0 ? indices.first - 1 : 0;
     } else {
       active = _currentSectionIndex;
     }
@@ -243,6 +263,8 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
     if (_currentSectionIndex != active) {
       setState(() => _currentSectionIndex = active);
       widget.onSectionChanged?.call(active);
+      // Re-verify once the rebuilt sticky bar has been laid out.
+      _schedulePostFrameCheck();
     }
   }
 
@@ -284,29 +306,41 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
         ? widget.sections[_currentSectionIndex]
         : null;
 
+    // When the list reaches the top of the screen (e.g. a full-height sheet
+    // on iOS), the pinned title must clear the status bar clock/notch. The
+    // inset goes INSIDE the bar's padding so the bar's background and border
+    // still extend up behind the status bar, iOS-style. In contexts that
+    // already consumed the inset (e.g. below an AppBar) this is a no-op.
+    final safeAreaTop = MediaQuery.paddingOf(context).top;
+
     return Column(
       children: [
         if (currentSection != null)
           _StickyHeader(
             section: currentSection,
-            padding: effectiveHeaderPadding,
+            padding: effectiveHeaderPadding.add(
+              EdgeInsets.only(top: safeAreaTop),
+            ),
             backgroundColor: effectiveHeaderBackgroundColor,
             border: effectiveHeaderBorder,
             alignment: effectiveHeaderAlignment,
           ),
         Expanded(
-          child: ListView.builder(
-            controller: _scrollController,
-            physics: widget.physics,
-            clipBehavior: widget.clipBehavior,
-            padding: effectivePadding,
-            itemCount: _calculateTotalItemCount(),
-            itemBuilder: (context, index) => _buildItemAtIndex(
-              context,
-              index,
-              effectiveInlineHeaderPadding,
-              effectiveInlineHeaderBackgroundColor,
-              effectiveHeaderAlignment,
+          child: KeyedSubtree(
+            key: _listViewportKey,
+            child: ListView.builder(
+              controller: _scrollController,
+              physics: widget.physics,
+              clipBehavior: widget.clipBehavior,
+              padding: effectivePadding,
+              itemCount: _calculateTotalItemCount(),
+              itemBuilder: (context, index) => _buildItemAtIndex(
+                context,
+                index,
+                effectiveInlineHeaderPadding,
+                effectiveInlineHeaderBackgroundColor,
+                effectiveHeaderAlignment,
+              ),
             ),
           ),
         ),
@@ -332,9 +366,11 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
     for (var i = 0; i < widget.sections.length; i++) {
       final section = widget.sections[i];
       if (remaining == 0) {
-        // Skip rendering the inline header for the first section — the sticky
-        // header at the top already displays it. We still need a zero-height
-        // widget so the scroll-position tracking (renderObject lookup) works.
+        // The first section's inline header is skipped — the sticky header
+        // at the top already displays it. We still need a zero-height widget
+        // so the scroll-position tracking (renderObject lookup) works. Other
+        // sections' inline headers go invisible (same size) while their
+        // section is the pinned one, so the title never shows twice.
         return _InlineSectionHeader(
           key: ValueKey('shad-sticky-header-$i'),
           sectionIndex: i,
@@ -345,6 +381,7 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
           onMounted: _onHeaderMounted,
           onUnmounted: _unregisterHeader,
           visible: i != 0,
+          active: i == _currentSectionIndex,
         );
       }
       remaining--;
@@ -402,6 +439,7 @@ class _InlineSectionHeader extends StatefulWidget {
     required this.onMounted,
     required this.onUnmounted,
     this.visible = true,
+    this.active = false,
   });
 
   final int sectionIndex;
@@ -417,6 +455,12 @@ class _InlineSectionHeader extends StatefulWidget {
   /// When false the widget renders invisible (zero height) but still registers
   /// itself for scroll-position tracking.
   final bool visible;
+
+  /// Whether this section is the currently pinned one. The inline header
+  /// then renders transparent while KEEPING its exact size: the pinned bar
+  /// already shows this title, and collapsing the header would make the
+  /// content jump.
+  final bool active;
 
   @override
   State<_InlineSectionHeader> createState() => _InlineSectionHeaderState();
@@ -451,10 +495,12 @@ class _InlineSectionHeaderState extends State<_InlineSectionHeader> {
 
     return Container(
       padding: widget.padding,
-      color: widget.backgroundColor,
+      color: widget.active ? null : widget.backgroundColor,
       child: Align(
         alignment: widget.alignment,
-        child: widget.section.header,
+        child: widget.active
+            ? Opacity(opacity: 0, child: widget.section.header)
+            : widget.section.header,
       ),
     );
   }
