@@ -366,9 +366,11 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
     for (var i = 0; i < widget.sections.length; i++) {
       final section = widget.sections[i];
       if (remaining == 0) {
-        // Skip rendering the inline header for the first section — the sticky
-        // header at the top already displays it. We still need a zero-height
-        // widget so the scroll-position tracking (renderObject lookup) works.
+        // The first section's inline header is skipped — the sticky header
+        // at the top already displays it. We still need a zero-height widget
+        // so the scroll-position tracking (renderObject lookup) works. Other
+        // sections' inline headers go invisible (same size) while their
+        // section is the pinned one, so the title never shows twice.
         return _InlineSectionHeader(
           key: ValueKey('shad-sticky-header-$i'),
           sectionIndex: i,
@@ -379,6 +381,7 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
           onMounted: _onHeaderMounted,
           onUnmounted: _unregisterHeader,
           visible: i != 0,
+          active: i == _currentSectionIndex,
         );
       }
       remaining--;
@@ -436,6 +439,7 @@ class _InlineSectionHeader extends StatefulWidget {
     required this.onMounted,
     required this.onUnmounted,
     this.visible = true,
+    this.active = false,
   });
 
   final int sectionIndex;
@@ -451,6 +455,12 @@ class _InlineSectionHeader extends StatefulWidget {
   /// When false the widget renders invisible (zero height) but still registers
   /// itself for scroll-position tracking.
   final bool visible;
+
+  /// Whether this section is the currently pinned one. The inline header
+  /// then renders transparent while KEEPING its exact size: the pinned bar
+  /// already shows this title, and collapsing the header would make the
+  /// content jump.
+  final bool active;
 
   @override
   State<_InlineSectionHeader> createState() => _InlineSectionHeaderState();
@@ -485,10 +495,12 @@ class _InlineSectionHeaderState extends State<_InlineSectionHeader> {
 
     return Container(
       padding: widget.padding,
-      color: widget.backgroundColor,
+      color: widget.active ? null : widget.backgroundColor,
       child: Align(
         alignment: widget.alignment,
-        child: widget.section.header,
+        child: widget.active
+            ? Opacity(opacity: 0, child: widget.section.header)
+            : widget.section.header,
       ),
     );
   }

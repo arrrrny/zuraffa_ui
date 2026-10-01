@@ -344,6 +344,25 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    /// Counts occurrences of [title] that are actually painted — excludes
+    /// any wrapped in an `Opacity(0)` (the active section's inline header is
+    /// kept for layout size but made invisible).
+    int visibleTitleCount(WidgetTester tester, String title) {
+      var count = 0;
+      for (final element in find.text(title).evaluate()) {
+        var invisible = false;
+        element.visitAncestorElements((ancestor) {
+          final widget = ancestor.widget;
+          if (widget is Opacity && widget.opacity == 0.0) {
+            invisible = true;
+          }
+          return !invisible;
+        });
+        if (!invisible) count++;
+      }
+      return count;
+    }
+
     testWidgets(
       'switches title when the incoming header reaches the viewport top',
       (tester) async {
@@ -370,8 +389,8 @@ void main() {
         controller.jumpTo(crossingOffset - 60);
         await tester.pump();
         expect(
-          find.text('Section B'),
-          findsOneWidget,
+          visibleTitleCount(tester, 'Section B'),
+          1,
           reason: 'B must not take the bar before its header reaches the top',
         );
 
@@ -401,7 +420,17 @@ void main() {
         expect(
           find.text('Section B'),
           findsNWidgets(2),
-          reason: 'B header reached the viewport top: bar must pin B',
+          reason:
+              'B header reached the viewport top: bar must pin B (bar + '
+              'inline header still in the tree for layout)',
+        );
+        // The title must be VISIBLE exactly once: the active section's
+        // inline header goes transparent so the title never shows twice
+        // while it scrolls out.
+        expect(
+          visibleTitleCount(tester, 'Section B'),
+          1,
+          reason: 'the title must not display twice during the transition',
         );
         expect(find.text('Section A'), findsNothing);
         expect(tester.takeException(), isNull);

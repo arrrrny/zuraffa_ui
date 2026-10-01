@@ -137,3 +137,19 @@ existed and failed before the implementation.
 - measurement note: the viewport-relative tracking is unaffected (the list
   origin moves with the taller bar, header dy values are list-relative).
 - commit: (safe-area commit, next SHA)
+
+## Cycle 8: follow-up — no duplicate title during the transition
+
+- request: after the corrected switch point, the active section's inline
+  header is still on screen right below the bar at the moment it takes over,
+  so the title painted twice for the header's own height of scrolling.
+- test: A3 extended with `visibleTitleCount` (paint-level count — excludes
+  `Opacity(0)`): exactly one visible 'Section B' at the crossing. Red:
+  `Actual: <2>`.
+- green: `_InlineSectionHeader` gains `active` — when its section is the
+  pinned one, the inline header renders a transparent background with the
+  title at `Opacity(0)`, KEEPING its exact size so the content never jumps
+  (collapsing it would lurch the list by a header height at every
+  transition). Section 0's zero-height suppression unchanged.
+- green: suite -> 403 passed, 0 failed.
+
