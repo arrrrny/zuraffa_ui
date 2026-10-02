@@ -94,6 +94,10 @@ void main() {
       }
       if (!declaration.name.contains('Shad')) continue;
       if (declaration.name.startsWith('_')) continue;
+      // Zorphy's written `$$X` abstracts are codegen-only seams (the
+      // generated sealed `X` is the public type); aliasing them would
+      // emit a `$$Zfa*` shape the brand-map gate rejects.
+      if (declaration.name.startsWith(r'$$')) continue;
       if (_alreadyIdentified.contains(declaration.name)) continue;
       final previous = seen[declaration.name];
       if (previous != null) {
