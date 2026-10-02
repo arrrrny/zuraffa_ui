@@ -29,6 +29,10 @@ abstract class $$ShadNode {}
 
 // The sealed union zorphy generates from it — the public type.
 sealed class ShadNode {}
+
+// A `$$`-prefixed extension is a codegen seam too: the generated header must
+// not document it as one of the Shad* extensions it cannot alias.
+extension $$ShadNodeExt on ShadNode {}
 ''');
 
     final result = Process.runSync('dart', [
