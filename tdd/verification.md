@@ -58,9 +58,14 @@ branch deleted (housekeeping).
 ## Mutation results
 
 Deliberate mutants (repo precedent from `specs/1099` and PR #28's audit; the
-`mutation_test` package was not run against changed files because **this PR
-changes zero `.dart` files** — `CHANGELOG.md`, `pubspec.yaml`,
-`cli/hashes.json` only):
+`mutation_test` package was not run against changed files because the
+**conflict-resolved** files (`CHANGELOG.md`, `pubspec.yaml`) and the
+regenerated `cli/hashes.json` are non-Dart. This PR does carry `.dart`
+changes, but they arrive pre-verified via the upstream merge —
+`lib/src/components/form/field.dart` (+18/−2) and
+`test/src/components/form_test.dart` (+40), the upstream 0.57.1 unique-field-id
+fix, upstream commit `ff2d140` (#709) — and `form_test.dart` was additionally
+run locally here (14/14, suite-green row above)):
 
 | Mutant | Change | Caught by |
 | --- | --- | --- |
