@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "feature": "shadapp-missing-scaffoldmessenger",
+  "lane": "engine",
+  "verdict": "error",
+  "result": "runner-error",
+  "behaviors": [
+    "A1",
+    "A3",
+    "A4"
+  ],
+  "counts": {
+    "total": 3,
+    "pending": 0,
+    "red": 0,
+    "green": 3,
+    "done": 0
+  },
+  "stopped_at": "A1:refactor",
+  "at": "2026-09-17T23:33:32.947696Z"
+}

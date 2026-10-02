@@ -1,0 +1,10 @@
+{
+  "feature": "shadapp-missing-scaffoldmessenger",
+  "behavior_states": {
+    "A1": "green",
+    "A3": "green",
+    "A4": "green",
+    "A2": "pending"
+  },
+  "dropped": []
+}

@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/theme/components/decorator.dart';
 import 'package:theme_extensions_builder_annotation/theme_extensions_builder_annotation.dart';
+import 'package:zuraffa_ui/src/theme/components/decorator.dart';
 
 part 'textarea.g.theme.dart';
 

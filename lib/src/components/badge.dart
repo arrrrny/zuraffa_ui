@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/theme/components/badge.dart';
-import 'package:shadcn_ui/src/theme/data.dart';
-import 'package:shadcn_ui/src/theme/theme.dart';
-import 'package:shadcn_ui/src/utils/debug_check.dart';
-import 'package:shadcn_ui/src/utils/gesture_detector.dart';
+import 'package:zuraffa_ui/src/theme/components/badge.dart';
+import 'package:zuraffa_ui/src/theme/data.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/utils/debug_check.dart';
+import 'package:zuraffa_ui/src/utils/gesture_detector.dart';
 
 /// Variants available for the [ShadBadge] widget.
 enum ShadBadgeVariant {

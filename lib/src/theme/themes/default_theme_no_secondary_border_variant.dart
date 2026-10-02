@@ -2,51 +2,52 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:shadcn_ui/src/components/button.dart';
-import 'package:shadcn_ui/src/raw_components/portal.dart';
-import 'package:shadcn_ui/src/theme/color_scheme/base.dart';
-import 'package:shadcn_ui/src/theme/components/accordion.dart';
-import 'package:shadcn_ui/src/theme/components/alert.dart';
-import 'package:shadcn_ui/src/theme/components/avatar.dart';
-import 'package:shadcn_ui/src/theme/components/badge.dart';
-import 'package:shadcn_ui/src/theme/components/breadcrumb.dart';
-import 'package:shadcn_ui/src/theme/components/button.dart';
-import 'package:shadcn_ui/src/theme/components/button_sizes.dart';
-import 'package:shadcn_ui/src/theme/components/calendar.dart';
-import 'package:shadcn_ui/src/theme/components/card.dart';
-import 'package:shadcn_ui/src/theme/components/checkbox.dart';
-import 'package:shadcn_ui/src/theme/components/context_menu.dart';
-import 'package:shadcn_ui/src/theme/components/date_picker.dart';
-import 'package:shadcn_ui/src/theme/components/decorator.dart';
-import 'package:shadcn_ui/src/theme/components/default_keyboard_toolbar.dart';
-import 'package:shadcn_ui/src/theme/components/dialog.dart';
-import 'package:shadcn_ui/src/theme/components/input.dart';
-import 'package:shadcn_ui/src/theme/components/input_otp.dart';
-import 'package:shadcn_ui/src/theme/components/menubar.dart';
-import 'package:shadcn_ui/src/theme/components/option.dart';
-import 'package:shadcn_ui/src/theme/components/popover.dart';
-import 'package:shadcn_ui/src/theme/components/progress.dart';
-import 'package:shadcn_ui/src/theme/components/radio.dart';
-import 'package:shadcn_ui/src/theme/components/resizable.dart';
-import 'package:shadcn_ui/src/theme/components/select.dart';
-import 'package:shadcn_ui/src/theme/components/separator.dart';
-import 'package:shadcn_ui/src/theme/components/sheet.dart';
-import 'package:shadcn_ui/src/theme/components/slider.dart';
-import 'package:shadcn_ui/src/theme/components/sonner.dart';
-import 'package:shadcn_ui/src/theme/components/switch.dart';
-import 'package:shadcn_ui/src/theme/components/table.dart';
-import 'package:shadcn_ui/src/theme/components/tabs.dart';
-import 'package:shadcn_ui/src/theme/components/textarea.dart';
-import 'package:shadcn_ui/src/theme/components/time_picker.dart';
-import 'package:shadcn_ui/src/theme/components/toast.dart';
-import 'package:shadcn_ui/src/theme/components/tooltip.dart';
-import 'package:shadcn_ui/src/theme/text_theme/text_styles_default.dart';
-import 'package:shadcn_ui/src/theme/text_theme/theme.dart';
-import 'package:shadcn_ui/src/theme/themes/base.dart';
-import 'package:shadcn_ui/src/theme/themes/shadows.dart';
-import 'package:shadcn_ui/src/utils/border.dart';
-import 'package:shadcn_ui/src/utils/extensions/text_style.dart';
-import 'package:shadcn_ui/src/utils/gesture_detector.dart';
+import 'package:zuraffa_ui/src/components/button.dart';
+import 'package:zuraffa_ui/src/raw_components/portal.dart';
+import 'package:zuraffa_ui/src/theme/color_scheme/base.dart';
+import 'package:zuraffa_ui/src/theme/components/accordion.dart';
+import 'package:zuraffa_ui/src/theme/components/alert.dart';
+import 'package:zuraffa_ui/src/theme/components/avatar.dart';
+import 'package:zuraffa_ui/src/theme/components/badge.dart';
+import 'package:zuraffa_ui/src/theme/components/breadcrumb.dart';
+import 'package:zuraffa_ui/src/theme/components/button.dart';
+import 'package:zuraffa_ui/src/theme/components/button_sizes.dart';
+import 'package:zuraffa_ui/src/theme/components/calendar.dart';
+import 'package:zuraffa_ui/src/theme/components/card.dart';
+import 'package:zuraffa_ui/src/theme/components/checkbox.dart';
+import 'package:zuraffa_ui/src/theme/components/context_menu.dart';
+import 'package:zuraffa_ui/src/theme/components/date_picker.dart';
+import 'package:zuraffa_ui/src/theme/components/decorator.dart';
+import 'package:zuraffa_ui/src/theme/components/default_keyboard_toolbar.dart';
+import 'package:zuraffa_ui/src/theme/components/dialog.dart';
+import 'package:zuraffa_ui/src/theme/components/input.dart';
+import 'package:zuraffa_ui/src/theme/components/input_otp.dart';
+import 'package:zuraffa_ui/src/theme/components/menubar.dart';
+import 'package:zuraffa_ui/src/theme/components/option.dart';
+import 'package:zuraffa_ui/src/theme/components/popover.dart';
+import 'package:zuraffa_ui/src/theme/components/progress.dart';
+import 'package:zuraffa_ui/src/theme/components/radio.dart';
+import 'package:zuraffa_ui/src/theme/components/resizable.dart';
+import 'package:zuraffa_ui/src/theme/components/select.dart';
+import 'package:zuraffa_ui/src/theme/components/separator.dart';
+import 'package:zuraffa_ui/src/theme/components/sheet.dart';
+import 'package:zuraffa_ui/src/theme/components/slider.dart';
+import 'package:zuraffa_ui/src/theme/components/sonner.dart';
+import 'package:zuraffa_ui/src/theme/components/sticky_section_list.dart';
+import 'package:zuraffa_ui/src/theme/components/switch.dart';
+import 'package:zuraffa_ui/src/theme/components/table.dart';
+import 'package:zuraffa_ui/src/theme/components/tabs.dart';
+import 'package:zuraffa_ui/src/theme/components/textarea.dart';
+import 'package:zuraffa_ui/src/theme/components/time_picker.dart';
+import 'package:zuraffa_ui/src/theme/components/toast.dart';
+import 'package:zuraffa_ui/src/theme/components/tooltip.dart';
+import 'package:zuraffa_ui/src/theme/text_theme/text_styles_default.dart';
+import 'package:zuraffa_ui/src/theme/text_theme/theme.dart';
+import 'package:zuraffa_ui/src/theme/themes/base.dart';
+import 'package:zuraffa_ui/src/theme/themes/shadows.dart';
+import 'package:zuraffa_ui/src/utils/border.dart';
+import 'package:zuraffa_ui/src/utils/extensions/text_style.dart';
+import 'package:zuraffa_ui/src/utils/gesture_detector.dart';
 
 class ShadDefaultThemeNoSecondaryBorderVariant extends ShadThemeVariant {
   ShadDefaultThemeNoSecondaryBorderVariant({
@@ -1098,6 +1099,24 @@ class ShadDefaultThemeNoSecondaryBorderVariant extends ShadThemeVariant {
       scaleFactor: 0.05,
       animationDuration: Duration(milliseconds: 300),
       animationCurve: Cubic(0.215, 0.61, 0.355, 1),
+    );
+  }
+
+  @override
+  ShadStickySectionListTheme stickySectionListTheme() {
+    return ShadStickySectionListTheme(
+      padding: EdgeInsets.zero,
+      headerPadding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+      headerBackgroundColor: colorScheme.background,
+      headerBorder: ShadBorder(
+        bottom: ShadBorderSide(color: colorScheme.border),
+      ),
+      inlineHeaderPadding: const EdgeInsets.symmetric(
+        horizontal: 24,
+        vertical: 12,
+      ),
+      inlineHeaderBackgroundColor: colorScheme.muted.withValues(alpha: 0.3),
+      clipBehavior: Clip.hardEdge,
     );
   }
 

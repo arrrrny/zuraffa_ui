@@ -6,19 +6,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:shadcn_ui/src/components/disabled.dart';
-import 'package:shadcn_ui/src/components/input.dart';
-import 'package:shadcn_ui/src/components/popover.dart';
-import 'package:shadcn_ui/src/components/separator.dart';
-import 'package:shadcn_ui/src/raw_components/focusable.dart';
-import 'package:shadcn_ui/src/raw_components/portal.dart';
-import 'package:shadcn_ui/src/theme/components/decorator.dart';
-import 'package:shadcn_ui/src/theme/components/select.dart';
-import 'package:shadcn_ui/src/theme/theme.dart';
-import 'package:shadcn_ui/src/utils/debug_check.dart';
-import 'package:shadcn_ui/src/utils/extensions/text_style.dart';
-import 'package:shadcn_ui/src/utils/gesture_detector.dart';
-import 'package:shadcn_ui/src/utils/provider.dart';
+import 'package:zuraffa_ui/src/components/disabled.dart';
+import 'package:zuraffa_ui/src/components/input.dart';
+import 'package:zuraffa_ui/src/components/popover.dart';
+import 'package:zuraffa_ui/src/components/separator.dart';
+import 'package:zuraffa_ui/src/raw_components/focusable.dart';
+import 'package:zuraffa_ui/src/raw_components/portal.dart';
+import 'package:zuraffa_ui/src/theme/components/decorator.dart';
+import 'package:zuraffa_ui/src/theme/components/select.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/utils/debug_check.dart';
+import 'package:zuraffa_ui/src/utils/extensions/text_style.dart';
+import 'package:zuraffa_ui/src/utils/gesture_detector.dart';
+import 'package:zuraffa_ui/src/utils/provider.dart';
 
 /// Builder for the selected option widget in [ShadSelect].
 typedef ShadSelectedOptionBuilder<T> =

@@ -22,6 +22,7 @@ import 'package:example/pages/input.dart';
 import 'package:example/pages/input_form_field.dart';
 import 'package:example/pages/input_otp.dart';
 import 'package:example/pages/input_otp_form_field.dart';
+import 'package:example/pages/list_sheet.dart';
 import 'package:example/pages/menubar.dart';
 import 'package:example/pages/popover.dart';
 import 'package:example/pages/progress.dart';
@@ -33,6 +34,7 @@ import 'package:example/pages/select_form_field.dart';
 import 'package:example/pages/sheet.dart';
 import 'package:example/pages/slider.dart';
 import 'package:example/pages/sonner.dart';
+import 'package:example/pages/sticky_section_list.dart';
 import 'package:example/pages/switch.dart';
 import 'package:example/pages/switch_form_field.dart';
 import 'package:example/pages/table.dart';
@@ -47,7 +49,7 @@ import 'package:example/pages/tooltip.dart';
 import 'package:example/pages/typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_solidart/flutter_solidart.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 void main() {
   SolidartConfig.devToolsEnabled = false;
@@ -77,6 +79,7 @@ final routes = <String, WidgetBuilder>{
   '/input-OTP-form-field': (_) => const InputOTPFormFieldPage(),
   '/input-form-field': (_) => const InputFormFieldPage(),
   '/keyboard-toolbar': (_) => const KeyboardToolbarPage(),
+  '/list-sheet': (_) => const ListSheetPage(),
   '/menubar': (_) => const MenubarPage(),
   '/popover': (_) => const PopoverPage(),
   '/portal': (_) => const ShadPortalPage(),
@@ -89,6 +92,7 @@ final routes = <String, WidgetBuilder>{
   '/sheet': (_) => const SheetPage(),
   '/slider': (_) => const SliderPage(),
   '/sonner': (_) => const SonnerPage(),
+  '/sticky-section-list': (_) => const StickySectionListPage(),
   '/switch': (_) => const SwitchPage(),
   '/switch-form-field': (_) => const SwitchFormFieldPage(),
   '/table': (_) => const TablePage(),
@@ -230,7 +234,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: MyAppBar(
         titleWidget: ShadInput(
-          placeholder: const Text('Search ShadcnUI component'),
+          placeholder: const Text('Search Zuraffa UI component'),
           onChanged: search.set,
         ),
       ),
