@@ -15,9 +15,9 @@ jobs:
   check-imports:
     uses: ./.github/workflows/check-imports.yaml
   build-runner:
-    # The job commits regenerated build_runner output back to the PR branch,
-    # so it needs a writable token. Callers grant it; the called workflow
-    # cannot escalate on its own.
+    # The called workflow pushes regenerated output back to the PR branch.
+    # Dependabot PRs otherwise get a read-only token, so the caller must
+    # grant contents: write explicitly.
     permissions:
       contents: write
     uses: ./.github/workflows/build-runner.yml
