@@ -1,4 +1,4 @@
-## 0.4.0 (unreleased)
+## 0.4.0
 
 - **FEAT**: the UINode layer — every certified component as serializable
   data (`json → node tree → widget tree`, and back). 34 node kinds
@@ -15,7 +15,21 @@
   see `specs/1100-uinode-system/contracts/uinode-api.md` and the coverage
   audit for the v1 vocabulary and exclusions. Spec 1100 / issue #4
   (ZikZak Wave U foundation). Zorphy sealed-base codegen workaround:
-  arrrrny/zuraffa#1717.
+  arrrrny/zuraffa#1717. New docs page: `Utils/uinode`.
+- **FEAT**: `ShadListSection.sticky` opt-out flag on `ShadStickySectionList`
+  (#33): a section created with `sticky: false` (e.g. a headerless ad
+  placeholder) never becomes the active section — the pinned bar keeps the
+  previous listing's title across its band, `onSectionChanged` skips it
+  entirely, and its inline header stays visible as it scrolls past. Default
+  `true`, so existing consumers are unchanged.
+- **FIX**: UINode hardening from review and CI (#25): the renderer mapper
+  imports `widgets` instead of `material` (check-imports gate), the
+  `lucide_icons_flutter` floor is raised to `3.1.17`, the analyze infos the
+  gate flagged are fixed, and the golden fixtures are regenerated on
+  Linux-rendered Flutter 3.47.4.
+- **Base fork SHA**: `a6e7688` (upstream `shadcn_ui` 0.57.0 + fixes; no new
+  upstream sync since 0.3.1).
+
 ## 0.3.1
 
 - **FIX**: `ShadStickySectionList` no longer flickers the pinned title when

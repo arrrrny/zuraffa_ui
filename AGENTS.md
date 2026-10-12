@@ -80,6 +80,14 @@ What it cannot reproduce, and prints on startup instead of guessing:
   a LOCAL-ONLY failure, not as a CI failure — pass `--strict` to count it anyway.
   A step that would `git clone` over a sibling checkout that already exists here
   is skipped; `--allow-outside-clone` forces it.
+- **Downgrade steps mutate the lockfile (workaround for arrrrny/zuraffa_ui#34).**
+  `flutter-test.yaml`'s `Downgrade dependencies` step (`flutter pub downgrade`)
+  runs in the working tree here, and the gitignored `pubspec.lock` keeps the
+  minimum versions after `local_ci` exits — `platform 3.0.0` no longer compiles
+  on current Dart (`Member not found: 'packageRoot'`), so 23 test files fail to
+  load on the next `flutter test`. Workaround applied: `flutter pub upgrade
+  platform` (→ 3.2.0) restores a compiling resolution; re-run it after any
+  `local_ci` run that executed the downgrade step. Details: #34.
 
 Canonical copy: `arrrrny/forklift` → `scripts/local_ci.sh` (reference:
 `docs/forklift-scripts.md`).
