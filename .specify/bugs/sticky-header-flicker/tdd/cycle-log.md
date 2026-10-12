@@ -183,3 +183,34 @@ existed and failed before the implementation.
 - action item (outside this repo's code): publish 0.3.1 per PUBLISH.md
   (master is 29 commits ahead of the 0.3.0 tag), then bump zik_zak to the
   published version.
+
+## Cycle 10: follow-up — `sticky` opt-out flag (ad sections never become active)
+
+- request: implement the optional API follow-up noted in cycle 9's report —
+  an opt-in flag so headerless ad sections never become the active section
+  at all. Before this flag, `onSectionChanged` still fired once for the ad
+  (index 1) on the way down, even though the bar no longer flickered.
+- design: `ShadListSection.sticky` (default `true`, so existing consumers
+  are untouched — the flag is opt-OUT). A `sticky: false` section is removed
+  from active-section tracking entirely: the bar keeps the previous sticky
+  section's title across its band, `onSectionChanged` skips it, and its
+  inline header stays visible as it scrolls past. Deliberately does NOT hide
+  the inline header — the section still reads as content passing by.
+- test: `...::sticky: false ad section never takes the bar or fires
+  onSectionChanged` — A / ad(`sticky: false`) / B fixture; 1px sweep across
+  B's crossing asserting ≤ 2 bar origins (only the two text-bar heights),
+  `changes == [2]` (A -> B directly, never the ad), bar keeps 'Section A'
+  over the ad band, up-pass ends `changes == [0]`. Red:
+  `Expected: <= 2, Actual: 3` — the empty ad bar still appeared as a third
+  list origin during the sweep.
+- green: `_updateCurrentSection()` filters mounted headers by
+  `isSticky(idx)`; the `indices.first - 1` fallback walks backward to the
+  nearest sticky section; `_firstStickyIndex()` covers "no sticky header
+  mounted" / degenerate all-opted-out inputs (`if (active == null) return;`
+  guards the latter — no test, no crash). Intermediate fixes during red:
+  a Dart flow-analysis promotion error (`int? active` not promoted inside
+  the `setState` closure — resolved via a `final resolvedActive` local) and
+  a stale `find.text('Sponsored')` lookup after the sweep recycled the ad
+  widget (crossing captured while still mounted).
+- green: sticky file -> 12 passed, 0 failed; `flutter analyze` -> no issues;
+  full suite -> see fix.md.

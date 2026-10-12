@@ -727,5 +727,133 @@ void main() {
         expect(tester.takeException(), isNull);
       },
     );
+
+    testWidgets(
+      'sticky: false ad section never takes the bar or fires '
+      'onSectionChanged',
+      (tester) async {
+        // The opt-out for headerless ad sections: `sticky: false` removes a
+        // section from active-section tracking entirely — the pinned bar
+        // keeps the previous listing's title across the ad band (it never
+        // collapses to the empty header), onSectionChanged never reports the
+        // ad, and the inline ad header stays visible as it scrolls past.
+        final sections = [
+          ShadListSection(
+            header: const Text('Section A'),
+            items: [
+              for (var j = 0; j < 3; j++)
+                SizedBox(height: 80, child: Text('ad-item a$j')),
+            ],
+          ),
+          const ShadListSection(
+            sticky: false,
+            header: SizedBox.shrink(),
+            items: [
+              SizedBox(height: 320, child: Center(child: Text('Sponsored'))),
+            ],
+          ),
+          ShadListSection(
+            header: const Text('Section B'),
+            items: [
+              for (var j = 0; j < 7; j++)
+                SizedBox(height: 80, child: Text('ad-item b$j')),
+            ],
+          ),
+        ];
+        final changes = <int>[];
+        final controller = ScrollController();
+        addTearDown(controller.dispose);
+        await tester.pumpWidget(
+          ShadApp(
+            home: SizedBox(
+              height: 400,
+              child: ShadStickySectionList(
+                sections: sections,
+                onSectionChanged: changes.add,
+                controller: controller,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Sweep down across the ad band, recording the list origin: with
+        // the ad opted out, the bar must never collapse to the empty ad
+        // height — only the two text-bar origins may occur.
+        final listTops = <double>[];
+        Future<void> stepTo(double offset) async {
+          controller.jumpTo(offset);
+          await tester.pump();
+          listTops.add(tester.getTopLeft(find.byType(ListView)).dy);
+        }
+
+        await walkForward(
+          tester,
+          controller,
+          () => tester.any(find.text('Section B')),
+        );
+        final listViewTop = tester.getTopLeft(find.byType(ListView)).dy;
+        final titleTop = tester.getTopLeft(find.text('Section B').last).dy;
+        final crossing = controller.offset + (titleTop - listViewTop);
+        // The ad's position, captured while it is still mounted: the sweep
+        // ends at maxScrollExtent, where the lazy list has recycled it.
+        final adCrossing =
+            controller.offset +
+            (tester.getTopLeft(find.text('Sponsored')).dy - listViewTop);
+
+        for (var i = 0; i < 100 && controller.offset < crossing - 40; i++) {
+          await stepTo(controller.offset + 20);
+        }
+        for (var s = controller.offset; s <= crossing + 80; s += 1) {
+          await stepTo(s);
+        }
+        for (
+          var i = 0;
+          i < 100 && controller.offset < controller.position.maxScrollExtent;
+          i++
+        ) {
+          await stepTo(controller.offset + 20);
+        }
+
+        expect(
+          runs(listTops).length,
+          lessThanOrEqualTo(2),
+          reason:
+              'the opted-out ad must never collapse the bar: '
+              '${runs(listTops)}',
+        );
+
+        // The section change skips the ad entirely: A -> B, never A -> AD.
+        expect(
+          changes,
+          [2],
+          reason: 'the ad (index 1) must never become active: $changes',
+        );
+        changes.clear();
+
+        // The pinned title must still be Section A while the ad band sits
+        // at the top: jump back to just past the ad's crossing (captured
+        // above, while the ad was still mounted) and check the bar.
+        controller.jumpTo(adCrossing + 40);
+        await tester.pump();
+        await tester.pump();
+        expect(
+          find.text('Section A'),
+          findsOneWidget,
+          reason: 'the bar must keep the previous listing title over the ad',
+        );
+
+        // Up-pass: returning to Section A fires exactly once (captured by
+        // the clear above), then never again on the way to the top.
+        for (var i = 0; i < 200 && controller.offset > 0; i++) {
+          controller.jumpTo(
+            (controller.offset - 20).clamp(0.0, double.infinity),
+          );
+          await tester.pump();
+        }
+        expect(changes, [0], reason: 'up-pass transitions: $changes');
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }
