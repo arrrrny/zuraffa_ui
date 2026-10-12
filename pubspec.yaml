@@ -48,7 +48,10 @@ dev_dependencies:
 # SDK: every test whose import graph reaches package:platform fails to load.
 # This floor keeps `flutter pub downgrade` (the min-deps check in
 # flutter-test.yaml) from resolving platform below the first release that
-# compiles on current Dart. See #34.
+# compiles on current Dart. Dev-local by design: dependency_overrides are
+# stripped on publish, so consumers of the published package get no such
+# floor — a downstream app whose own graph resolves platform below 3.2.0
+# needs its own override. See #34.
 dependency_overrides:
   platform: ^3.2.0
 

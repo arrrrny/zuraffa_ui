@@ -1351,15 +1351,17 @@ def snapshot_lockfiles(root):
     return found
 
 
-def restore_lockfiles(snapshot):
+def restore_lockfiles(snapshot, root):
     """Put every pubspec.lock back exactly as snapshotted.
 
-    Returns (rewritten, removed, recreated): files a step mutated or deleted
-    are rewritten from the snapshot, files a step created are removed.
+    Returns (rewritten, removed, recreated, failed): files a step mutated or
+    deleted are rewritten from the snapshot, files a step created are removed.
+    A restore that could not be applied (permissions, file lock, disk full) is
+    counted in `failed` and warned about — a silent restore is no restore.
     """
-    rewritten = removed = recreated = 0
+    rewritten = removed = recreated = failed = 0
     seen = set()
-    for path in _walk_lockfiles(ROOT):
+    for path in _walk_lockfiles(root):
         seen.add(path)
         try:
             if path in snapshot:
@@ -1370,7 +1372,9 @@ def restore_lockfiles(snapshot):
                 path.unlink()
                 removed += 1
         except OSError:
-            pass
+            failed += 1
+            print(f"local_ci: WARNING could not restore {path}",
+                  file=sys.stderr)
     for path, data in snapshot.items():
         if path not in seen:
             try:
@@ -1378,8 +1382,10 @@ def restore_lockfiles(snapshot):
                 path.write_bytes(data)
                 recreated += 1
             except OSError:
-                pass
-    return rewritten, removed, recreated
+                failed += 1
+                print(f"local_ci: WARNING could not restore {path}",
+                      file=sys.stderr)
+    return rewritten, removed, recreated, failed
 
 
 def main(argv):
@@ -1503,12 +1509,17 @@ def run(args):
                   "restored when this run ends (#34)")
 
         def _restore_lockfiles():
-            rewritten, removed, recreated = restore_lockfiles(lock_snapshot)
-            if rewritten or removed or recreated:
-                print(f"\nlocal_ci: pubspec.lock back to its pre-run state "
+            rewritten, removed, recreated, failed = restore_lockfiles(
+                lock_snapshot, ROOT)
+            if rewritten or removed or recreated or failed:
+                verdict = ("a step's lockfile mutation never survives this "
+                           "run" if not failed else
+                           f"{failed} restore(s) FAILED — see the WARNING "
+                           "lines above")
+                print(f"\nlocal_ci: pubspec.lock vs its pre-run state "
                       f"({rewritten} rewritten, {removed} removed, "
-                      f"{recreated} recreated) — a step's lockfile mutation "
-                      "never survives this run (#34)")
+                      f"{recreated} recreated, {failed} failed) — "
+                      f"{verdict} (#34)")
 
         atexit.register(_restore_lockfiles)
     runner.run()

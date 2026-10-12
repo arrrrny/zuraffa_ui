@@ -100,6 +100,27 @@ $stepsYaml''',
       );
     });
 
+    test('a lockfile a step deleted is recreated when the run ends', () async {
+      final sandbox = await sandboxWithWorkflow('''
+      - name: Downgrade dependencies
+        run: |
+          rm pubspec.lock
+''');
+      File('${sandbox.path}/pubspec.lock').writeAsStringSync('original\n');
+
+      final (code, output) = await runLocalCi(sandbox);
+
+      expect(code, 0, reason: output);
+      expect(
+        File('${sandbox.path}/pubspec.lock').readAsStringSync(),
+        'original\n',
+        reason:
+            'a step that deletes a pre-existing pubspec.lock must not get '
+            'away with it either — the exit hook recreates it from the '
+            'snapshot (the recreated count)',
+      );
+    });
+
     test('later steps see the mutated lockfile mid-run, as in CI', () async {
       final sandbox = await sandboxWithWorkflow(r'''
       - name: Downgrade dependencies
