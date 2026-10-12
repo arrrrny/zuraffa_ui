@@ -7,7 +7,11 @@ import 'package:zuraffa_ui/src/utils/border.dart';
 /// {@endtemplate}
 class ShadListSection {
   /// {@macro ShadListSection}
-  const ShadListSection({required this.header, required this.items});
+  const ShadListSection({
+    required this.header,
+    required this.items,
+    this.sticky = true,
+  });
 
   /// The header widget displayed at the top of this section.
   ///
@@ -18,6 +22,15 @@ class ShadListSection {
 
   /// The item widgets contained in this section.
   final List<Widget> items;
+
+  /// Whether this section participates in active-section tracking.
+  ///
+  /// When false (e.g. a headerless ad placeholder between listing
+  /// sections), the section never becomes the pinned one: the sticky bar
+  /// keeps the previous sticky section's title across this section's band,
+  /// [ShadStickySectionList.onSectionChanged] never reports it, and its
+  /// inline header stays visible as it scrolls past.
+  final bool sticky;
 }
 
 /// {@template ShadStickySectionList}
@@ -139,8 +152,9 @@ class ShadStickySectionList extends StatefulWidget {
   /// Called when the active section changes during scrolling.
   ///
   /// The callback receives the zero-based index of the newly active section.
-  /// Useful for tracking which section is currently in view, for example
-  /// to prefetch data or update external state.
+  /// Sections created with `sticky: false` are never reported. Useful for
+  /// tracking which section is currently in view, for example to prefetch
+  /// data or update external state.
   /// {@endtemplate}
   final ValueChanged<int>? onSectionChanged;
 
@@ -229,16 +243,24 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
         _listViewportKey.currentContext?.findRenderObject() as RenderBox?;
     if (listBox == null || !listBox.attached) return;
 
+    // Only sticky sections participate in tracking: a `sticky: false`
+    // section (e.g. a headerless ad placeholder) can never become the
+    // pinned one, so the bar never collapses to its empty header and
+    // onSectionChanged never reports it.
+    bool isSticky(int idx) =>
+        idx < widget.sections.length && widget.sections[idx].sticky;
+
     // Scan in ascending section order so the result never depends on the
     // order headers happened to mount (a zero-height header tied with the
     // next one must not flip the outcome).
     final indices = _mountedHeaders.keys.toList()..sort();
 
-    // The active section is the last one whose inline header has reached the
-    // top of the list viewport. Headers above the top belong to sections
-    // that have been scrolled past.
+    // The active section is the last STICKY one whose inline header has
+    // reached the top of the list viewport. Headers above the top belong
+    // to sections that have been scrolled past.
     int? lastCrossedIndex;
     for (final idx in indices) {
+      if (!isSticky(idx)) continue;
       final renderObject = _mountedHeaders[idx]?.renderObject;
       if (renderObject == null || !renderObject.attached) continue;
       final headerBox = renderObject as RenderBox;
@@ -246,26 +268,43 @@ class _ShadStickySectionListState extends State<ShadStickySectionList> {
       if (dy <= 0) lastCrossedIndex = idx;
     }
 
-    int active;
+    int? active;
     if (lastCrossedIndex != null) {
       active = lastCrossedIndex;
     } else if (indices.isNotEmpty) {
       // Not necessarily the start of the list: the active section's own
       // header may have been recycled out of the cache extent while the
       // next section's header is already mounted below the top. The
-      // section before the first mounted header is active then; at the
-      // start of the list this degenerates to index 0.
-      active = indices.first > 0 ? indices.first - 1 : 0;
+      // section before the first mounted header is active then — or, when
+      // that section opted out (`sticky: false`), the nearest sticky
+      // section before it. At the start of the list this degenerates to
+      // the first sticky section.
+      for (var i = indices.first - 1; i >= 0; i--) {
+        if (isSticky(i)) {
+          active = i;
+          break;
+        }
+      }
+      active ??= _firstStickyIndex();
     } else {
       active = _currentSectionIndex;
     }
+    if (active == null) return;
+    final resolvedActive = active;
 
-    if (_currentSectionIndex != active) {
-      setState(() => _currentSectionIndex = active);
-      widget.onSectionChanged?.call(active);
+    if (_currentSectionIndex != resolvedActive) {
+      setState(() => _currentSectionIndex = resolvedActive);
+      widget.onSectionChanged?.call(resolvedActive);
       // Re-verify once the rebuilt sticky bar has been laid out.
       _schedulePostFrameCheck();
     }
+  }
+
+  int? _firstStickyIndex() {
+    for (var i = 0; i < widget.sections.length; i++) {
+      if (widget.sections[i].sticky) return i;
+    }
+    return null;
   }
 
   @override
