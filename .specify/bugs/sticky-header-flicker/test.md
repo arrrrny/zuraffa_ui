@@ -43,3 +43,27 @@ version bump — no app-side code change.
 
 Publish `0.3.1` per `PUBLISH.md` and bump zik_zak to `^0.3.1`; the flicker
 in the app disappears on the next `flutter pub get` there.
+
+## Cycle 10 verification — `sticky` opt-out flag (2026-10-12)
+
+- **Fix**: ./fix.md (cycle 10 report; archived: ./fix-cycle9.md, ./fix-pr28.md)
+- **Result**: verified
+
+### Checks Performed
+
+- Red (pre-flag code): `sticky: false ad section never takes the bar or
+  fires onSectionChanged` → `Expected: <= 2, Actual: 3` (empty ad bar as a
+  third list origin; `changes` included the ad index).
+- Green (flag applied): same test passes — ≤ 2 bar origins, `changes == [2]`
+  down / `[0]` up, bar keeps 'Section A' over the ad band.
+- Sticky file: `flutter test --concurrency=2
+  test/src/components/sticky_section_list_test.dart` → 12 passed.
+- Full suite: `flutter test --concurrency=2` → 505 passed / 0 failed
+  (6 skipped, pre-existing).
+- `flutter analyze` → no issues found; `dart format` clean.
+
+### Remaining Manual Step (user)
+
+None for this cycle — the flag is on PR #33 (merged). It ships in the next
+release; zik_zak adopts it by setting `sticky: false` on its ad section
+after bumping to that release.
