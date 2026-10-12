@@ -1317,6 +1317,71 @@ def run_git(*args):
         return ""
 
 
+# ------------------------------------------------ lockfile protection (#34)
+# Steps like `flutter pub downgrade` mutate the gitignored pubspec.lock. CI
+# runs them in a throwaway checkout, so the mutation dies with the job; here
+# it would survive the run and poison the next `flutter test` (arrrrny/
+# zuraffa_ui#34: platform 3.0.0 no longer compiles on current Dart, and 23
+# test files failed to load). The whole run's lockfile mutations are therefore
+# transient: every pubspec.lock is snapshotted before the first step and
+# restored when the run ends — byte-identical for files that existed, removed
+# for files a step created. Mid-run, later steps still see the mutated
+# lockfile, exactly as they would in CI.
+
+LOCKFILE_NAME = "pubspec.lock"
+LOCKFILE_PRUNE = {".git", ".dart_tool", "build", "node_modules", "Pods"}
+
+
+def _walk_lockfiles(root):
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames
+                       if d not in LOCKFILE_PRUNE and not d.startswith(".")]
+        if LOCKFILE_NAME in filenames:
+            yield Path(dirpath) / LOCKFILE_NAME
+
+
+def snapshot_lockfiles(root):
+    """Every pubspec.lock under root -> its bytes, before any step runs."""
+    found = {}
+    for path in _walk_lockfiles(root):
+        try:
+            found[path] = path.read_bytes()
+        except OSError:
+            pass
+    return found
+
+
+def restore_lockfiles(snapshot):
+    """Put every pubspec.lock back exactly as snapshotted.
+
+    Returns (rewritten, removed, recreated): files a step mutated or deleted
+    are rewritten from the snapshot, files a step created are removed.
+    """
+    rewritten = removed = recreated = 0
+    seen = set()
+    for path in _walk_lockfiles(ROOT):
+        seen.add(path)
+        try:
+            if path in snapshot:
+                if path.read_bytes() != snapshot[path]:
+                    path.write_bytes(snapshot[path])
+                    rewritten += 1
+            else:
+                path.unlink()
+                removed += 1
+        except OSError:
+            pass
+    for path, data in snapshot.items():
+        if path not in seen:
+            try:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(data)
+                recreated += 1
+            except OSError:
+                pass
+    return rewritten, removed, recreated
+
+
 def main(argv):
     args = {"workflow": None, "job": None, "event": "pull_request", "plan": False,
             "keep_going": False, "verbose": False, "allow_outside_clone": False,
@@ -1429,6 +1494,23 @@ def run(args):
     if run_git("status", "--porcelain"):
         print("  note     : working tree has uncommitted changes; CI runs the "
               "committed tree")
+    lock_snapshot = {}
+    if not args["plan"]:
+        lock_snapshot = snapshot_lockfiles(ROOT)
+        if lock_snapshot:
+            print(f"  note     : snapshotted {len(lock_snapshot)} pubspec.lock "
+                  "file(s) — steps that mutate them (pub downgrade/get) are "
+                  "restored when this run ends (#34)")
+
+        def _restore_lockfiles():
+            rewritten, removed, recreated = restore_lockfiles(lock_snapshot)
+            if rewritten or removed or recreated:
+                print(f"\nlocal_ci: pubspec.lock back to its pre-run state "
+                      f"({rewritten} rewritten, {removed} removed, "
+                      f"{recreated} recreated) — a step's lockfile mutation "
+                      "never survives this run (#34)")
+
+        atexit.register(_restore_lockfiles)
     runner.run()
     runner.summary()
     if args["plan"]:

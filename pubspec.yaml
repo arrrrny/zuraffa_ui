@@ -44,6 +44,14 @@ dev_dependencies:
   very_good_analysis: ^10.0.0
   zorphy: ^2.4.2
 
+# platform 3.0.0 references io.Platform.packageRoot, removed from the Dart
+# SDK: every test whose import graph reaches package:platform fails to load.
+# This floor keeps `flutter pub downgrade` (the min-deps check in
+# flutter-test.yaml) from resolving platform below the first release that
+# compiles on current Dart. See #34.
+dependency_overrides:
+  platform: ^3.2.0
+
 flutter:
   fonts:
     - family: Geist
