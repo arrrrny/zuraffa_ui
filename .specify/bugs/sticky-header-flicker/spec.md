@@ -65,3 +65,33 @@ the boundary.
 - Animating the sticky title switch (component documents instant switching).
 - In-section ad items (ads placed between items of one section do not involve
   section headers).
+
+## Reopened report (2026-10-12) — "still flickers in the zik_zak app"
+
+The user verified PR #28 in the example app, then observed the same
+transition still flickering in the zik_zak app: "the first listing title
+after the ad flickers at the sticky title… shows the title and flickers
+until the scroll completes exactly the sticky-title height, then it sticks."
+
+**Answered open question:** zik_zak's ad section is
+`ShadListSection(header: SizedBox.shrink(), items: [ListingAdCard()])` and
+the list is built with `headerPadding: EdgeInsets.zero` and
+`inlineHeaderPadding: EdgeInsets.zero` — the ad header is truly zero-extent
+and the bar height equals the title height exactly.
+
+**Diagnosis — version skew, not a code gap:** zik_zak pins hosted
+`zuraffa_ui ^0.3.0`; the `0.3.0` tag (2026-09-18) predates the entire
+PR #28 merge (2026-10-01) and contains none of the fixes
+(`git tag --contains 28a14a8` is empty; pub.dev latest is still 0.3.0). The
+app therefore runs the pre-fix component, where the oscillation band is
+exactly one bar-height of scroll — the user's "sticky title height". The
+missing half of the story is the **release**: publish a version containing
+PR #28 (0.3.1 per PUBLISH.md), then bump zik_zak.
+
+**Additional acceptance criterion (reopened cycle):**
+
+- **AC5 — Zero-padding consumer geometry pinned.** With
+  `headerPadding: EdgeInsets.zero`, `inlineHeaderPadding: EdgeInsets.zero`
+  and a `SizedBox.shrink()` ad header (the zik_zak feed), AC1–AC3 hold:
+  monotonic transitions, ≤ 3 bar origins across a 1px sweep of the ad
+  boundary, and exactly one visible title at the crossing.

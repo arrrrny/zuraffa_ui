@@ -1,97 +1,79 @@
-# Bug Fix: Sticky header flicker past a headerless ad section
+# Bug Fix: Sticky header flicker past a headerless ad section (reopened — zik_zak still flickers)
 
 - **Slug**: sticky-header-flicker
-- **Fixed**: 2026-09-30
+- **Fixed**: 2026-10-12
 - **Assessment**: ./assessment.md
-- **Status**: applied
-- **TDD artifacts**: ./tdd/test-list.md, ./tdd/cycle-log.md
+- **Previous cycle**: ./fix-pr28.md (PR #28, merged 2026-10-01)
+- **Status**: applied (remediation pre-existing on master; this cycle pins the
+  shipped consumer geometry and identifies the release gap)
+- **TDD artifacts**: ./tdd/test-list.md, ./tdd/cycle-log.md (cycle 9)
 
 ## Summary
 
-`ShadStickySectionList` measured inline header positions against the whole
-Column (sticky bar included) and derived the active section indirectly via
-"closest header below the top − 1", which let a headerless ad section take
-the pinned bar and its shorter empty header shift the measurements back — a
-layout feedback loop that flickered the header exactly when the next listing's
-title was due. Headers are now measured in list-viewport coordinates and the
-active section is the last section whose inline header reached the viewport
-top (deterministic ascending scan).
+The user verified PR #28 in the example app, then saw the same transition
+still flickering in the zik_zak app: the first listing title after the ad
+flickers at the sticky bar "until the scroll completes exactly the
+sticky-title height, then it sticks". This is **not a code gap**: zik_zak
+pins hosted `zuraffa_ui ^0.3.0`, and the `0.3.0` tag (2026-09-18, `2ffb5ac`)
+predates the entire PR #28 merge (2026-10-01) — `git tag --contains 28a14a8`
+is empty and pub.dev's latest is still 0.3.0. The app runs the **pre-fix**
+component, where the oscillation band is exactly one bar-height of scroll —
+the user's "sticky title height". The missing half of the story is the
+release, not the code.
 
 ## Changes
 
 | File | Change | Notes |
 |------|--------|-------|
-| `lib/src/components/sticky_section_list.dart` | modified | `_updateCurrentSection` rewritten: `GlobalKey`-anchored viewport measurement + direct "last crossed" rule (no `idx - 1`, no map-order dependence); `ListView` wrapped in `KeyedSubtree`; evaluation moved to a deduped post-frame callback so decisions use the laid-out frame (scroll notifications measure the previous frame and could leave the title stale) |
-| `test/src/components/sticky_section_list_test.dart` | added tests | 5 new widget tests (see below); existing 3 untouched |
-| `example/lib/pages/sticky_section_list.dart` | modified | standalone repro: "Open Feed with Ads (flicker repro)" sheet — ad placeholder section with empty header between product sections |
+| `test/src/components/sticky_section_list_test.dart` | added test | `zik_zak geometry: zero paddings + headerless ad never flicker the pinned title` — the app's exact geometry: `headerPadding: EdgeInsets.zero`, `inlineHeaderPadding: EdgeInsets.zero`, ad header `SizedBox.shrink()`. Answers the assessment's open question on the ad header widget. |
+| `.specify/bugs/sticky-header-flicker/spec.md` | modified | reopened-report section + AC5 (zero-padding consumer geometry) |
+| `.specify/bugs/sticky-header-flicker/tdd/cycle-log.md` | appended | cycle 9 (diagnosis + red/green evidence) |
+| `.specify/bugs/sticky-header-flicker/fix.md` | replaced | this report; the PR #28 report is archived as `fix-pr28.md` |
 
-## Diff Highlights
+No production code changed: the remediation already landed on master via
+`28a14a8` (viewport-anchored measurement), `6c7018c` (post-frame evaluation),
+`19ec8a5` (safe-area bar) and `47dc435` (no duplicate title), all inside
+PR #28.
 
-```dart
-// Before: Column-relative measurement + indirect idx-1 mapping
-final offsetInList = headerBox.localToGlobal(Offset.zero, ancestor: listBox);
-if (offsetInList.dy >= 0 && ...) {
-  closestHeaderIndex = idx < 1 ? 0 : idx - 1;   // ad section becomes active
-}
+## Red/Green Evidence
 
-// After: viewport-relative measurement + direct last-crossed rule
-final dy = headerBox.localToGlobal(Offset.zero, ancestor: listBox).dy;
-if (dy <= 0) lastCrossedIndex = idx;            // section owns the top itself
-```
-
-In viewport coordinates header offsets are independent of the sticky bar's
-height, so the shrink → shift → flip → regrow loop cannot close; in
-list-relative terms the switch point also moves to where iOS puts it (the
-moment the incoming header reaches the top of the scroll area, not one
-bar-height after it disappeared behind the bar).
+- **Red (0.3.0 code — what zik_zak runs):** with the 0.3.0
+  `sticky_section_list.dart` checked out in place, the new test fails:
+  `bar origin oscillated on zik_zak geometry: [14.0, 0.0] × 17` across a
+  1px sweep of the ad boundary — the original feedback loop, reproduced
+  under the app's exact zero-padding geometry.
+- **Green (master):** same test passes — bar origins ≤ 3, `onSectionChanged`
+  monotonic ending at index 2, and `visibleTitleCount('Listing 1') == 1` at
+  the crossing (no duplicate title).
 
 ## Tests Added or Updated
 
-- `no flicker past a headerless ad section (monotonic transitions)` —
-  micro-scroll down then up across A→AD→B: `onSectionChanged` must be strictly
-  monotonic per direction and end at B (down) / A (up)
-- `sticky bar size does not oscillate across the ad boundary` — 1px sweep
-  through the boundary zone with short sections (keeps the ad header mounted
-  through the zone) and a trailing section C: the bar height sequence (read
-  from the list's y-offset) must have ≤ 3 runs; red evidence was
-  `[46.0, 32.0, 46.0, 32.0, ...]` (17 runs)
-- `switches title when the incoming header reaches the viewport top` — at the
-  crossing offset B's title appears both inline and pinned (2 occurrences);
-  60px before the top it is inline-only
-- `pins the section at the top even when a zero-height header crosses with
-  it` — a headerless section with no items and zero inline padding crosses at
-  exactly the same offset as the next header; the real section must win the
-  bar (kills the first-crossed and exclusive-boundary mutants, pins the tie
-  determinism)
-- `stays on the first section before any header crosses` — baseline guard
-- Deliberate mutants M1 (first-crossed), M2 (Column-relative measurement),
-  M3 (exclusive `dy < 0` boundary) all caught after strengthening; see
-  ./tdd/verification.md and ./tdd/cycle-log.md (cycles 5–6)
+- `test/src/components/sticky_section_list_test.dart::zik_zak geometry: zero
+  paddings + headerless ad never flicker the pinned title` — pins AC1/AC2/
+  AC3 for the exact zik_zak feed geometry.
 
 ## Local Verification
 
-- `flutter test test/src/components/sticky_section_list_test.dart` → 8 passed
-  (3 pre-existing + 5 new)
-- `flutter test` (full suite) → 401 passed, 0 failed, ~6 skipped (baseline was
-  396; goldens untouched)
-- `flutter analyze` on the three changed files → No issues found
-- `dart format` applied to changed files
+- `flutter test --concurrency=2 test/src/components/sticky_section_list_test.dart`
+  → 11 passed (10 pre-existing + 1 new)
+- `flutter test --concurrency=2` (full suite) → 408 passed / 0 failed
+- `flutter analyze` → no issues found
+- `dart format` applied to the test file
 
 ## Deviations from Assessment
 
-- None in mechanism. One test-design note: the first A2 draft (20px steps,
-  3 sections) did not reproduce the loop on unfixed code — it stepped over the
-  ~14px oscillation window and hit the "stuck on the empty bar" branch (which
-  A1 captures). A2 was strengthened to a 1px sweep with a trailing section C
-  before any fix landed, which exposed the true flicker loop. The assessment's
-  proposed GlobalKey/viewport approach and direct selection rule were applied
-  as written.
+The assessment's remediation was already applied (PR #28). The reopened
+report's root cause turned out to be release/version skew, which the
+assessment could not have known. The component code needs no further change
+for the zik_zak geometry.
 
 ## Follow-ups
 
-- `onSectionChanged` now fires for the ad section while its (empty) band is at
-  the top — correct, but apps that want ad sections fully invisible to
-  callbacks can add an opt-out flag on `ShadListSection` later.
-- The headerless section still renders a 24px padded inline strip inside the
-  list (existing behavior for every section header); suppressing it for empty
-  headers would be a separate polish task.
+- **Ship the fix**: publish `0.3.1` per `PUBLISH.md` (master is 29 commits
+  ahead of the `0.3.0` tag; the changelog must cover the sticky-list fixes,
+  the upstream sync, and the fleet-guard CI changes). Then bump zik_zak from
+  `^0.3.0` to `^0.3.1` — the app's flicker disappears with no app-side code
+  change.
+- Optional API follow-up from PR #28: an opt-out flag so headerless sections
+  never become the active section (`onSectionChanged` still fires once for
+  the ad section today).
