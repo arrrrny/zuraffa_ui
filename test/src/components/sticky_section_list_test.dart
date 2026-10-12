@@ -600,5 +600,132 @@ void main() {
         expect(tester.takeException(), isNull);
       },
     );
+
+    testWidgets(
+      'zik_zak geometry: zero paddings + headerless ad never flicker the '
+      'pinned title',
+      (tester) async {
+        // The zik_zak listing feed pins BOTH paddings to zero
+        // (headerPadding: zero, inlineHeaderPadding: zero) and gives the ad
+        // section a SizedBox.shrink() header — so the ad header is truly
+        // zero-extent and the bar height equals the title height exactly.
+        // That is the geometry shipped consumers actually
+        // run (zuraffa_ui 0.3.0 → the unpublished master fixes); pin it so
+        // the ad-boundary behaviour cannot regress only for them.
+        final sections = [
+          ShadListSection(
+            header: const Text('Listing 0'),
+            items: [
+              for (var j = 0; j < 3; j++)
+                SizedBox(height: 80, child: Text('listing item 0.$j')),
+            ],
+          ),
+          const ShadListSection(
+            header: SizedBox.shrink(),
+            items: [
+              SizedBox(height: 320, child: Center(child: Text('Sponsored'))),
+            ],
+          ),
+          ShadListSection(
+            header: const Text('Listing 1'),
+            items: [
+              for (var j = 0; j < 7; j++)
+                SizedBox(height: 80, child: Text('listing item 1.$j')),
+            ],
+          ),
+        ];
+        final changes = <int>[];
+        final controller = ScrollController();
+        addTearDown(controller.dispose);
+        await tester.pumpWidget(
+          ShadApp(
+            home: SizedBox(
+              height: 400,
+              child: ShadStickySectionList(
+                sections: sections,
+                headerPadding: EdgeInsets.zero,
+                inlineHeaderPadding: EdgeInsets.zero,
+                onSectionChanged: changes.add,
+                controller: controller,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // 1px sweep across Listing 1's crossing, recording the list origin:
+        // with the ad bar at height 0 a feedback loop would alternate the
+        // origin every frame exactly at this boundary.
+        final listTops = <double>[];
+        Future<void> stepTo(double offset) async {
+          controller.jumpTo(offset);
+          await tester.pump();
+          listTops.add(tester.getTopLeft(find.byType(ListView)).dy);
+        }
+
+        await walkForward(
+          tester,
+          controller,
+          () => tester.any(find.text('Listing 1')),
+        );
+        final listViewTop = tester.getTopLeft(find.byType(ListView)).dy;
+        final titleTop = tester.getTopLeft(find.text('Listing 1').last).dy;
+        final crossing = controller.offset + (titleTop - listViewTop);
+
+        for (var i = 0; i < 100 && controller.offset < crossing - 40; i++) {
+          await stepTo(controller.offset + 20);
+        }
+        for (var s = controller.offset; s <= crossing + 80; s += 1) {
+          await stepTo(s);
+        }
+        for (
+          var i = 0;
+          i < 100 && controller.offset < controller.position.maxScrollExtent;
+          i++
+        ) {
+          await stepTo(controller.offset + 20);
+        }
+
+        // At most three bar origins: Listing 0's title bar, the empty ad
+        // bar, Listing 1's title bar — in order, once each.
+        expect(
+          runs(listTops).length,
+          lessThanOrEqualTo(3),
+          reason:
+              'bar origin oscillated on zik_zak geometry: '
+              '${runs(listTops)}',
+        );
+
+        // Transitions monotonic down (and ending on Listing 1, index 2).
+        for (var i = 1; i < changes.length; i++) {
+          expect(
+            changes[i],
+            greaterThan(changes[i - 1]),
+            reason: 'down-pass transitions flapped: $changes',
+          );
+        }
+        expect(changes.last, 2, reason: 'down-pass transitions: $changes');
+
+        // At the crossing the pinned title must be visible exactly once —
+        // the inline header goes transparent so it never paints twice.
+        var offset = crossing;
+        for (var i = 0; i < 4; i++) {
+          controller.jumpTo(offset);
+          await tester.pump();
+          final dy =
+              tester.getTopLeft(find.text('Listing 1').last).dy -
+              tester.getTopLeft(find.byType(ListView)).dy;
+          if (dy == 0.0) break;
+          offset += dy;
+        }
+        await tester.pump();
+        expect(
+          visibleTitleCount(tester, 'Listing 1'),
+          1,
+          reason: 'the listing title must not paint twice at the crossing',
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

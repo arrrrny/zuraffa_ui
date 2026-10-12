@@ -153,3 +153,33 @@ existed and failed before the implementation.
   transition). Section 0's zero-height suppression unchanged.
 - green: suite -> 403 passed, 0 failed.
 
+## Cycle 9: reopened report — "first listing title still flickers in zik_zak" (version skew)
+
+- report (2026-10-12): the user verified PR #28 in the example app but still
+  saw the first listing title after the ad flicker at the sticky bar in the
+  zik_zak app — "shows the title and flickers until the scroll completes
+  exactly the sticky-title height, then it sticks".
+- diagnosis: NOT a code gap. zik_zak pins hosted `zuraffa_ui ^0.3.0`; the
+  `0.3.0` tag (2026-09-18, `2ffb5ac`) predates the whole PR #28 merge
+  (2026-10-01) — `git tag --contains 28a14a8` is empty and the tagged
+  `sticky_section_list.dart` has zero viewport-anchor / post-frame /
+  no-double-title / safe-area code. pub.dev latest is still 0.3.0. The app
+  runs the PRE-fix component, so the original loop (the oscillation band is
+  exactly one bar-height of scroll — the user's "sticky title height") is
+  still live there. The fix was never shipped: the missing half of the story
+  is the release, not the code.
+- test: new `zik_zak geometry: zero paddings + headerless ad never flicker
+  the pinned title` — the app's exact geometry (`headerPadding: EdgeInsets
+  .zero`, `inlineHeaderPadding: EdgeInsets.zero`, ad header
+  `SizedBox.shrink()`; answers the assessment's open question on the ad
+  header widget). Red against the 0.3.0 file (checked out in place):
+  `bar origin oscillated: [14.0, 0.0] × 17` across the 1px sweep. Green on
+  master: bar origins ≤ 3, transitions monotonic, `visibleTitleCount == 1`
+  at the crossing.
+- fix: none needed in code (remediation already on master via `28a14a8`,
+  `6c7018c`, `19ec8a5`, `47dc435`). This cycle pins the shipped consumer
+  geometry with a regression test so the ad-boundary behaviour cannot
+  regress only for zero-padding consumers.
+- action item (outside this repo's code): publish 0.3.1 per PUBLISH.md
+  (master is 29 commits ahead of the 0.3.0 tag), then bump zik_zak to the
+  published version.
