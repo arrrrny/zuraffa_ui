@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "padding",
+    "padding": {
+      "all": 16
+    },
+    "child": {
+      "widgetType": "formItem",
+      "label": "Password",
+      "required": true,
+      "helper": "At least 12 characters",
+      "field": {
+        "widgetType": "input",
+        "placeholder": "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",
+        "obscure": true
+      }
+    }
+  }
+}

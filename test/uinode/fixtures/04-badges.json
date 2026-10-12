@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "row",
+    "mainAxisAlignment": "center",
+    "gap": 8,
+    "children": [
+      {
+        "widgetType": "badge",
+        "label": "default"
+      },
+      {
+        "widgetType": "badge",
+        "label": "secondary",
+        "variant": "secondary"
+      }
+    ]
+  }
+}

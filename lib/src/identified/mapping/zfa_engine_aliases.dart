@@ -22,6 +22,9 @@
 //
 // Extension declarations cannot be aliased in Dart (they are
 // reached by dot notation, never typed by name):
+//   ShadNodeX
+//   ShadNodePropertyHelpers
+//   ShadNodeCompareE
 //   ShadDurationExt
 //   ShadDateTime
 //   ShadBreakpointsExt
@@ -137,6 +140,10 @@ import 'package:zuraffa_ui/src/theme/theme.dart';
 import 'package:zuraffa_ui/src/theme/themes/base.dart';
 import 'package:zuraffa_ui/src/theme/themes/default_theme_variant.dart';
 import 'package:zuraffa_ui/src/theme/themes/shadows.dart';
+import 'package:zuraffa_ui/src/uinode/nodes/nodes.dart';
+import 'package:zuraffa_ui/src/uinode/render/shad_node_renderer.dart';
+import 'package:zuraffa_ui/src/uinode/tree/shad_node_parser.dart';
+import 'package:zuraffa_ui/src/uinode/tree/shad_node_tree.dart';
 import 'package:zuraffa_ui/src/utils/animate.dart';
 import 'package:zuraffa_ui/src/utils/animation_builder.dart';
 import 'package:zuraffa_ui/src/utils/border.dart';
@@ -150,6 +157,20 @@ import 'package:zuraffa_ui/src/utils/provider_index.dart';
 import 'package:zuraffa_ui/src/utils/responsive.dart';
 import 'package:zuraffa_ui/src/utils/states_controller.dart';
 import 'package:zuraffa_ui/src/utils/text_editing_controller.dart';
+
+// src/uinode/tree/shad_node_tree.dart
+typedef ZfaNodeTree = ShadNodeTree;
+
+// src/uinode/tree/shad_node_parser.dart
+typedef ZfaNodeParser = ShadNodeParser;
+
+// src/uinode/render/shad_node_renderer.dart
+typedef ZfaNodeRenderHost = ShadNodeRenderHost;
+typedef ZfaNodeRenderer = ShadNodeRenderer;
+typedef ZfaNodeMapper = ShadNodeMapper;
+
+// src/uinode/nodes/nodes.dart
+typedef ZfaNode = ShadNode;
 
 // src/utils/text_editing_controller.dart
 typedef ZfaTextEditingController = ShadTextEditingController;
