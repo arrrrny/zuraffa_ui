@@ -16,6 +16,30 @@
   audit for the v1 vocabulary and exclusions. Spec 1100 / issue #4
   (ZikZak Wave U foundation). Zorphy sealed-base codegen workaround:
   arrrrny/zuraffa#1717.
+## 0.3.1
+
+- **FIX**: `ShadStickySectionList` no longer flickers the pinned title when
+  scrolling past a headerless ad section (#28, reopened report #31). Inline
+  headers are measured in list-viewport coordinates (a bar-height change can
+  no longer feed back into section detection), the active section is the last
+  one whose header reached the viewport top — selected deterministically and
+  evaluated in a deduped post-frame callback so every decision uses the
+  positions on screen. The pinned bar clears the top safe-area inset, and the
+  section title never paints twice during a transition (the active section's
+  inline header renders transparent while keeping its exact size). A
+  regression test pins the zero-padding consumer geometry (headerless
+  `SizedBox.shrink()` ad sections, `headerPadding`/`inlineHeaderPadding`
+  zero). Consumer apps on 0.3.0 still flicker — this release is the fix.
+- **FEAT**: the Zfa alias map skips zorphy `$$` written abstracts (#24).
+- **FIX**: generated form field ids are unique (upstream #707).
+- **FIX**: engine follows upstream `a6e7688` (post-`b7c4ad0` fixes); the
+  generated brand map and `cli/hashes.json` are regenerated on top.
+- **CHORE**: `scripts/local_ci.sh` runs the pull_request workflow's jobs and
+  steps locally, step-for-step (`--plan`/`--list`/`--job`); AGENTS.md carries
+  the reference. `flutter test` concurrency is capped at 2 everywhere (fleet
+  guard, arrrrrny/forklift#176). The sync-upstream conflict procedure was
+  exercised and TDD-verified for real (#27).
+- **Base fork SHA**: `a6e7688` (upstream `shadcn_ui` 0.57.0 + fixes).
 
 ## 0.3.0
 
@@ -96,6 +120,10 @@ skin lane's certified vocabulary.
   and the `SkinContractKit` promoted from the 006 pilot (#1102).
 - The fork's component tests carried over (import URIs rewritten) and extended
   with identification + contract-kit tests in `test/identified/`.
+
+## 0.57.1
+
+- **FIX**: Form fields without an `id` could get the same generated id in large forms (the id came from a 20-bit hash), which seeded a field with another field's value, dropped entries from `ShadForm.value`, or threw a `TypeError` when the fields had different types. Generated ids are now unique, and explicit ids starting with `__shad_field_` are reserved for them (#707).
 
 ## 0.57.0
 

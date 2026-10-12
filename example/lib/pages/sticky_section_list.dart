@@ -171,15 +171,29 @@ class StickySectionListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Sticky Section List')),
       body: Center(
-        child: ShadButton.outline(
-          child: const Text('Open Product Feed'),
-          onPressed: () => _showProductSheet(context),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 12,
+          children: [
+            ShadButton.outline(
+              child: const Text('Open Product Feed'),
+              onPressed: () => _showProductSheet(context),
+            ),
+            // Regression demo for the sticky-header flicker: a feed with an
+            // ad placeholder section that has no sticky title. Scrolling past
+            // the ad used to flicker the sticky header as the next section's
+            // title took over.
+            ShadButton.outline(
+              child: const Text('Open Feed with Ads (flicker repro)'),
+              onPressed: () => _showProductSheet(context, withAds: true),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  void _showProductSheet(BuildContext context) {
+  void _showProductSheet(BuildContext context, {bool withAds = false}) {
     showShadSheet(
       context: context,
       builder: (context) => ShadSheet(
@@ -188,8 +202,49 @@ class StickySectionListPage extends StatelessWidget {
         draggable: true,
         padding: EdgeInsets.zero,
         child: ShadStickySectionList(
-          sections: productSections,
+          sections: withAds ? feedSectionsWithAds : productSections,
         ),
+      ),
+    );
+  }
+}
+
+/// [productSections] with an ad placeholder section (no sticky title) inserted
+/// after the first section — reproduces the zik_zak listing feed layout.
+final feedSectionsWithAds = [
+  productSections.first,
+  const ShadListSection(
+    header: SizedBox.shrink(),
+    items: [_AdPlaceholderCard()],
+  ),
+  ...productSections.sublist(1),
+];
+
+/// A sponsored-placeholder card between listing sections.
+class _AdPlaceholderCard extends StatelessWidget {
+  const _AdPlaceholderCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    return Container(
+      height: 320,
+      width: double.infinity,
+      color: theme.colorScheme.muted.withValues(alpha: 0.2),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.campaign_outlined,
+            size: 48,
+            color: theme.colorScheme.mutedForeground,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Sponsored',
+            style: theme.textTheme.muted,
+          ),
+        ],
       ),
     );
   }

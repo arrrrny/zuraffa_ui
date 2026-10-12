@@ -85,8 +85,12 @@ void main() {
       if (declaration.kind == 'extension') {
         // Dart cannot alias an extension name; only the Shad-named ones are
         // worth reporting (an unnamed `extension on X` parses as `on`).
+        // Zorphy's written `$$X` seams are skipped for the same reason as the
+        // type branch below, so this stays in sync with `mapped()` in
+        // `test/identified/zfa_alias_coverage_test.dart` (issue #24).
         if (declaration.name != 'on' &&
             declaration.name.contains('Shad') &&
+            !declaration.name.startsWith(r'$$') &&
             !extensions.contains(declaration.name)) {
           extensions.add(declaration.name);
         }

@@ -241,9 +241,7 @@ _EngineDeclarations _engineDeclarations() {
   // codegen-only seams, not public surface (the generated sealed `X` is
   // what consumers see — and what the brand map aliases).
   bool mapped(String name) =>
-      name.contains('Shad') &&
-      !name.startsWith('_') &&
-      !name.startsWith(r'$$');
+      name.contains('Shad') && !name.startsWith('_') && !name.startsWith(r'$$');
   return _EngineDeclarations(
     types.where(mapped).toSet(),
     values.where(mapped).toSet(),
