@@ -137,6 +137,8 @@ void main() {
       final vocabulary = <Type>[
         zfa.ZuraffaApp,
         zfa.ZfaButton,
+        zfa.ZfaButtonVariant,
+        zfa.ZfaButtonSize,
         zfa.ZfaInput,
         zfa.ZfaCard,
         zfa.ZfaSheet,
@@ -150,7 +152,7 @@ void main() {
         zfa.ZuraffaRouteObserver,
         zfa.SkinContractKit,
       ];
-      expect(vocabulary, hasLength(14));
+      expect(vocabulary, hasLength(16));
       // And the contract protocol is typed on the certified names.
       const button = zfa.ZfaButton();
       expect(button.contractId, 'zfa.button');

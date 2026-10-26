@@ -25,6 +25,7 @@ class ZfaCard extends StatelessWidget with ZfaContract {
     this.footer,
     this.leading,
     this.trailing,
+    this.padding,
     this.contractEnabled = true,
   });
 
@@ -46,6 +47,10 @@ class ZfaCard extends StatelessWidget with ZfaContract {
   /// The widget displayed at the end of the card's row.
   final Widget? trailing;
 
+  /// The padding inside the card, surrounding all content. Unset falls back
+  /// to the theme, mirroring [ShadCard.padding].
+  final EdgeInsetsGeometry? padding;
+
   @override
   String get contractId => 'zfa.card';
 
@@ -60,6 +65,7 @@ class ZfaCard extends StatelessWidget with ZfaContract {
       footer: footer,
       leading: leading,
       trailing: trailing,
+      padding: padding,
       child: child,
     );
   }

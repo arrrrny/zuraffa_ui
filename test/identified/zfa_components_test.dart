@@ -93,6 +93,37 @@ void main() {
       expect(engine.variant, ZfaButtonVariant.ghost);
       expect(find.text('raw ghost'), findsOneWidget);
     });
+
+    testWidgets('forwards size to the engine; un-set stays theme-resolved', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrap(const ZfaButton(child: Text('sized'))));
+      var engine = tester.widget<ShadButton>(find.byType(ShadButton));
+      expect(engine.size, isNull, reason: 'unset must stay theme-resolved');
+
+      await tester.pumpWidget(
+        wrap(
+          const ZfaButton.outline(
+            size: ZfaButtonSize.sm,
+            child: Text('sm chip'),
+          ),
+        ),
+      );
+      engine = tester.widget<ShadButton>(find.byType(ShadButton));
+      expect(engine.size, ZfaButtonSize.sm);
+
+      await tester.pumpWidget(
+        wrap(
+          const ZfaButton.raw(
+            variant: ZfaButtonVariant.secondary,
+            size: ZfaButtonSize.lg,
+            child: Text('lg secondary'),
+          ),
+        ),
+      );
+      engine = tester.widget<ShadButton>(find.byType(ShadButton));
+      expect(engine.size, ZfaButtonSize.lg);
+    });
   });
 
   group('ZfaInput', () {
@@ -157,6 +188,16 @@ void main() {
       expect(find.text('card title'), findsOneWidget);
       expect(find.text('card description'), findsOneWidget);
       expect(find.text('card body'), findsOneWidget);
+    });
+
+    testWidgets('forwards padding to the engine', (tester) async {
+      const padding = EdgeInsets.symmetric(horizontal: 10, vertical: 10);
+      await tester.pumpWidget(
+        wrap(const ZfaCard(padding: padding, child: Text('offer'))),
+      );
+      final engine = tester.widget<ShadCard>(find.byType(ShadCard));
+      expect(engine.padding, padding);
+      expect(find.text('offer'), findsOneWidget);
     });
   });
 

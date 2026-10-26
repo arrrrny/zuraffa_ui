@@ -4,6 +4,12 @@ import 'package:zuraffa_ui/src/components/button.dart';
 import 'package:zuraffa_ui/src/identified/contract/skin_contract_kit.dart';
 import 'package:zuraffa_ui/src/identified/mapping/zfa_engine_aliases.dart';
 
+/// The button enums re-exported under the certified surface so a barrel-only
+/// skin can spell [ZfaButton.raw] and [ZfaButton.size] without importing the
+/// engine library (arrrrny/zuraffa_ui#40).
+export 'package:zuraffa_ui/src/identified/mapping/zfa_engine_aliases.dart'
+    show ZfaButtonSize, ZfaButtonVariant;
+
 /// The certified button of the skin lane.
 ///
 /// Wraps [ShadButton] with the typed contract protocol
@@ -32,6 +38,7 @@ class ZfaButton extends StatelessWidget with ZfaContract {
     this.child,
     this.leading,
     this.trailing,
+    this.size,
     this.enabled = true,
     this.autofocus = false,
     this.focusNode,
@@ -50,6 +57,7 @@ class ZfaButton extends StatelessWidget with ZfaContract {
     this.child,
     this.leading,
     this.trailing,
+    this.size,
     this.enabled = true,
     this.autofocus = false,
     this.focusNode,
@@ -66,6 +74,7 @@ class ZfaButton extends StatelessWidget with ZfaContract {
     this.child,
     this.leading,
     this.trailing,
+    this.size,
     this.enabled = true,
     this.autofocus = false,
     this.focusNode,
@@ -82,6 +91,7 @@ class ZfaButton extends StatelessWidget with ZfaContract {
     this.child,
     this.leading,
     this.trailing,
+    this.size,
     this.enabled = true,
     this.autofocus = false,
     this.focusNode,
@@ -98,6 +108,7 @@ class ZfaButton extends StatelessWidget with ZfaContract {
     this.child,
     this.leading,
     this.trailing,
+    this.size,
     this.enabled = true,
     this.autofocus = false,
     this.focusNode,
@@ -114,6 +125,7 @@ class ZfaButton extends StatelessWidget with ZfaContract {
     this.child,
     this.leading,
     this.trailing,
+    this.size,
     this.enabled = true,
     this.autofocus = false,
     this.focusNode,
@@ -131,6 +143,7 @@ class ZfaButton extends StatelessWidget with ZfaContract {
     required this.child,
     this.leading,
     this.trailing,
+    this.size,
     this.enabled = true,
     this.autofocus = false,
     this.focusNode,
@@ -156,6 +169,10 @@ class ZfaButton extends StatelessWidget with ZfaContract {
 
   /// The widget displayed after [child].
   final Widget? trailing;
+
+  /// The size of the button. Unset stays theme-resolved, mirroring
+  /// [ShadButton.size].
+  final ZfaButtonSize? size;
 
   /// Whether the button is enabled.
   final bool enabled;
@@ -188,6 +205,7 @@ class ZfaButton extends StatelessWidget with ZfaContract {
       onPressed: onPressed,
       leading: leading,
       trailing: trailing,
+      size: size,
       enabled: enabled,
       autofocus: autofocus,
       focusNode: focusNode,
