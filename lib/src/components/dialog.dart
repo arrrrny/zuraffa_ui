@@ -864,7 +864,7 @@ class ShadDialog extends StatelessWidget {
       bottom: math.max(0, rawViewInsets.bottom),
     );
 
-    Widget result = Align(
+    final result = Align(
       alignment: effectiveAlignment,
       child: Padding(
         padding: effectiveViewInsets,
@@ -872,15 +872,13 @@ class ShadDialog extends StatelessWidget {
       ),
     );
 
-    if (effectiveUseSafeArea) {
-      // SafeArea consumes ambient viewInsets as padding, so it must see the
-      // clamped values too (#42).
-      result = MediaQuery(
-        data: MediaQuery.of(context).copyWith(viewInsets: effectiveViewInsets),
-        child: SafeArea(child: result),
-      );
-    }
-
-    return result;
+    // Mask the clamped viewInsets for the whole dialog subtree, with and
+    // without SafeArea: SafeArea itself derives its padding from
+    // padding/viewPadding (copyWith touches neither), but any descendant
+    // that reads viewInsets must never see the negative transient (#42).
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(viewInsets: effectiveViewInsets),
+      child: effectiveUseSafeArea ? SafeArea(child: result) : result,
+    );
   }
 }
