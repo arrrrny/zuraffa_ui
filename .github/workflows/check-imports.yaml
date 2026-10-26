@@ -21,10 +21,14 @@ jobs:
           # imports; the component and theme layers below them must not. The
           # TDD lane's acceptance subjects boot the shell and drive Material
           # feedback APIs (Scaffold, SnackBar); they never ship (.pubignore).
+          # One certified component is exempt: ZfaDialog must place Flutter's
+          # canonical Dialog widget so byType(Dialog) scopes resolve (#43) —
+          # that widget exists only behind the material barrel.
           EXCLUDED_FILES=(
             "lib/src/app.dart"
             "lib/src/identified/app/zuraffa_app.dart"
             "lib/tdd"
+            "lib/src/identified/components/zfa_dialog.dart"
           )
 
           # Build grep exclusion pattern
