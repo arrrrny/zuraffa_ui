@@ -216,6 +216,62 @@ void main() {
       expect(find.text('dialog title'), findsOneWidget);
       expect(find.text('dialog body'), findsOneWidget);
     });
+
+    // zuraffa_ui#43 (cross-ref: arrrrny/zuraffa#2022): ShadDialog renders no
+    // Flutter Dialog widget, so the canonical byType(Dialog)-scoped finders
+    // used by certification tests matched nothing and dismissal taps fell
+    // through (click-through misfire).
+    testWidgets(
+      'places a Flutter Dialog so byType(Dialog) scopes resolve the '
+      'certified dialog and its close icon',
+      (tester) async {
+        await tester.pumpWidget(
+          wrap(
+            ZfaButton(
+              child: const Text('open dialog'),
+              onPressed: () => ZfaDialog.show<void>(
+                tester.element(find.byType(ZfaButton)),
+                title: const Text('dialog title'),
+                child: const Text('dialog body'),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('open dialog'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(ZfaDialog), findsOneWidget);
+        expect(
+          find.byType(Dialog),
+          findsOneWidget,
+          reason:
+              'the Flutter-canonical Dialog scope must exist '
+              '(zuraffa_ui#43)',
+        );
+        expect(
+          find.descendant(
+            of: find.ancestor(
+              of: find.text('dialog title'),
+              matching: find.byType(Dialog),
+            ),
+            matching: find.byType(ShadDialog),
+          ),
+          findsOneWidget,
+          reason: 'the engine dialog must sit inside the Dialog scope',
+        );
+        expect(
+          find.descendant(
+            of: find.ancestor(
+              of: find.text('dialog title'),
+              matching: find.byType(Dialog),
+            ),
+            matching: find.byIcon(LucideIcons.x),
+          ),
+          findsOneWidget,
+          reason: 'the dismissal ✕ must resolve through the Dialog scope',
+        );
+      },
+    );
   });
 
   group('ZfaToaster', () {
