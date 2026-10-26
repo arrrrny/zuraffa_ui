@@ -272,5 +272,64 @@ void main() {
         expect(builtPadding, widgetPadding);
       },
     );
+
+    testWidgets(
+      'survives negative viewInsets (iOS keyboard-dismiss transient, #42)',
+      (tester) async {
+        // iOS overscroll during the keyboard-dismiss animation transiently
+        // reports a NEGATIVE bottom viewInset; Padding and SafeArea both
+        // assert non-negative, so the dialog must clamp before use (#42).
+        await tester.pumpWidget(
+          const ShadApp(
+            home: Scaffold(
+              body: MediaQuery(
+                data: MediaQueryData(
+                  viewInsets: EdgeInsets.only(bottom: -767.4),
+                ),
+                child: ShadDialog(
+                  title: Text('Title'),
+                  description: Text('Description'),
+                  child: Text('Child'),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        expect(find.byType(ShadDialog), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'survives negative viewInsets with useSafeArea: false (#42)',
+      (tester) async {
+        // Pins the outer Padding clamp independently of the SafeArea
+        // MediaQuery wrapper: with SafeArea off, the dialog must still
+        // survive the raw negative transient (#42).
+        await tester.pumpWidget(
+          const ShadApp(
+            home: Scaffold(
+              body: MediaQuery(
+                data: MediaQueryData(
+                  viewInsets: EdgeInsets.only(bottom: -767.4),
+                ),
+                child: ShadDialog(
+                  useSafeArea: false,
+                  title: Text('Title'),
+                  description: Text('Description'),
+                  child: Text('Child'),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        expect(find.byType(ShadDialog), findsOneWidget);
+      },
+    );
   });
 }

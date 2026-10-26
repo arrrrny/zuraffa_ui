@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:boxy/flex.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -850,10 +852,19 @@ class ShadDialog extends StatelessWidget {
       ),
     );
 
-    // Keyboard insets, so the dialog shifts clear of the keyboard.
-    final effectiveViewInsets = MediaQuery.viewInsetsOf(context);
+    // Keyboard insets, so the dialog shifts clear of the keyboard. The iOS
+    // keyboard-dismiss animation transiently reports NEGATIVE viewInsets
+    // (overscroll/bounce); Padding and SafeArea both assert non-negative,
+    // so clamp before use (#42).
+    final rawViewInsets = MediaQuery.viewInsetsOf(context);
+    final effectiveViewInsets = EdgeInsets.only(
+      left: math.max(0, rawViewInsets.left),
+      top: math.max(0, rawViewInsets.top),
+      right: math.max(0, rawViewInsets.right),
+      bottom: math.max(0, rawViewInsets.bottom),
+    );
 
-    Widget result = Align(
+    final result = Align(
       alignment: effectiveAlignment,
       child: Padding(
         padding: effectiveViewInsets,
@@ -861,10 +872,13 @@ class ShadDialog extends StatelessWidget {
       ),
     );
 
-    if (effectiveUseSafeArea) {
-      result = SafeArea(child: result);
-    }
-
-    return result;
+    // Mask the clamped viewInsets for the whole dialog subtree, with and
+    // without SafeArea: SafeArea itself derives its padding from
+    // padding/viewPadding (copyWith touches neither), but any descendant
+    // that reads viewInsets must never see the negative transient (#42).
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(viewInsets: effectiveViewInsets),
+      child: effectiveUseSafeArea ? SafeArea(child: result) : result,
+    );
   }
 }
