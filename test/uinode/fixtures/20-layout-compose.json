@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "padding",
+    "padding": {
+      "all": 16
+    },
+    "child": {
+      "widgetType": "column",
+      "gap": 12,
+      "crossAxisAlignment": "stretch",
+      "children": [
+        {
+          "widgetType": "row",
+          "mainAxisAlignment": "spaceBetween",
+          "children": [
+            {
+              "widgetType": "text",
+              "text": "Total",
+              "style": "h4"
+            },
+            {
+              "widgetType": "text",
+              "text": "$42.00",
+              "style": "h4"
+            }
+          ]
+        },
+        {
+          "widgetType": "separator"
+        },
+        {
+          "widgetType": "row",
+          "gap": 8,
+          "children": [
+            {
+              "widgetType": "button",
+              "label": "Back",
+              "variant": "outline"
+            },
+            {
+              "widgetType": "button",
+              "label": "Checkout"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

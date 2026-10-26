@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "column",
+    "crossAxisAlignment": "start",
+    "children": [
+      {
+        "widgetType": "checkbox",
+        "label": "Subscribe",
+        "value": true
+      },
+      {
+        "widgetType": "checkbox",
+        "label": "Terms accepted",
+        "value": false
+      }
+    ]
+  }
+}

@@ -7,15 +7,15 @@ import 'package:flutter_localizations/flutter_localizations.dart'
         GlobalCupertinoLocalizations,
         GlobalMaterialLocalizations,
         GlobalWidgetsLocalizations;
-import 'package:shadcn_ui/src/components/sonner.dart';
-import 'package:shadcn_ui/src/components/toast.dart';
-import 'package:shadcn_ui/src/i18n/localizations_delegate.dart';
-import 'package:shadcn_ui/src/theme/color_scheme/slate.dart';
-import 'package:shadcn_ui/src/theme/data.dart';
-import 'package:shadcn_ui/src/theme/text_theme/theme.dart';
-import 'package:shadcn_ui/src/theme/theme.dart';
-import 'package:shadcn_ui/src/utils/mouse_area.dart';
-import 'package:shadcn_ui/src/utils/mouse_cursor_provider.dart';
+import 'package:zuraffa_ui/src/components/sonner.dart';
+import 'package:zuraffa_ui/src/components/toast.dart';
+import 'package:zuraffa_ui/src/i18n/localizations_delegate.dart';
+import 'package:zuraffa_ui/src/theme/color_scheme/slate.dart';
+import 'package:zuraffa_ui/src/theme/data.dart';
+import 'package:zuraffa_ui/src/theme/text_theme/theme.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/utils/mouse_area.dart';
+import 'package:zuraffa_ui/src/utils/mouse_cursor_provider.dart';
 
 enum ShadAppType {
   shadcn,

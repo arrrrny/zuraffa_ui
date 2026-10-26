@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:shadcn_ui/src/utils/clipboard/clipboard_service_stub.dart'
-    if (dart.library.js_interop) 'package:shadcn_ui/src/utils/clipboard/clipboard_service_web.dart'
+import 'package:zuraffa_ui/src/utils/clipboard/clipboard_service_stub.dart'
+    if (dart.library.js_interop) 'package:zuraffa_ui/src/utils/clipboard/clipboard_service_web.dart'
     as impl;
 
 /// A single item read from the system clipboard.

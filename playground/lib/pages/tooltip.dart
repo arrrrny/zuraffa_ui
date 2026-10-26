@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class TooltipPage extends StatefulWidget {
   const TooltipPage({super.key});

@@ -7,12 +7,12 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+" # Matches v1.2.3
       - 'v[0-9]+.[0-9]+.[0-9]+\+[0-9]+' # Matches v1.2.3+1
 
-# Publish using the reusable workflow from dart-lang.
+# Publish using this repository's own reusable workflow.
 jobs:
   publish:
     permissions:
       id-token: write # Required for authentication using OIDC
-    uses: nank1ro/flutter-shadcn-ui/.github/workflows/cached-publish.yaml@main
+    uses: ./.github/workflows/cached-publish.yaml
     with:
       environment: pub.dev
       install_flutter: true

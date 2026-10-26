@@ -5,9 +5,11 @@ on:
 
 jobs:
   build-runner:
-    runs-on: ubuntu-latest
+    # This job runs PR-controlled code (build_runner), so it only ever gets
+    # read access; the write-capable push lives in the push-generated job.
     permissions:
       contents: read
+    runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
       cancel-in-progress: true

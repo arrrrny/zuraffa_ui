@@ -1,5 +1,9 @@
 name: Deploy Docs to Cloudflare Workers
 
+# NOTE: parked on purpose. `docs/wrangler.jsonc` deploys into the upstream
+# `mariuti.com` Cloudflare zone and the workflow needs a `CLOUDFLARE_API_TOKEN`
+# this repo does not have, so enabling it would only produce red runs.
+# `workflow_dispatch` is left available for a manual deploy.
 on:
   push:
     branches: [main]

@@ -8,6 +8,11 @@ on:
         required: false
         default: false
         type: boolean
+  # NOTE: this repo's default branch is `master`. This workflow stays parked
+  # until the secrets it needs exist (`PAT` for `gh release create`,
+  # `DISCORD_WEBHOOK_URL` for the announcement); activating it first would
+  # just turn every green master run into a red one. To enable it, point
+  # `branches` at `master` and add those repo secrets.
   workflow_run:
     workflows: ["Flutter test"]
     branches: [main]

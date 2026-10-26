@@ -1,7 +1,7 @@
 import 'dart:js_interop';
 
-import 'package:shadcn_ui/src/utils/clipboard/clipboard_service.dart';
 import 'package:web/web.dart' as web;
+import 'package:zuraffa_ui/src/utils/clipboard/clipboard_service.dart';
 
 final _listeners = <PasteFilesCallback>{};
 final _errorListeners = <PasteFilesErrorCallback>{};

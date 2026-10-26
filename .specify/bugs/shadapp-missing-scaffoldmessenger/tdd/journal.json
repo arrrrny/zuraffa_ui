@@ -1,0 +1,304 @@
+{
+  "schema": 1,
+  "feature": "shadapp-missing-scaffoldmessenger",
+  "entries": [
+    {
+      "feature": "shadapp-missing-scaffoldmessenger",
+      "cycle": "engine",
+      "phase": "drive",
+      "started_at": "2026-09-17T22:09:58.968552Z",
+      "finished_at": "2026-09-17T22:09:59.354879Z",
+      "gate_state": "red",
+      "receipts": [
+        "tdd/04-engine-receipt.json"
+      ],
+      "violations": [
+        "stopped_at=A1:verify-red",
+        "step_error=A1:verify-red outcome=unresolved exit=1"
+      ],
+      "refs": {
+        "engine_receipt": "tdd/04-engine-receipt.json",
+        "skin_receipt": null,
+        "contract_schema": null
+      },
+      "result": "stopped",
+      "behaviors": [
+        "A1",
+        "A3",
+        "A4"
+      ],
+      "counts": {
+        "total": 3,
+        "pending": 3,
+        "red": 0,
+        "green": 0,
+        "done": 0
+      },
+      "stopped_at": "A1:verify-red",
+      "error": {
+        "behavior": "A1",
+        "step": "verify-red",
+        "outcome": "unresolved",
+        "exit_code": 1,
+        "command": "/Users/arrrrny/.local/bin/zfa tdd verify-red A1 --feature .specify/bugs/shadapp-missing-scaffoldmessenger --project /Users/arrrrny/Developer/zuraffa_ui --timeout 25.0000",
+        "output": "zfa tdd verify-red: behavior A1\n   feature: shadapp-missing-scaffoldmessenger\n   test: test/tdd/shadapp-missing-scaffoldmessenger/a1_test.dart\nzfa tdd verify-red: no `single` command template found in /Users/arrrrny/Developer/zuraffa_ui/.specify/memory/tdd-profile.md. Add a `single:` key to the Keys (machine-readable) block or a `- Single test:` bullet, then re-run.\nverify-red: behavior=A1 classification=unresolved certified=false feature=shadapp-missing-scaffoldmessenger"
+      }
+    },
+    {
+      "feature": "shadapp-missing-scaffoldmessenger",
+      "cycle": "meta",
+      "phase": "aggregate",
+      "started_at": "2026-09-17T22:09:57.049097Z",
+      "finished_at": "2026-09-17T22:09:59.364059Z",
+      "gate_state": "red",
+      "receipts": [
+        "tdd/04-engine-receipt.json"
+      ],
+      "violations": [
+        "engine lane stopped at A1:verify-red",
+        "engine lane result=stopped — fail fast, no skin step spawned"
+      ],
+      "refs": {
+        "engine_receipt": "tdd/04-engine-receipt.json",
+        "skin_receipt": null,
+        "contract_schema": null
+      },
+      "result": "stopped",
+      "behaviors": [],
+      "stopped_at": null
+    },
+    {
+      "feature": "shadapp-missing-scaffoldmessenger",
+      "cycle": "engine",
+      "phase": "drive",
+      "started_at": "2026-09-17T22:11:42.198014Z",
+      "finished_at": "2026-09-17T22:14:54.403977Z",
+      "gate_state": "red",
+      "receipts": [
+        "tdd/04-engine-receipt.json"
+      ],
+      "violations": [
+        "stopped_at=A1:make"
+      ],
+      "refs": {
+        "engine_receipt": "tdd/04-engine-receipt.json",
+        "skin_receipt": null,
+        "contract_schema": null
+      },
+      "result": "stopped",
+      "behaviors": [
+        "A1",
+        "A3",
+        "A4"
+      ],
+      "counts": {
+        "total": 3,
+        "pending": 2,
+        "red": 1,
+        "green": 0,
+        "done": 0
+      },
+      "stopped_at": "A1:make"
+    },
+    {
+      "feature": "shadapp-missing-scaffoldmessenger",
+      "cycle": "meta",
+      "phase": "aggregate",
+      "started_at": "2026-09-17T22:11:41.895180Z",
+      "finished_at": "2026-09-17T22:14:54.431621Z",
+      "gate_state": "red",
+      "receipts": [
+        "tdd/04-engine-receipt.json"
+      ],
+      "violations": [
+        "engine lane stopped at A1:make",
+        "engine lane result=stopped — fail fast, no skin step spawned"
+      ],
+      "refs": {
+        "engine_receipt": "tdd/04-engine-receipt.json",
+        "skin_receipt": null,
+        "contract_schema": null
+      },
+      "result": "stopped",
+      "behaviors": [],
+      "stopped_at": null
+    },
+    {
+      "feature": "shadapp-missing-scaffoldmessenger",
+      "cycle": "engine",
+      "phase": "drive",
+      "started_at": "2026-09-17T22:22:38.234431Z",
+      "finished_at": "2026-09-17T22:36:41.246301Z",
+      "gate_state": "red",
+      "receipts": [
+        "tdd/04-engine-receipt.json"
+      ],
+      "violations": [
+        "stopped_at=A3:make"
+      ],
+      "refs": {
+        "engine_receipt": "tdd/04-engine-receipt.json",
+        "skin_receipt": null,
+        "contract_schema": null
+      },
+      "result": "stopped",
+      "behaviors": [
+        "A1",
+        "A3",
+        "A4"
+      ],
+      "counts": {
+        "total": 3,
+        "pending": 1,
+        "red": 1,
+        "green": 1,
+        "done": 0
+      },
+      "stopped_at": "A3:make"
+    },
+    {
+      "feature": "shadapp-missing-scaffoldmessenger",
+      "cycle": "meta",
+      "phase": "aggregate",
+      "started_at": "2026-09-17T22:22:36.127378Z",
+      "finished_at": "2026-09-17T22:36:41.294031Z",
+      "gate_state": "red",
+      "receipts": [
+        "tdd/04-engine-receipt.json"
+      ],
+      "violations": [
+        "engine lane stopped at A3:make",
+        "engine lane result=stopped — fail fast, no skin step spawned"
+      ],
+      "refs": {
+        "engine_receipt": "tdd/04-engine-receipt.json",
+        "skin_receipt": null,
+        "contract_schema": null
+      },
+      "result": "stopped",
+      "behaviors": [],
+      "stopped_at": null
+    },
+    {
+      "feature": "shadapp-missing-scaffoldmessenger",
+      "cycle": "engine",
+      "phase": "drive",
+      "started_at": "2026-09-17T22:47:33.939499Z",
+      "finished_at": "2026-09-17T23:05:24.208497Z",
+      "gate_state": "red",
+      "receipts": [
+        "tdd/04-engine-receipt.json"
+      ],
+      "violations": [
+        "stopped_at=A4:make"
+      ],
+      "refs": {
+        "engine_receipt": "tdd/04-engine-receipt.json",
+        "skin_receipt": null,
+        "contract_schema": null
+      },
+      "result": "stopped",
+      "behaviors": [
+        "A1",
+        "A3",
+        "A4"
+      ],
+      "counts": {
+        "total": 3,
+        "pending": 0,
+        "red": 1,
+        "green": 2,
+        "done": 0
+      },
+      "stopped_at": "A4:make"
+    },
+    {
+      "feature": "shadapp-missing-scaffoldmessenger",
+      "cycle": "meta",
+      "phase": "aggregate",
+      "started_at": "2026-09-17T22:47:31.475501Z",
+      "finished_at": "2026-09-17T23:05:24.250690Z",
+      "gate_state": "red",
+      "receipts": [
+        "tdd/04-engine-receipt.json"
+      ],
+      "violations": [
+        "engine lane stopped at A4:make",
+        "engine lane result=stopped — fail fast, no skin step spawned"
+      ],
+      "refs": {
+        "engine_receipt": "tdd/04-engine-receipt.json",
+        "skin_receipt": null,
+        "contract_schema": null
+      },
+      "result": "stopped",
+      "behaviors": [],
+      "stopped_at": null
+    },
+    {
+      "feature": "shadapp-missing-scaffoldmessenger",
+      "cycle": "engine",
+      "phase": "drive",
+      "started_at": "2026-09-17T23:12:11.348443Z",
+      "finished_at": "2026-09-17T23:33:33.003248Z",
+      "gate_state": "red",
+      "receipts": [
+        "tdd/04-engine-receipt.json"
+      ],
+      "violations": [
+        "stopped_at=A1:refactor",
+        "step_error=A1:refactor outcome=runner-error exit=1"
+      ],
+      "refs": {
+        "engine_receipt": "tdd/04-engine-receipt.json",
+        "skin_receipt": null,
+        "contract_schema": null
+      },
+      "result": "runner-error",
+      "behaviors": [
+        "A1",
+        "A3",
+        "A4"
+      ],
+      "counts": {
+        "total": 3,
+        "pending": 0,
+        "red": 0,
+        "green": 3,
+        "done": 0
+      },
+      "stopped_at": "A1:refactor",
+      "error": {
+        "behavior": "A1",
+        "step": "refactor",
+        "outcome": "runner-error",
+        "exit_code": 1,
+        "command": "/Users/arrrrny/.local/bin/zfa tdd refactor A1 --feature .specify/bugs/shadapp-missing-scaffoldmessenger --project /Users/arrrrny/Developer/zuraffa_ui --suite-baseline /Users/arrrrny/Developer/zuraffa_ui/.specify/bugs/shadapp-missing-scaffoldmessenger/tdd/run-baseline.json --timeout 36.3439 --pass-batch",
+        "output": "zfa tdd refactor: preflight suite\n   command: flutter test\n   preflight exit: 1\n   suite baseline: cached (2026-09-17T23:21:18.814772Z) — 6 pre-existing failure(s) excluded from the green verdicts (issue #922)\n   suite is RED but every failure is pre-existing at baseline — 6 tolerated (issue #922):\n   tolerated: /Users/arrrrny/Developer/zuraffa_ui/test/src/components/sheet_test.dart: ShadSheet expandable golden: expandable bottom sheet at initial size\n   tolerated: /Users/arrrrny/Developer/zuraffa_ui/test/src/components/sheet_test.dart: ShadSheet expandable golden: expandable bottom sheet at maxSize\n   tolerated: /Users/arrrrny/Developer/zuraffa_ui/test/src/components/sheet_test.dart: ShadSheet expandable golden: expandable top sheet\n   tolerated: /Users/arrrrny/Developer/zuraffa_ui/test/src/components/sheet_test.dart: ShadSheet expandable golden: expandable left sheet\n   tolerated: /Users/arrrrny/Developer/zuraffa_ui/test/src/components/sheet_test.dart: ShadSheet expandable golden: expandable right sheet\n   tolerated: /Users/arrrrny/Developer/zuraffa_ui/test/src/components/sheet_test.dart: ShadSheet expandable golden: expandable sheet with custom drag handle\nzfa tdd refactor: applying passes\n   pass: build\n     command: /Users/arrrrny/.local/bin/zfa build\n     exit: 1\n     duration: 0.6s\n     changed: (none)\n   pass \"build\" failed — misfire-stop.\nzfa tdd refactor: re-proof suite\n   command: flutter test\n   re-proof exit: 1\n   re-proof RED but every failure is pre-existing at baseline — 6 tolerated, no regression (issue #922).\nrefactor: feature=shadapp-missing-scaffoldmessenger outcome=runner-error applied=0"
+      }
+    },
+    {
+      "feature": "shadapp-missing-scaffoldmessenger",
+      "cycle": "meta",
+      "phase": "aggregate",
+      "started_at": "2026-09-17T23:12:09.570485Z",
+      "finished_at": "2026-09-17T23:33:33.034501Z",
+      "gate_state": "red",
+      "receipts": [
+        "tdd/04-engine-receipt.json"
+      ],
+      "violations": [
+        "engine lane stopped at A1:refactor",
+        "engine lane result=runner-error — fail fast, no skin step spawned"
+      ],
+      "refs": {
+        "engine_receipt": "tdd/04-engine-receipt.json",
+        "skin_receipt": null,
+        "contract_schema": null
+      },
+      "result": "runner-error",
+      "behaviors": [],
+      "stopped_at": null
+    }
+  ]
+}

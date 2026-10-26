@@ -33,7 +33,7 @@ import 'package:playground/pages/time_picker.dart';
 import 'package:playground/pages/toast.dart';
 import 'package:playground/pages/tooltip.dart';
 import 'package:playground/pages/typography.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 extension on GoRouterState {
   bool? getBoolFromArg(String name) {
