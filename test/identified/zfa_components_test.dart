@@ -270,6 +270,25 @@ void main() {
           findsOneWidget,
           reason: 'the dismissal ✕ must resolve through the Dialog scope',
         );
+
+        // zuraffa_ui#43's Expected also requires "the tap dismisses it" —
+        // pin the dismissal half so a future change cannot keep the finder
+        // green while the scoped ✕ tap falls through again.
+        await tester.tap(
+          find.descendant(
+            of: find.ancestor(
+              of: find.text('dialog title'),
+              matching: find.byType(Dialog),
+            ),
+            matching: find.byIcon(LucideIcons.x),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.byType(ZfaDialog),
+          findsNothing,
+          reason: 'the scoped ✕ tap dismisses the certified dialog',
+        );
       },
     );
   });
