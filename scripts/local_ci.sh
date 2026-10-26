@@ -1798,6 +1798,86 @@ def run_git(*args):
         return ""
 
 
+# ------------------------------------------------ tree protection (#34, #38)
+# Steps like `flutter pub downgrade` mutate the gitignored pubspec.lock, and
+# `flutter analyze` rewrites an analysis_options.yaml that lacks the
+# build/platform excludes (it prints "Upgrading analysis_options.yaml to
+# exclude build and platform directories."). CI runs both in a throwaway
+# checkout, so the mutation dies with the job; here it would survive the run
+# and poison the working tree (#34: a poisoned lockfile failed 23 test files;
+# #38: the analyze upgrade lands as a dirty playground/analysis_options.yaml
+# that `git add -A` then ships). The whole run's mutations of these files are
+# therefore transient: every pubspec.lock and analysis_options.yaml is
+# snapshotted before the first step and restored when the run ends —
+# byte-identical for files that existed, removed for files a step created.
+# Mid-run, later steps still see the mutated files, exactly as in CI.
+#
+# The AGENTS.md standardization rollout fd9fa10 replaced this script wholesale
+# and silently dropped the #34 protection, turning its three committed tests
+# red on master; this block restores it as part of #38, and the drop itself
+# is recorded in arrrrny/zuraffa_ui#44.
+
+PROTECTED_NAMES = ("pubspec.lock", "analysis_options.yaml")
+PROTECTED_PRUNE = {".git", ".dart_tool", "build", "node_modules", "Pods"}
+
+
+def _walk_protected(root):
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames
+                       if d not in PROTECTED_PRUNE and not d.startswith(".")]
+        for name in PROTECTED_NAMES:
+            if name in filenames:
+                yield Path(dirpath) / name
+
+
+def snapshot_protected_files(root):
+    """Every protected file under root -> its bytes, before any step runs."""
+    found = {}
+    for path in _walk_protected(root):
+        try:
+            found[path] = path.read_bytes()
+        except OSError:
+            pass
+    return found
+
+
+def restore_protected_files(snapshot, root):
+    """Put every protected file back exactly as snapshotted.
+
+    Returns (rewritten, removed, recreated, failed): files a step mutated or
+    deleted are rewritten from the snapshot, files a step created are removed.
+    A restore that could not be applied (permissions, file lock, disk full) is
+    counted in `failed` and warned about — a silent restore is no restore.
+    """
+    rewritten = removed = recreated = failed = 0
+    seen = set()
+    for path in _walk_protected(root):
+        seen.add(path)
+        try:
+            if path in snapshot:
+                if path.read_bytes() != snapshot[path]:
+                    path.write_bytes(snapshot[path])
+                    rewritten += 1
+            else:
+                path.unlink()
+                removed += 1
+        except OSError:
+            failed += 1
+            print(f"local_ci: WARNING could not restore {path}",
+                  file=sys.stderr)
+    for path, data in snapshot.items():
+        if path not in seen:
+            try:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(data)
+                recreated += 1
+            except OSError:
+                failed += 1
+                print(f"local_ci: WARNING could not restore {path}",
+                      file=sys.stderr)
+    return rewritten, removed, recreated, failed
+
+
 def main(argv):
     args = {"workflow": None, "job": None, "event": "pull_request", "plan": False,
             "keep_going": False, "verbose": False, "allow_outside_clone": False,
@@ -1912,6 +1992,29 @@ def run(args):
     if run_git("status", "--porcelain"):
         print("  note     : working tree has uncommitted changes; CI runs the "
               "committed tree")
+    protected_snapshot = {}
+    if not args["plan"]:
+        protected_snapshot = snapshot_protected_files(ROOT)
+        if protected_snapshot:
+            print(f"  note     : snapshotted {len(protected_snapshot)} "
+                  "protected file(s) (pubspec.lock, analysis_options.yaml) — "
+                  "steps that mutate them (pub downgrade/get, flutter "
+                  "analyze) are restored when this run ends (#34, #38)")
+
+        def _restore_protected():
+            rewritten, removed, recreated, failed = restore_protected_files(
+                protected_snapshot, ROOT)
+            if rewritten or removed or recreated or failed:
+                verdict = ("a step's mutation never survives this run"
+                           if not failed else
+                           f"{failed} restore(s) FAILED — see the WARNING "
+                           "lines above")
+                print(f"\nlocal_ci: protected files vs their pre-run state "
+                      f"({rewritten} rewritten, {removed} removed, "
+                      f"{recreated} recreated, {failed} failed) — "
+                      f"{verdict} (#34, #38)")
+
+        atexit.register(_restore_protected)
     runner.run()
     runner.summary()
     if args["plan"]:
