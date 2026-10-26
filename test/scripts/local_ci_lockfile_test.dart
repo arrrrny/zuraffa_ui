@@ -2,6 +2,14 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+// MISFIRE (workaround: reported, not fixed as a drive-by): since fd9fa10
+// ("docs: standardize AGENTS.md") rewrote scripts/local_ci.sh and dropped
+// the #34 lockfile-protection block, the three restore/prune tests below
+// are RED on a clean origin/master (runner exits 0 with no protection
+// applied). Tracked in arrrrny/zuraffa_ui#49 — see that issue for
+// expected-vs-actual; found by forklift task
+// b74344c3-6d41-4431-8a06-d4a273c65872.
+
 /// Guards the two fixes for arrrrny/zuraffa_ui#34:
 ///
 /// 1. `scripts/local_ci.sh` must not let a workflow step's `pubspec.lock`
