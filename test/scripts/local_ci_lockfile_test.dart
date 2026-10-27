@@ -14,6 +14,10 @@ import 'package:flutter_test/flutter_test.dart';
 ///    resolve `platform` to 3.0.0 — that release references
 ///    `io.Platform.packageRoot`, removed from the Dart SDK, so nothing whose
 ///    import graph reaches `package:platform` compiles.
+/// 3. the protection wiring inside `scripts/local_ci.sh` is pinned. A
+///    wholesale replacement of that script (the fd9fa10 class —
+///    arrrrny/zuraffa_ui#49) must fail loudly at the wiring, not as three
+///    behavioral reds every gate misreads as pre-existing noise.
 void main() {
   group('local_ci pubspec.lock protection (#34)', () {
     /// A one-job workflow whose `Downgrade dependencies` step overwrites the
@@ -134,6 +138,45 @@ $stepsYaml''',
       final (code, output) = await runLocalCi(sandbox);
 
       expect(code, 0, reason: output);
+    });
+  });
+
+  group('local_ci.sh protection wiring pin (#34, #49)', () {
+    test('the script still wires the snapshot/restore contract', () {
+      // fd9fa10 replaced scripts/local_ci.sh wholesale and silently dropped
+      // the #34/#38 tree protection; the three behavioral tests above went
+      // red on master for days and every full-suite gate misread them as
+      // unrelated pre-existing noise (arrrrny/zuraffa_ui#49). These pins are
+      // the tripwire for that failure class: a re-roll of the script from
+      // the forklift canonical copy (arrrrny/forklift, which carries no
+      // pubspec logic) fails HERE, at the cause, with the recovery story in
+      // the reason — instead of as three confusing behavioral failures.
+      const pins = <String, String>{
+        'snapshot before the first step': 'snapshot_protected_files(ROOT)',
+        'restore hook registered for the run end':
+            'atexit.register(_restore_protected)',
+        'protected names cover pubspec.lock':
+            'PROTECTED_NAMES = ("pubspec.lock", "analysis_options.yaml")',
+      };
+      final script = File('scripts/local_ci.sh').readAsStringSync();
+
+      for (final entry in pins.entries) {
+        expect(
+          script,
+          contains(entry.value),
+          reason:
+              'scripts/local_ci.sh lost the #34/#38 protection wiring '
+              '— ${entry.key} (${entry.value}) is gone from the script. '
+              'That is the fd9fa10 failure class (arrrrny/zuraffa_ui#49): '
+              'a wholesale replacement of the script — most likely a '
+              'rollout from the forklift canonical copy, which has no '
+              'pubspec logic — dropped the protection silently while the '
+              'runner kept exiting 0. Restore the block (see f9979f3 and '
+              '25b375e) or, if the wiring was renamed deliberately, update '
+              'this pin in the same PR and upstream the protection to '
+              'arrrrny/forklift so the next rollout cannot clobber it.',
+        );
+      }
     });
   });
 
