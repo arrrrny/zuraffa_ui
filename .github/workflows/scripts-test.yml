@@ -4,10 +4,12 @@ on:
   pull_request:
     paths:
       - ".github/scripts/**"
+      - ".github/workflows/sync-upstream.yml"
   push:
     branches: [master]
     paths:
       - ".github/scripts/**"
+      - ".github/workflows/sync-upstream.yml"
 
 permissions: {}
 
