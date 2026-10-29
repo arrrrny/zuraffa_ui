@@ -101,6 +101,17 @@ Upstream is `nank1ro/flutter-shadcn-ui` (`main`); the fork tracks it with
    `test/identified/zfa_alias_coverage_test.dart` fails on drift.
 4. Never rename engine symbols to `Zfa*`: the identified layer exists so
    upstream merges stay mechanical (spec 1099).
+5. **Workflow files are the fork's own unless `SYNC_PAT` is set.** A job token
+   cannot create or update `.github/workflows/**`, and GitHub checks every
+   commit in the pushed range — so a merge that bumps an upstream action
+   version made the whole sync fail (issue #54, "refusing to allow a GitHub
+   App to create or update workflow … without `workflows` permission").
+   `.github/scripts/sync_keep_fork_workflows.sh` therefore restores the fork's
+   copies into the merge commit when the secret is absent and lists the skipped
+   paths in the run summary; everything else from upstream lands unchanged.
+   This fork pins every action by SHA and its dependabot manages those bumps.
+   Set `SYNC_PAT` (a token with the `workflow` scope) to apply upstream's CI
+   edits again — the script is then a no-op.
 
 <!-- local-ci:begin -->
 ## Running CI locally — `scripts/local_ci.sh`

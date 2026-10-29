@@ -15,6 +15,18 @@
 #      exports), so upstream adding an engine name must add its `Zfa*` alias;
 #      `test/identified/zfa_alias_coverage_test.dart` guards the drift. The
 #      regenerated map is committed on top of the merge, then pushed.
+#   4. Workflow files are the fork's own unless `SYNC_PAT` is set. A job token
+#      may not create or update `.github/workflows/**`, and the check covers
+#      every commit in the pushed range — so a merge that bumps an upstream
+#      action version used to fail the whole sync ("refusing to allow a GitHub
+#      App to create or update workflow … without `workflows` permission",
+#      issue #54). `.github/scripts/sync_keep_fork_workflows.sh` restores the
+#      fork's copies into the merge commit when the secret is absent, so the
+#      rest of the upstream work still lands; the filenames it skipped are
+#      listed in the run summary. Setting `SYNC_PAT` (a token with the
+#      `workflow` scope) makes the guard a no-op and applies upstream's CI
+#      edits again — this fork pins every action by SHA and its dependabot
+#      manages those bumps, so nothing is lost by skipping them by default.
 #
 # `.github/workflows/flutter-test.yaml` runs on a push to `master`, but a
 # `github.token` push does **not** trigger other workflows — so the merged tree
@@ -87,7 +99,11 @@ jobs:
         if: steps.check.outputs.up_to_date == 'false'
         run: |
           set +e
-          git merge upstream/main --no-edit \
+          # `--no-ff` always yields a merge commit, which is what lets the
+          # workflow-file guard below amend the merge instead of rewriting a
+          # fast-forward chain of upstream commits (a fast-forward would push
+          # upstream's own workflow commits, which the job token cannot push).
+          git merge --no-ff upstream/main --no-edit \
             -m "merge: sync upstream $(date +%Y-%m-%d)"
           rc=$?
           set -e
@@ -172,6 +188,16 @@ jobs:
         run: |
           echo "::error::merge conflicts detected; sync aborted. See the sync-labelled issue for resolution steps."
           exit 1
+
+      - name: Keep the fork's workflow files when the token cannot push them
+        id: workflows
+        if: steps.merge.outputs.merge_state == 'clean'
+        env:
+          # The pre-merge master sha: the guard restores `.github/workflows/**`
+          # to this content inside the merge commit.
+          BASE_SHA: ${{ steps.check.outputs.local }}
+          SYNC_PAT: ${{ secrets.SYNC_PAT }}
+        run: bash .github/scripts/sync_keep_fork_workflows.sh
 
       - name: Verify fork-owned file markers
         id: verify
