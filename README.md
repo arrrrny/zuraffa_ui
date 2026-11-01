@@ -10,7 +10,7 @@
 
 ```yaml
 dependencies:
-  zuraffa_ui: ^0.1.0
+  zuraffa_ui: ^7.3.2
 ```
 
 ```dart
