@@ -16,4 +16,5 @@ export 'src/identified/components/zfa_input.dart';
 export 'src/identified/components/zfa_sheet.dart';
 export 'src/identified/components/zfa_toaster.dart';
 export 'src/identified/contract/skin_contract_kit.dart';
+export 'src/identified/theme/zfa_forklift_theme.dart';
 export 'src/identified/theme/zfa_theme.dart';

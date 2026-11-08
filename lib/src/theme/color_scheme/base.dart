@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:zuraffa_ui/src/theme/color_scheme/blue.dart';
+import 'package:zuraffa_ui/src/theme/color_scheme/forklift.dart';
 import 'package:zuraffa_ui/src/theme/color_scheme/gray.dart';
 import 'package:zuraffa_ui/src/theme/color_scheme/green.dart';
 import 'package:zuraffa_ui/src/theme/color_scheme/neutral.dart';
@@ -49,6 +50,10 @@ class ShadColorScheme {
         brightness == Brightness.light
             ? const ShadBlueColorScheme.light()
             : const ShadBlueColorScheme.dark(),
+      'forklift' =>
+        brightness == Brightness.light
+            ? const ShadForkliftColorScheme.light()
+            : const ShadForkliftColorScheme.dark(),
       'gray' =>
         brightness == Brightness.light
             ? const ShadGrayColorScheme.light()
