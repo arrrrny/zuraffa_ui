@@ -58,6 +58,10 @@ dev_dependencies:
 dependency_overrides:
   platform: ^3.2.0
   xml: 7.1.0
+  # 2.4.5 emits `abstract class ShadNode` instead of `sealed`, which broke the
+  # exhaustive switch in lib/src/uinode/tree/canonical_json.dart when CI
+  # regenerated nodes.zorphy.dart with it (2402619). Unpin only once the
+  # generator restores the sealed base.
   zorphy: 2.4.4
   zorphy_annotation: 2.4.4
 flutter:

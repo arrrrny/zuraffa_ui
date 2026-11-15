@@ -3,10 +3,9 @@ analyzer:
     specify_nonobvious_property_types: ignore
     discarded_futures: ignore
     cascade_invocations: ignore
-    # Flutter 3.47 deprecates package:flutter/material.dart in favour of
-    # material_ui; the migration spans ~150 call sites across this repo and
-    # its sub-packages. Silenced until that migration lands — see #59.
-    deprecated_member_use: ignore
+    # Deliberately no `deprecated_member_use: ignore` here: a category-wide
+    # mute would hide every future first-party deprecation, not just the SDK
+    # import #59 was added for. Silence those narrowly, per import, instead.
   exclude:
     - build/**
     - android/**

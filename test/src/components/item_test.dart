@@ -540,6 +540,44 @@ void main() {
       expect(focusChanges, [true]);
     });
 
+    testWidgets('attaches to a focus node passed after the first build', (
+      tester,
+    ) async {
+      final focusChanges = <bool>[];
+      final externalNode = FocusNode();
+      addTearDown(externalNode.dispose);
+      await tester.pumpWidget(
+        createTestWidget(
+          ShadItem(
+            onFocusChange: focusChanges.add,
+            onPressed: () {},
+            title: const Text('Title'),
+          ),
+        ),
+      );
+
+      // The item starts on its own internal node; swapping in an external one
+      // must move the listener, so the focus ring and onFocusChange follow it.
+      await tester.pumpWidget(
+        createTestWidget(
+          ShadItem(
+            focusNode: externalNode,
+            onFocusChange: focusChanges.add,
+            onPressed: () {},
+            title: const Text('Title'),
+          ),
+        ),
+      );
+
+      expect(itemDecorator(tester).focused, isFalse);
+
+      externalNode.requestFocus();
+      await tester.pump();
+
+      expect(itemDecorator(tester).focused, isTrue);
+      expect(focusChanges, [true]);
+    });
+
     for (final disableSecondaryBorder in [false, true]) {
       testWidgets(
         'paints a ring colored border without layout shift when focused '

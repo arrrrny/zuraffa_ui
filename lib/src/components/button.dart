@@ -778,11 +778,14 @@ class _ShadButtonState extends State<ShadButton> {
     if (oldWidget.enabled != widget.enabled) {
       statesController.update(ShadState.disabled, !widget.enabled);
     }
-    if (oldWidget.focusNode != null && widget.focusNode == null) {
-      oldWidget.focusNode!.removeListener(onFocusChange);
-      _focusNode?.dispose();
-      _focusNode = FocusNode();
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _focusNode)?.removeListener(onFocusChange);
+      if (widget.focusNode == null) {
+        _focusNode?.dispose();
+        _focusNode = FocusNode();
+      }
       focusNode.addListener(onFocusChange);
+      statesController.update(ShadState.focused, focusNode.hasFocus);
     }
   }
 

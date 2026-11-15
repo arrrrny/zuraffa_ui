@@ -355,11 +355,14 @@ class _ShadItemState extends State<ShadItem> {
     if (oldWidget.enabled != widget.enabled) {
       statesController.update(ShadState.disabled, !widget.enabled);
     }
-    if (oldWidget.focusNode != null && widget.focusNode == null) {
-      oldWidget.focusNode!.removeListener(onFocusChange);
-      _focusNode?.dispose();
-      _focusNode = FocusNode();
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _focusNode)?.removeListener(onFocusChange);
+      if (widget.focusNode == null) {
+        _focusNode?.dispose();
+        _focusNode = FocusNode();
+      }
       focusNode.addListener(onFocusChange);
+      statesController.update(ShadState.focused, focusNode.hasPrimaryFocus);
     }
     // The gesture detector is removed when the item stops being
     // interactive, so it can't report the pointer leaving anymore.
@@ -693,18 +696,24 @@ class _RenderShadItemRow extends RenderBox
   // The min-content width of the content, the widest min-content width of
   // its title, description and child.
   //
+  // [height] is the constraint the content is measured against, so a child
+  // whose min intrinsic width depends on its height is measured like it will
+  // be laid out; it defaults to unbounded when the caller has no height.
+  //
   // Widgets without intrinsic dimensions, like a LayoutBuilder, return 0 in
   // release mode but throw in debug mode, and there is no API to ask whether
   // a render object supports them. Each child is measured on its own and a
   // throw counts as 0, so debug lays out like release. In debug mode only,
   // this leaves the framework's intrinsic timeline events unbalanced.
-  double _minContentWidth(RenderBox content) {
+  double _minContentWidth(RenderBox content, [double? height]) {
     var width = 0.0;
     content.visitChildren((child) {
       try {
         width = math.max(
           width,
-          (child as RenderBox).getMinIntrinsicWidth(double.infinity),
+          (child as RenderBox).getMinIntrinsicWidth(
+            height ?? double.infinity,
+          ),
         );
         // ignore: avoid_catching_errors
       } on FlutterError {
@@ -747,7 +756,7 @@ class _RenderShadItemRow extends RenderBox
     final widths = <double>[];
     for (final item in items) {
       if (item == content) {
-        widths.add(_minContentWidth(item));
+        widths.add(_minContentWidth(item, constraints.maxHeight));
       } else {
         childConstraints[item] = loose;
         sizes[item] = sizeOf(item, loose);
@@ -864,7 +873,7 @@ class _RenderShadItemRow extends RenderBox
       width,
       // The content is measured like in layout.
       child == _content
-          ? _minContentWidth(child)
+          ? _minContentWidth(child, height)
           : child.getMinIntrinsicWidth(height),
     ),
   );

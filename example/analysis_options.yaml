@@ -10,10 +10,9 @@ linter:
   rules:
     avoid_print: false
 analyzer:
-  errors:
-    # Flutter 3.47 deprecates package:flutter/material.dart in favour of
-    # material_ui. Silenced until that migration lands — see #59.
-    deprecated_member_use: ignore
+  # Deliberately no `deprecated_member_use: ignore` here: a category-wide
+  # mute would hide every future first-party deprecation, not just the SDK
+  # import #59 was added for. Silence those narrowly, per import, instead.
   exclude:
     - build/**
     - android/**
