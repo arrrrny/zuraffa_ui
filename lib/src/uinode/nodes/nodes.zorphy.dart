@@ -8,7 +8,7 @@ part of 'nodes.dart';
 // ZorphyGenerator
 // **************************************************************************
 
-abstract class ShadNode {
+sealed class ShadNode {
   ShadNode();
 
   String? get id;

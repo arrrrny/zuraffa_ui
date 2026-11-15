@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:universal_image/universal_image.dart';
 import 'package:zuraffa_ui/src/components/disabled.dart';
 import 'package:zuraffa_ui/src/components/separator.dart';
 import 'package:zuraffa_ui/src/raw_components/focusable.dart';
@@ -14,7 +15,6 @@ import 'package:zuraffa_ui/src/utils/debug_check.dart';
 import 'package:zuraffa_ui/src/utils/gesture_detector.dart';
 import 'package:zuraffa_ui/src/utils/provider.dart';
 import 'package:zuraffa_ui/src/utils/states_controller.dart';
-import 'package:universal_image/universal_image.dart';
 
 /// The variant of the [ShadItem].
 enum ShadItemVariant { primary, outline, muted }
