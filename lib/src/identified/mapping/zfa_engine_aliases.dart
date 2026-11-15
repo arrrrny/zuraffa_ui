@@ -61,6 +61,7 @@ import 'package:zuraffa_ui/src/components/form/form.dart';
 import 'package:zuraffa_ui/src/components/icon_button.dart';
 import 'package:zuraffa_ui/src/components/input.dart';
 import 'package:zuraffa_ui/src/components/input_otp.dart';
+import 'package:zuraffa_ui/src/components/item.dart';
 import 'package:zuraffa_ui/src/components/menubar.dart';
 import 'package:zuraffa_ui/src/components/popover.dart';
 import 'package:zuraffa_ui/src/components/progress.dart';
@@ -78,6 +79,8 @@ import 'package:zuraffa_ui/src/components/tabs.dart';
 import 'package:zuraffa_ui/src/components/textarea.dart';
 import 'package:zuraffa_ui/src/components/time_picker.dart';
 import 'package:zuraffa_ui/src/components/toast.dart';
+import 'package:zuraffa_ui/src/components/toggle.dart';
+import 'package:zuraffa_ui/src/components/toggle_group.dart';
 import 'package:zuraffa_ui/src/components/tooltip.dart';
 import 'package:zuraffa_ui/src/i18n/localizations_delegate.dart';
 import 'package:zuraffa_ui/src/i18n/strings.g.dart';
@@ -115,6 +118,7 @@ import 'package:zuraffa_ui/src/theme/components/dialog.dart';
 import 'package:zuraffa_ui/src/theme/components/input.dart';
 import 'package:zuraffa_ui/src/theme/components/input_decorator.dart';
 import 'package:zuraffa_ui/src/theme/components/input_otp.dart';
+import 'package:zuraffa_ui/src/theme/components/item.dart';
 import 'package:zuraffa_ui/src/theme/components/menubar.dart';
 import 'package:zuraffa_ui/src/theme/components/option.dart';
 import 'package:zuraffa_ui/src/theme/components/popover.dart';
@@ -133,6 +137,8 @@ import 'package:zuraffa_ui/src/theme/components/tabs.dart';
 import 'package:zuraffa_ui/src/theme/components/textarea.dart';
 import 'package:zuraffa_ui/src/theme/components/time_picker.dart';
 import 'package:zuraffa_ui/src/theme/components/toast.dart';
+import 'package:zuraffa_ui/src/theme/components/toggle.dart';
+import 'package:zuraffa_ui/src/theme/components/toggle_group.dart';
 import 'package:zuraffa_ui/src/theme/components/tooltip.dart';
 import 'package:zuraffa_ui/src/theme/text_theme/text_styles_default.dart';
 import 'package:zuraffa_ui/src/theme/text_theme/theme.dart';
@@ -253,6 +259,12 @@ typedef ZfaTextDefaultTheme = ShadTextDefaultTheme;
 // src/theme/components/tooltip.dart
 typedef ZfaTooltipTheme = ShadTooltipTheme;
 
+// src/theme/components/toggle_group.dart
+typedef ZfaToggleGroupTheme = ShadToggleGroupTheme;
+
+// src/theme/components/toggle.dart
+typedef ZfaToggleTheme = ShadToggleTheme;
+
 // src/theme/components/toast.dart
 typedef ZfaToastTheme = ShadToastTheme;
 
@@ -306,6 +318,9 @@ typedef ZfaOptionTheme = ShadOptionTheme;
 
 // src/theme/components/menubar.dart
 typedef ZfaMenubarTheme = ShadMenubarTheme;
+
+// src/theme/components/item.dart
+typedef ZfaItemTheme = ShadItemTheme;
 
 // src/theme/components/input_otp.dart
 typedef ZfaInputOTPTheme = ShadInputOTPTheme;
@@ -437,6 +452,17 @@ typedef ZfaLocalizations = ShadLocalizations;
 typedef ZfaTooltipController = ShadTooltipController;
 typedef ZfaTooltip = ShadTooltip;
 
+// src/components/toggle_group.dart
+typedef ZfaToggleGroupController<T> = ShadToggleGroupController<T>;
+typedef ZfaToggleGroupType = ShadToggleGroupType;
+typedef ZfaToggleGroup<T> = ShadToggleGroup<T>;
+typedef ZfaToggleGroupState<T> = ShadToggleGroupState<T>;
+typedef ZfaToggleGroupItem<T> = ShadToggleGroupItem<T>;
+
+// src/components/toggle.dart
+typedef ZfaToggleVariant = ShadToggleVariant;
+typedef ZfaToggle = ShadToggle;
+
 // src/components/toast.dart
 typedef ZfaToasterState = ShadToasterState;
 typedef ZfaToasterScope = ShadToasterScope;
@@ -537,6 +563,21 @@ typedef ZfaPopover = ShadPopover;
 typedef ZfaMenubarController = ShadMenubarController;
 typedef ZfaMenubar = ShadMenubar;
 typedef ZfaMenubarItem = ShadMenubarItem;
+
+// src/components/item.dart
+typedef ZfaItemVariant = ShadItemVariant;
+typedef ZfaItemSize = ShadItemSize;
+typedef ZfaItemMediaVariant = ShadItemMediaVariant;
+typedef ZfaItem = ShadItem;
+typedef ZfaItemMedia = ShadItemMedia;
+typedef ZfaItemContent = ShadItemContent;
+typedef ZfaItemTitle = ShadItemTitle;
+typedef ZfaItemDescription = ShadItemDescription;
+typedef ZfaItemActions = ShadItemActions;
+typedef ZfaItemHeader = ShadItemHeader;
+typedef ZfaItemFooter = ShadItemFooter;
+typedef ZfaItemGroup = ShadItemGroup;
+typedef ZfaItemSeparator = ShadItemSeparator;
 
 // src/components/input_otp.dart
 typedef ZfaInputOTP = ShadInputOTP;

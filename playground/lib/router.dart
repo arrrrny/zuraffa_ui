@@ -16,6 +16,7 @@ import 'package:playground/pages/form.dart';
 import 'package:playground/pages/icon_button.dart';
 import 'package:playground/pages/input.dart';
 import 'package:playground/pages/input_otp.dart';
+import 'package:playground/pages/item.dart';
 import 'package:playground/pages/menubar.dart';
 import 'package:playground/pages/popover.dart';
 import 'package:playground/pages/progress.dart';
@@ -31,6 +32,8 @@ import 'package:playground/pages/tabs.dart';
 import 'package:playground/pages/textarea.dart';
 import 'package:playground/pages/time_picker.dart';
 import 'package:playground/pages/toast.dart';
+import 'package:playground/pages/toggle.dart';
+import 'package:playground/pages/toggle_group.dart';
 import 'package:playground/pages/tooltip.dart';
 import 'package:playground/pages/typography.dart';
 import 'package:zuraffa_ui/zfa.dart';
@@ -255,6 +258,14 @@ final router = GoRouter(
       },
     ),
     GoRoute(
+      path: '/item',
+      builder: (context, state) {
+        final style =
+            state.uri.queryParameters['style'] ?? ItemStyle.primary.name;
+        return ItemPage(style: ItemStyle.values.byName(style));
+      },
+    ),
+    GoRoute(
       path: '/separator',
       builder: (context, state) {
         final style = state.uri.queryParameters['style'] ?? 'horizontal';
@@ -277,6 +288,22 @@ final router = GoRouter(
       path: '/textarea',
       builder: (context, state) {
         return const TextareaPage();
+      },
+    ),
+    GoRoute(
+      path: '/toggle',
+      builder: (context, state) {
+        final style = state.uri.queryParameters['style'] ?? 'bookmark';
+        return TogglePage(style: PlaygroundToggleStyle.values.byName(style));
+      },
+    ),
+    GoRoute(
+      path: '/toggle-group',
+      builder: (context, state) {
+        final style = state.uri.queryParameters['style'] ?? 'primary';
+        return ToggleGroupPage(
+          style: PlaygroundToggleGroupStyle.values.byName(style),
+        );
       },
     ),
   ],

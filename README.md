@@ -74,7 +74,7 @@ component set — and the upstream project it tracks.
 [![Join Discord](https://dcbadge.limes.pink/api/server/ZhRMAPNh5Y?style=flat)](https://discord.gg/ZhRMAPNh5Y)
 [![Supported by ufirst](https://custom-icon-badges.demolab.com/badge/Supported%20by-ufirst-blue?logo=heart)](https://ufirst.com)
 
-<a href="https://www.buymeacoffee.com/nank1ro" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+<a href="https://www.buymeacoffee.com/nank1ro" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a> <a href="https://trendshift.io/repositories/9443?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-9443" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/9443/daily?language=Dart" alt="nank1ro%2Fflutter-shadcn-ui | Trendshift" width="186" height="41"/></a>
 
 The engine: shadcn/ui ported in Flutter. Awesome UI components, fully customizable — carried over unchanged (apart from the package rename) from the upstream fork.
 
@@ -121,6 +121,7 @@ npx skills add arrrrny/zuraffa_ui
 - [x] <strike>Hover Card</strike> Use Popover instead
 - [x] [Input](https://mariuti.com/flutter-shadcn-ui/components/input/)
 - [x] [Input OTP](https://mariuti.com/flutter-shadcn-ui/components/input-otp/)
+- [x] [Item](https://mariuti.com/flutter-shadcn-ui/components/item/)
 - [x] <strike>Label</strike> Use Text instead
 - [x] [Menubar](https://mariuti.com/flutter-shadcn-ui/components/menubar/)
 - [ ] Navigation Menu
@@ -142,8 +143,8 @@ npx skills add arrrrny/zuraffa_ui
 - [x] [TextArea](https://mariuti.com/flutter-shadcn-ui/components/text-area/)
 - [x] [Time Picker](https://mariuti.com/flutter-shadcn-ui/components/time-picker/)
 - [x] [Toast](https://mariuti.com/flutter-shadcn-ui/components/toast/)
-- [ ] Toggle
-- [ ] ToggleGroup
+- [x] [Toggle](https://mariuti.com/flutter-shadcn-ui/components/toggle/)
+- [x] [ToggleGroup](https://mariuti.com/flutter-shadcn-ui/components/toggle-group/)
 - [x] [Tooltip](https://mariuti.com/flutter-shadcn-ui/components/tooltip/)
 
 ## FAQs

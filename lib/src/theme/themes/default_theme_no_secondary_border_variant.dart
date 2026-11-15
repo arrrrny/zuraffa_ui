@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:zuraffa_ui/src/components/button.dart';
+import 'package:zuraffa_ui/src/components/item.dart';
 import 'package:zuraffa_ui/src/raw_components/portal.dart';
 import 'package:zuraffa_ui/src/theme/color_scheme/base.dart';
 import 'package:zuraffa_ui/src/theme/components/accordion.dart';
@@ -22,6 +23,7 @@ import 'package:zuraffa_ui/src/theme/components/default_keyboard_toolbar.dart';
 import 'package:zuraffa_ui/src/theme/components/dialog.dart';
 import 'package:zuraffa_ui/src/theme/components/input.dart';
 import 'package:zuraffa_ui/src/theme/components/input_otp.dart';
+import 'package:zuraffa_ui/src/theme/components/item.dart';
 import 'package:zuraffa_ui/src/theme/components/menubar.dart';
 import 'package:zuraffa_ui/src/theme/components/option.dart';
 import 'package:zuraffa_ui/src/theme/components/popover.dart';
@@ -40,6 +42,8 @@ import 'package:zuraffa_ui/src/theme/components/tabs.dart';
 import 'package:zuraffa_ui/src/theme/components/textarea.dart';
 import 'package:zuraffa_ui/src/theme/components/time_picker.dart';
 import 'package:zuraffa_ui/src/theme/components/toast.dart';
+import 'package:zuraffa_ui/src/theme/components/toggle.dart';
+import 'package:zuraffa_ui/src/theme/components/toggle_group.dart';
 import 'package:zuraffa_ui/src/theme/components/tooltip.dart';
 import 'package:zuraffa_ui/src/theme/text_theme/text_styles_default.dart';
 import 'package:zuraffa_ui/src/theme/text_theme/theme.dart';
@@ -1151,6 +1155,200 @@ class ShadDefaultThemeNoSecondaryBorderVariant extends ShadThemeVariant {
       showDoneButton: true,
       showNextButton: true,
       showPreviousButton: true,
+    );
+  }
+
+  @override
+  ShadToggleTheme primaryToggleTheme() {
+    return ShadToggleTheme(
+      hoverBackgroundColor: colorScheme.muted,
+      selectedBackgroundColor: colorScheme.accent,
+      selectedHoverBackgroundColor: colorScheme.accent,
+      foregroundColor: colorScheme.foreground,
+      hoverForegroundColor: colorScheme.mutedForeground,
+      selectedForegroundColor: colorScheme.accentForeground,
+      selectedHoverForegroundColor: colorScheme.accentForeground,
+      decoration: ShadDecoration(
+        border: ShadBorder.all(
+          radius: radius,
+          width: 0,
+          padding: const EdgeInsets.all(2),
+        ),
+      ),
+      gap: 8,
+    );
+  }
+
+  @override
+  ShadToggleTheme outlineToggleTheme() {
+    return ShadToggleTheme(
+      hoverBackgroundColor: colorScheme.accent,
+      selectedBackgroundColor: colorScheme.accent,
+      selectedHoverBackgroundColor: colorScheme.accent,
+      foregroundColor: colorScheme.foreground,
+      hoverForegroundColor: colorScheme.accentForeground,
+      selectedForegroundColor: colorScheme.accentForeground,
+      selectedHoverForegroundColor: colorScheme.accentForeground,
+      decoration: ShadDecoration(
+        border: ShadBorder.all(
+          radius: radius,
+          color: colorScheme.input,
+          padding: const EdgeInsets.all(1),
+          width: 1,
+        ),
+      ),
+      gap: 8,
+    );
+  }
+
+  @override
+  ShadButtonSizesTheme toggleSizesTheme() {
+    return const ShadButtonSizesTheme(
+      regular: ShadButtonSizeTheme(
+        height: 36,
+        padding: EdgeInsets.symmetric(horizontal: 8),
+      ),
+      sm: ShadButtonSizeTheme(
+        height: 32,
+        padding: EdgeInsets.symmetric(horizontal: 6),
+      ),
+      lg: ShadButtonSizeTheme(
+        height: 40,
+        padding: EdgeInsets.symmetric(horizontal: 10),
+      ),
+    );
+  }
+
+  @override
+  ShadToggleGroupTheme toggleGroupTheme() {
+    return const ShadToggleGroupTheme(
+      axis: Axis.horizontal,
+      spacing: 0,
+      itemPadding: EdgeInsets.symmetric(horizontal: 12),
+    );
+  }
+
+  @override
+  ShadItemTheme primaryItemTheme() {
+    return ShadItemTheme(
+      decoration: ShadDecoration(
+        border: ShadBorder.all(
+          width: 1,
+          color: const Color(0x00000000),
+          radius: radius,
+          padding: const EdgeInsets.all(1),
+        ),
+        focusedBorder: ShadBorder.all(
+          width: 2,
+          color: colorScheme.ring,
+          radius: radius,
+        ),
+      ),
+      hoverBackgroundColor: colorScheme.accent.withValues(alpha: .5),
+      size: ShadItemSize.regular,
+      titleStyle: effectiveTextTheme.small.copyWith(
+        color: colorScheme.foreground,
+        height: 1.375,
+      ),
+      descriptionStyle: effectiveTextTheme.muted.copyWith(
+        color: colorScheme.mutedForeground,
+        height: 1.5,
+      ),
+      descriptionMaxLines: 2,
+      contentSpacing: 4,
+      actionsSpacing: 8,
+      headerSpacing: 8,
+      footerSpacing: 8,
+      mediaIconSize: 16,
+      mediaIconContainerSize: 32,
+      mediaImageSize: 40,
+      mediaRadius: const BorderRadius.all(Radius.circular(4)),
+      mediaImageFit: BoxFit.cover,
+      mediaBackgroundColor: colorScheme.muted,
+      mediaBorderColor: colorScheme.border,
+    );
+  }
+
+  @override
+  ShadItemTheme outlineItemTheme() {
+    return ShadItemTheme(
+      decoration: ShadDecoration(
+        border: ShadBorder.all(
+          width: 1,
+          color: colorScheme.border,
+          radius: radius,
+          padding: const EdgeInsets.all(1),
+        ),
+        focusedBorder: ShadBorder.all(
+          width: 2,
+          color: colorScheme.ring,
+          radius: radius,
+        ),
+      ),
+      hoverBackgroundColor: colorScheme.accent.withValues(alpha: .5),
+      size: ShadItemSize.regular,
+      titleStyle: effectiveTextTheme.small.copyWith(
+        color: colorScheme.foreground,
+        height: 1.375,
+      ),
+      descriptionStyle: effectiveTextTheme.muted.copyWith(
+        color: colorScheme.mutedForeground,
+        height: 1.5,
+      ),
+      descriptionMaxLines: 2,
+      contentSpacing: 4,
+      actionsSpacing: 8,
+      headerSpacing: 8,
+      footerSpacing: 8,
+      mediaIconSize: 16,
+      mediaIconContainerSize: 32,
+      mediaImageSize: 40,
+      mediaRadius: const BorderRadius.all(Radius.circular(4)),
+      mediaImageFit: BoxFit.cover,
+      mediaBackgroundColor: colorScheme.muted,
+      mediaBorderColor: colorScheme.border,
+    );
+  }
+
+  @override
+  ShadItemTheme mutedItemTheme() {
+    return ShadItemTheme(
+      decoration: ShadDecoration(
+        border: ShadBorder.all(
+          width: 1,
+          color: const Color(0x00000000),
+          radius: radius,
+          padding: const EdgeInsets.all(1),
+        ),
+        focusedBorder: ShadBorder.all(
+          width: 2,
+          color: colorScheme.ring,
+          radius: radius,
+        ),
+      ),
+      backgroundColor: colorScheme.muted.withValues(alpha: .5),
+      hoverBackgroundColor: colorScheme.accent.withValues(alpha: .5),
+      size: ShadItemSize.regular,
+      titleStyle: effectiveTextTheme.small.copyWith(
+        color: colorScheme.foreground,
+        height: 1.375,
+      ),
+      descriptionStyle: effectiveTextTheme.muted.copyWith(
+        color: colorScheme.mutedForeground,
+        height: 1.5,
+      ),
+      descriptionMaxLines: 2,
+      contentSpacing: 4,
+      actionsSpacing: 8,
+      headerSpacing: 8,
+      footerSpacing: 8,
+      mediaIconSize: 16,
+      mediaIconContainerSize: 32,
+      mediaImageSize: 40,
+      mediaRadius: const BorderRadius.all(Radius.circular(4)),
+      mediaImageFit: BoxFit.cover,
+      mediaBackgroundColor: colorScheme.muted,
+      mediaBorderColor: colorScheme.border,
     );
   }
 }

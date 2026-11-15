@@ -282,6 +282,46 @@ void main() {
       expect(decorator.focused, true);
     });
 
+    testWidgets('attaches to a focus node passed after the first build', (
+      WidgetTester tester,
+    ) async {
+      final focusChanges = <bool>[];
+      final externalNode = FocusNode();
+      addTearDown(externalNode.dispose);
+      await tester.pumpWidget(
+        createTestWidget(
+          ShadButton(
+            onFocusChange: focusChanges.add,
+            child: const Text('Focusable Button'),
+          ),
+        ),
+      );
+
+      // The button starts on its own internal node; swapping in an external
+      // one must move the listener, so the focus ring follows the new node.
+      await tester.pumpWidget(
+        createTestWidget(
+          ShadButton(
+            focusNode: externalNode,
+            onFocusChange: focusChanges.add,
+            child: const Text('Focusable Button'),
+          ),
+        ),
+      );
+
+      expect(focusChanges, isEmpty);
+
+      externalNode.requestFocus();
+      await tester.pumpAndSettle();
+
+      expect(focusChanges, [true]);
+      final decoratorFinder = find.descendant(
+        of: find.byType(ShadButton),
+        matching: find.byType(ShadDecorator),
+      );
+      expect(tester.widget<ShadDecorator>(decoratorFinder).focused, isTrue);
+    });
+
     testWidgets('handles text direction correctly', (
       WidgetTester tester,
     ) async {

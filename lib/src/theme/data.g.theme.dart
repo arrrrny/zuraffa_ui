@@ -207,6 +207,41 @@ mixin _$ShadThemeData {
         b.defaultKeyboardToolbarTheme,
         t,
       )!,
+      primaryItemTheme: ShadItemTheme.lerp(
+        a.primaryItemTheme,
+        b.primaryItemTheme,
+        t,
+      )!,
+      outlineItemTheme: ShadItemTheme.lerp(
+        a.outlineItemTheme,
+        b.outlineItemTheme,
+        t,
+      )!,
+      mutedItemTheme: ShadItemTheme.lerp(
+        a.mutedItemTheme,
+        b.mutedItemTheme,
+        t,
+      )!,
+      primaryToggleTheme: ShadToggleTheme.lerp(
+        a.primaryToggleTheme,
+        b.primaryToggleTheme,
+        t,
+      )!,
+      outlineToggleTheme: ShadToggleTheme.lerp(
+        a.outlineToggleTheme,
+        b.outlineToggleTheme,
+        t,
+      )!,
+      toggleSizesTheme: ShadButtonSizesTheme.lerp(
+        a.toggleSizesTheme,
+        b.toggleSizesTheme,
+        t,
+      )!,
+      toggleGroupTheme: ShadToggleGroupTheme.lerp(
+        a.toggleGroupTheme,
+        b.toggleGroupTheme,
+        t,
+      )!,
     );
   }
 
@@ -266,6 +301,13 @@ mixin _$ShadThemeData {
     ShadStickySectionListTheme? stickySectionListTheme,
     ShadTextareaTheme? textareaTheme,
     ShadDefaultKeyboardToolbarTheme? defaultKeyboardToolbarTheme,
+    ShadItemTheme? primaryItemTheme,
+    ShadItemTheme? outlineItemTheme,
+    ShadItemTheme? mutedItemTheme,
+    ShadToggleTheme? primaryToggleTheme,
+    ShadToggleTheme? outlineToggleTheme,
+    ShadButtonSizesTheme? toggleSizesTheme,
+    ShadToggleGroupTheme? toggleGroupTheme,
   }) {
     final _this = (this as ShadThemeData);
 
@@ -332,6 +374,13 @@ mixin _$ShadThemeData {
       textareaTheme: textareaTheme ?? _this.textareaTheme,
       defaultKeyboardToolbarTheme:
           defaultKeyboardToolbarTheme ?? _this.defaultKeyboardToolbarTheme,
+      primaryItemTheme: primaryItemTheme ?? _this.primaryItemTheme,
+      outlineItemTheme: outlineItemTheme ?? _this.outlineItemTheme,
+      mutedItemTheme: mutedItemTheme ?? _this.mutedItemTheme,
+      primaryToggleTheme: primaryToggleTheme ?? _this.primaryToggleTheme,
+      outlineToggleTheme: outlineToggleTheme ?? _this.outlineToggleTheme,
+      toggleSizesTheme: toggleSizesTheme ?? _this.toggleSizesTheme,
+      toggleGroupTheme: toggleGroupTheme ?? _this.toggleGroupTheme,
     );
   }
 
@@ -424,6 +473,17 @@ mixin _$ShadThemeData {
       defaultKeyboardToolbarTheme: _this.defaultKeyboardToolbarTheme.merge(
         other.defaultKeyboardToolbarTheme,
       ),
+      primaryItemTheme: _this.primaryItemTheme.merge(other.primaryItemTheme),
+      outlineItemTheme: _this.outlineItemTheme.merge(other.outlineItemTheme),
+      mutedItemTheme: _this.mutedItemTheme.merge(other.mutedItemTheme),
+      primaryToggleTheme: _this.primaryToggleTheme.merge(
+        other.primaryToggleTheme,
+      ),
+      outlineToggleTheme: _this.outlineToggleTheme.merge(
+        other.outlineToggleTheme,
+      ),
+      toggleSizesTheme: _this.toggleSizesTheme.merge(other.toggleSizesTheme),
+      toggleGroupTheme: _this.toggleGroupTheme.merge(other.toggleGroupTheme),
     );
   }
 
@@ -494,7 +554,15 @@ mixin _$ShadThemeData {
         _other.sonnerTheme == _this.sonnerTheme &&
         _other.stickySectionListTheme == _this.stickySectionListTheme &&
         _other.textareaTheme == _this.textareaTheme &&
-        _other.defaultKeyboardToolbarTheme == _this.defaultKeyboardToolbarTheme;
+        _other.defaultKeyboardToolbarTheme ==
+            _this.defaultKeyboardToolbarTheme &&
+        _other.primaryItemTheme == _this.primaryItemTheme &&
+        _other.outlineItemTheme == _this.outlineItemTheme &&
+        _other.mutedItemTheme == _this.mutedItemTheme &&
+        _other.primaryToggleTheme == _this.primaryToggleTheme &&
+        _other.outlineToggleTheme == _this.outlineToggleTheme &&
+        _other.toggleSizesTheme == _this.toggleSizesTheme &&
+        _other.toggleGroupTheme == _this.toggleGroupTheme;
   }
 
   @override
@@ -558,6 +626,13 @@ mixin _$ShadThemeData {
       _this.stickySectionListTheme,
       _this.textareaTheme,
       _this.defaultKeyboardToolbarTheme,
+      _this.primaryItemTheme,
+      _this.outlineItemTheme,
+      _this.mutedItemTheme,
+      _this.primaryToggleTheme,
+      _this.outlineToggleTheme,
+      _this.toggleSizesTheme,
+      _this.toggleGroupTheme,
     ]);
   }
 }

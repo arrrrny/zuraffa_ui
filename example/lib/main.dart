@@ -22,6 +22,7 @@ import 'package:example/pages/input.dart';
 import 'package:example/pages/input_form_field.dart';
 import 'package:example/pages/input_otp.dart';
 import 'package:example/pages/input_otp_form_field.dart';
+import 'package:example/pages/item.dart';
 import 'package:example/pages/list_sheet.dart';
 import 'package:example/pages/menubar.dart';
 import 'package:example/pages/popover.dart';
@@ -45,6 +46,8 @@ import 'package:example/pages/textarea_form_field.dart';
 import 'package:example/pages/time_picker.dart';
 import 'package:example/pages/time_picker_form_field.dart';
 import 'package:example/pages/toast.dart';
+import 'package:example/pages/toggle.dart';
+import 'package:example/pages/toggle_group.dart';
 import 'package:example/pages/tooltip.dart';
 import 'package:example/pages/typography.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +81,7 @@ final routes = <String, WidgetBuilder>{
   '/input-OTP': (_) => const InputOTPPage(),
   '/input-OTP-form-field': (_) => const InputOTPFormFieldPage(),
   '/input-form-field': (_) => const InputFormFieldPage(),
+  '/item': (_) => const ItemPage(),
   '/keyboard-toolbar': (_) => const KeyboardToolbarPage(),
   '/list-sheet': (_) => const ListSheetPage(),
   '/menubar': (_) => const MenubarPage(),
@@ -102,6 +106,8 @@ final routes = <String, WidgetBuilder>{
   '/time-picker': (_) => const TimePickerPage(),
   '/time-picker-form-field': (_) => const TimePickerFormFieldPage(),
   '/toast': (_) => const ToastPage(),
+  '/toggle': (_) => const TogglePage(),
+  '/toggle-group': (_) => const ToggleGroupPage(),
   '/tooltip': (_) => const TooltipPage(),
   '/typography': (_) => const TypographyPage(),
 };
