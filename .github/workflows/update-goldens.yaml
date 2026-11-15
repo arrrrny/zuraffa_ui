@@ -37,11 +37,23 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      # Scoped to the UINode golden suite: a repo-wide update would
-      # rewrite the sheet/alert goldens, whose authoritative pixels come
-      # from their original Linux render.
+      # Scoped to the UINode golden suite plus the component golden suites:
+      # a repo-wide update would rewrite the sheet/alert goldens, whose
+      # authoritative pixels come from their original Linux render, so those
+      # two suites are excluded from the component sweep below.
       - name: Regenerate UINode goldens on Linux
         run: flutter test test/uinode/golden_test.dart --update-goldens
+
+      - name: Regenerate component goldens on Linux
+        # CI's floating stable (channel: stable, unpinned) re-renders these
+        # goldens on every SDK bump — 3.47.9 -> 3.50.0 drifted badge.png by
+        # 0.03% and failed the suite under --fail-fast. Regenerate them on
+        # the exact image CI tests on; sheet/alert keep their original
+        # render.
+        run: |
+          tests=$(find test/src/components -name '*_test.dart' \
+            ! -name 'sheet_test.dart' ! -name 'alert_test.dart' | sort)
+          flutter test $tests --update-goldens
 
       - name: Check for changes
         id: verify-changed-files
