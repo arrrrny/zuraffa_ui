@@ -11,9 +11,10 @@ analyzer:
   errors:
     avoid_web_libraries_in_flutter: ignore
     avoid_print: ignore
-    # Deliberately no `deprecated_member_use: ignore` here: a category-wide
-    # mute would hide every future first-party deprecation, not just the SDK
-    # import #59 was added for. Silence those narrowly, per import, instead.
+    # See the root analysis_options.yaml: the SDK's `material.dart` import
+    # deprecation fails `flutter analyze` until the imports are migrated
+    # (#59). REMOVE THIS with that migration.
+    deprecated_member_use: ignore
   exclude:
     - build/**
     - web/**
