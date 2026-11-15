@@ -17,6 +17,7 @@ Use `ZfaThemeData` within `ZfaApp` to define your light and dark themes.
 - [Theming](guides/theming.md)
 - [Typography](guides/typography.md)
 - [Material & Cupertino Interop](guides/interop.md)
+- [UINode](guides/uinode.md)
 - [Responsive](guides/responsive.md)
 - [Decorator](guides/decorator.md)
 
@@ -39,6 +40,7 @@ Use `ZfaThemeData` within `ZfaApp` to define your light and dark themes.
 | IconButton | Displays an icon button or a component that looks like a button with an icon. | [icon-button.md](components/icon-button.md) |
 | Input | Displays a form input field or a component that looks like an input field. | [input.md](components/input.md) |
 | InputOTP | Accessible one-time password component with copy paste functionality. | [input-otp.md](components/input-otp.md) |
+| Item | A versatile component that you can use to display any content. | [item.md](components/item.md) |
 | Menubar | A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands. | [menubar.md](components/menubar.md) |
 | Popover | Displays rich content in a portal, triggered by a button. | [popover.md](components/popover.md) |
 | Progress | Displays an indicator showing the completion progress of a task, typically displayed as a progress bar. | [progress.md](components/progress.md) |
@@ -55,6 +57,8 @@ Use `ZfaThemeData` within `ZfaApp` to define your light and dark themes.
 | Textarea | Displays a form textarea or a component that looks like a textarea. | [textarea.md](components/textarea.md) |
 | Time Picker | A time picker component. | [time-picker.md](components/time-picker.md) |
 | Toast | A succinct message that is displayed temporarily. | [toast.md](components/toast.md) |
+| Toggle | A two-state button that can be either on or off. | [toggle.md](components/toggle.md) |
+| Toggle Group | A set of two-state buttons that can be toggled on or off. | [toggle-group.md](components/toggle-group.md) |
 | Tooltip | A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it. | [tooltip.md](components/tooltip.md) |
 
 ## Usage Examples

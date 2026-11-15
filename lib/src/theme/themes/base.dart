@@ -17,6 +17,7 @@ import 'package:zuraffa_ui/src/theme/components/default_keyboard_toolbar.dart';
 import 'package:zuraffa_ui/src/theme/components/dialog.dart';
 import 'package:zuraffa_ui/src/theme/components/input.dart';
 import 'package:zuraffa_ui/src/theme/components/input_otp.dart';
+import 'package:zuraffa_ui/src/theme/components/item.dart';
 import 'package:zuraffa_ui/src/theme/components/menubar.dart';
 import 'package:zuraffa_ui/src/theme/components/option.dart';
 import 'package:zuraffa_ui/src/theme/components/popover.dart';
@@ -35,6 +36,8 @@ import 'package:zuraffa_ui/src/theme/components/tabs.dart';
 import 'package:zuraffa_ui/src/theme/components/textarea.dart';
 import 'package:zuraffa_ui/src/theme/components/time_picker.dart';
 import 'package:zuraffa_ui/src/theme/components/toast.dart';
+import 'package:zuraffa_ui/src/theme/components/toggle.dart';
+import 'package:zuraffa_ui/src/theme/components/toggle_group.dart';
 import 'package:zuraffa_ui/src/theme/components/tooltip.dart';
 import 'package:zuraffa_ui/src/theme/text_theme/theme.dart';
 import 'package:zuraffa_ui/src/utils/gesture_detector.dart';
@@ -98,6 +101,13 @@ abstract class ShadBaseTheme {
     required this.stickySectionListTheme,
     required this.textareaTheme,
     required this.defaultKeyboardToolbarTheme,
+    required this.primaryItemTheme,
+    required this.outlineItemTheme,
+    required this.mutedItemTheme,
+    required this.primaryToggleTheme,
+    required this.outlineToggleTheme,
+    required this.toggleSizesTheme,
+    required this.toggleGroupTheme,
   });
 
   final ShadColorScheme colorScheme;
@@ -155,6 +165,13 @@ abstract class ShadBaseTheme {
   final ShadStickySectionListTheme stickySectionListTheme;
   final ShadTextareaTheme textareaTheme;
   final ShadDefaultKeyboardToolbarTheme defaultKeyboardToolbarTheme;
+  final ShadItemTheme primaryItemTheme;
+  final ShadItemTheme outlineItemTheme;
+  final ShadItemTheme mutedItemTheme;
+  final ShadToggleTheme primaryToggleTheme;
+  final ShadToggleTheme outlineToggleTheme;
+  final ShadButtonSizesTheme toggleSizesTheme;
+  final ShadToggleGroupTheme toggleGroupTheme;
 }
 
 @immutable
@@ -208,4 +225,11 @@ abstract class ShadThemeVariant {
   ShadStickySectionListTheme stickySectionListTheme();
   ShadTextareaTheme textareaTheme();
   ShadDefaultKeyboardToolbarTheme defaultKeyboardToolbarTheme();
+  ShadToggleTheme primaryToggleTheme();
+  ShadToggleTheme outlineToggleTheme();
+  ShadButtonSizesTheme toggleSizesTheme();
+  ShadToggleGroupTheme toggleGroupTheme();
+  ShadItemTheme primaryItemTheme();
+  ShadItemTheme outlineItemTheme();
+  ShadItemTheme mutedItemTheme();
 }

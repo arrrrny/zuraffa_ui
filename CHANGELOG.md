@@ -164,6 +164,18 @@ skin lane's certified vocabulary.
 - The fork's component tests carried over (import URIs rewritten) and extended
   with identification + contract-kit tests in `test/identified/`.
 
+## 0.59.0
+
+- **FEAT**: Add new component `ShadItem` and all of its related components (#705).
+
+## 0.58.0
+
+- **FEAT**: Add `ShadToggle` and `ShadToggleGroup` components (#723).
+
+## 0.57.4
+
+- **FIX**: `ShadRadioGroupFormField` calls `onChanged` once per selection change. A controller update ran `didChange` (which already notifies `onChanged`), then called `onChanged` again, and the inner `ShadRadioGroup` listener called `didChange` a third time (#735).
+
 ## 0.57.3
 
 - **FIX**: Opening a `ShadContextMenu` now closes another one that is already open. All context menus shared one tap region group, so a tap on another menu's trigger counted as a tap inside every open menu. Each menu now has its own tap region group, shared with its submenus. `kContextMenuGroupId` is deprecated and no longer used (#728).

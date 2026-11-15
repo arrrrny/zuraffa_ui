@@ -8,7 +8,7 @@ void main() {
       'skills/zuraffa-ui-flutter',
     ).listSync(recursive: true).whereType<File>().toList();
 
-    expect(files, hasLength(40));
+    expect(files, hasLength(44));
     for (final file in files) {
       final content = file.readAsStringSync();
       expect(
