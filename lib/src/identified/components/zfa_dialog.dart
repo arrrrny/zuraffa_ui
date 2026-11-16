@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'package:zuraffa_ui/src/components/dialog.dart';
 import 'package:zuraffa_ui/src/identified/contract/skin_contract_kit.dart';

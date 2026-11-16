@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/zuraffa_ui.dart';
 
 // ZuraffaApp behavior: the route-contract observer is mounted by default, the

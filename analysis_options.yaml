@@ -3,13 +3,6 @@ analyzer:
     specify_nonobvious_property_types: ignore
     discarded_futures: ignore
     cascade_invocations: ignore
-    # Flutter 3.47 deprecates `package:flutter/material.dart` (and
-    # `package:flutter/cupertino.dart`) in favour of `package:material_ui` /
-    # `package:cupertino_ui`, so every import of them is a
-    # `deprecated_member_use` info and the bare `flutter analyze` step of
-    # `.github/workflows/flutter-test.yaml` fails on 144 of them. REMOVE THIS
-    # when the imports are migrated — tracked in #59.
-    deprecated_member_use: ignore
   exclude:
     - build/**
     - android/**

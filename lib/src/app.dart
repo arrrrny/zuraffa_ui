@@ -1,12 +1,9 @@
 // ignore_for_file: lines_longer_than_80_chars
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'
-    show
-        GlobalCupertinoLocalizations,
-        GlobalMaterialLocalizations,
-        GlobalWidgetsLocalizations;
+    show GlobalWidgetsLocalizations;
+import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/src/components/sonner.dart';
 import 'package:zuraffa_ui/src/components/toast.dart';
 import 'package:zuraffa_ui/src/i18n/localizations_delegate.dart';

@@ -5,8 +5,8 @@
 // arrrrny/zuraffa_browser#168): a widget mounted under the app shell resolves
 // a ScaffoldMessengerState — no "No ScaffoldMessenger widget found" throw.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/tdd/shadapp-missing-scaffoldmessenger/a1_subject.dart'
     as subject;
 

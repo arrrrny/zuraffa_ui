@@ -7,8 +7,8 @@
 // remain mounted above the navigator.
 // ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/src/components/sonner.dart';
 import 'package:zuraffa_ui/src/components/toast.dart';
 import 'package:zuraffa_ui/src/identified/app/zuraffa_app.dart';
