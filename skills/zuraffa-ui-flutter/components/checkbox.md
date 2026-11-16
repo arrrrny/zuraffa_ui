@@ -57,8 +57,8 @@ ShadCheckboxFormField(
 ```dart
 import 'package:example/common/base_scaffold.dart';
 import 'package:example/common/properties/bool_property.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/zfa.dart';
 
 class CheckboxPage extends StatefulWidget {
@@ -126,7 +126,7 @@ import 'dart:convert';
 import 'package:example/common/base_scaffold.dart';
 import 'package:example/common/properties/bool_property.dart';
 import 'package:example/common/properties/enum_property.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/zfa.dart';
 
 class CheckboxFormFieldPage extends StatefulWidget {

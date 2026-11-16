@@ -6,8 +6,8 @@
 // pushed route — the condition reported in arrrrny/zuraffa_browser#168.
 // ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/src/identified/app/zuraffa_app.dart';
 import 'package:zuraffa_ui/src/identified/components/zfa_button.dart';
 

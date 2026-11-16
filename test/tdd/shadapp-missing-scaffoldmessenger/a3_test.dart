@@ -6,8 +6,8 @@
 // navigator resolves the shell's ScaffoldMessenger — no "No ScaffoldMessenger
 // widget found" throw.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/tdd/shadapp-missing-scaffoldmessenger/a3_subject.dart'
     as subject;
 

@@ -122,7 +122,7 @@ class DropdownBreadcrumb extends StatelessWidget {
 
 ## Example
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/zfa.dart';
 import '../common/base_scaffold.dart';
 

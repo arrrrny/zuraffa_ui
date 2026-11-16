@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/zfa.dart';
 
 // A2 / SC-3: the fixture trees render to matching goldens on the
