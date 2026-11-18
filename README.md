@@ -1,4 +1,69 @@
-# Flutter ShadcnUI
+<!-- ZURAFFA-LAUNCH-PROMO (valid until Dec 1, 2026) -->
+## 🦒 [Zuraffa Browser](https://zuraffa.com) — now live
+
+<div align="center">
+  <a href="https://zuraffa.com"><img src="https://zuraffa.com/img/zuraffa-browser-home.jpg" alt="Zuraffa Browser — 10 Browsers. One window." width="800"></a>
+</div>
+
+**[Zuraffa Browser](https://zuraffa.com)** — the multi-tasking browser for AI agents & humans — is live on the [Mac App Store](https://apps.apple.com/app/id6811352058).
+
+🎁 **Launch offer: 6 months free with code `ZURAFFA`** — no credit card, no subscription, no payment. Redeem in-app until **Dec 1, 2026**.
+
+---
+
+# Zuraffa UI
+
+> `zuraffa_ui` — the skin lane's certified vocabulary: identified Zfa
+> components + `ZuraffaApp`, repackaged end to end from the
+> [`shadcn_ui`](https://github.com/nank1ro/flutter-shadcn-ui) Flutter port
+> (fork of nank1ro/flutter-shadcn-ui at `shadcn_ui` 0.56.3, base fork SHA
+> `afc95690e53629324ddbf094ca78021f56848bd4`).
+
+## Skin lane usage (certified surface)
+
+```yaml
+dependencies:
+  zuraffa_ui: ^7.3.8
+```
+
+```dart
+import 'package:zuraffa_ui/zuraffa_ui.dart';
+
+ZuraffaApp(
+  theme: ZfaThemeData(brightness: Brightness.dark),
+  home: const SkinShell(),
+)
+```
+
+`ZfaButton`, `ZfaInput`, `ZfaCard`, `ZfaSheet`, `ZfaDialog`, `ZfaToaster` each
+carry the typed contract protocol (`contractId` / `contractEnabled`), so
+runtime contract auditors, xray decks and slice manifests can identify them
+without grepping.
+
+## Zfa surface (full vocabulary)
+
+`package:zuraffa_ui/zfa.dart` carries the certified components plus a generated
+`Zfa*` alias for every public engine name
+(`scripts/generate_zfa_aliases.dart`), so consuming code never types a `Shad*`
+name:
+
+```dart
+import 'package:zuraffa_ui/zfa.dart';
+
+ZfaTooltip(
+  builder: (context) => const Text('Refresh the list'),
+  child: ZfaButton(onPressed: refresh, child: const Text('Refresh')),
+);
+```
+
+The engine keeps the upstream `Shad*` spelling underneath — that is what keeps
+upstream merges mechanical — and a skin that wants the certified vocabulary
+without the engine names imports `package:zuraffa_ui/zuraffa_ui.dart` alone.
+
+## Engine (upstream lineage)
+
+Everything below documents the engine underneath — the full shadcn/ui port
+component set — and the upstream project it tracks.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://github.com/nank1ro/flutter-shadcn-ui/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/nank1ro/flutter-shadcn-ui)](https://gitHub.com/nank1ro/flutter-shadcn-ui/stargazers/)
@@ -11,19 +76,21 @@
 
 <a href="https://www.buymeacoffee.com/nank1ro" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a> <a href="https://trendshift.io/repositories/9443?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-9443" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/9443/daily?language=Dart" alt="nank1ro%2Fflutter-shadcn-ui | Trendshift" width="186" height="41"/></a>
 
-Shadcn UI ported in Flutter.
-Awesome UI components for Flutter, fully customizable.
+The engine: shadcn/ui ported in Flutter. Awesome UI components, fully customizable — carried over unchanged (apart from the package rename) from the upstream fork.
 
 ## Documentation
 
-See the [documentation](https://mariuti.com/flutter-shadcn-ui/) to interact with the components and see the code.
+The certified `Zfa*` surface is documented above. The engine components below it
+are documented by the upstream project: see the
+[upstream documentation](https://mariuti.com/flutter-shadcn-ui/) to interact
+with them and see the code.
 
 ### Agent Skills
 
 You can install the [Agent Skills](https://agentskills.io) for this project with:
 
 ```bash
-npx skills add nank1ro/flutter-shadcn-ui
+npx skills add arrrrny/zuraffa_ui
 ```
 
 ## Progress

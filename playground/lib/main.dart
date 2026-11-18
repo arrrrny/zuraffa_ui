@@ -1,13 +1,11 @@
 import 'dart:js_interop';
 
-import 'package:web/web.dart';
-import 'package:material_ui/material_ui.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
-
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:flutter_solidart/flutter_solidart.dart';
-
+import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:playground/router.dart';
+import 'package:web/web.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 final themeSignal = Signal<ThemeMode>(ThemeMode.light);
 final themeColorSignal = Signal<String>('zinc');
@@ -115,7 +113,7 @@ class _MyAppState extends State<MyApp> {
         final themeMode = themeSignal.value;
         final themeColor = themeColorSignal.value;
         return ShadApp.router(
-          title: 'shadcn-ui Flutter Playground',
+          title: 'zuraffa_ui Flutter Playground',
           routerConfig: router,
           themeMode: themeMode,
           debugShowCheckedModeBanner: false,

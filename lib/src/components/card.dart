@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/theme/theme.dart';
-import 'package:shadcn_ui/src/utils/border.dart';
-import 'package:shadcn_ui/src/utils/extensions/text_style.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/utils/border.dart';
+import 'package:zuraffa_ui/src/utils/extensions/text_style.dart';
 
 // A customizable card widget for displaying structured content.
 ///

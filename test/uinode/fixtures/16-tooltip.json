@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "tooltip",
+    "message": "Deletes everything",
+    "child": {
+      "widgetType": "button",
+      "label": "Reset",
+      "variant": "outline"
+    }
+  }
+}

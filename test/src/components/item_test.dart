@@ -3,7 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 void main() {
   Widget createTestWidget(
@@ -534,6 +534,44 @@ void main() {
       expect(itemDecorator(tester).focused, isFalse);
 
       focusNode.requestFocus();
+      await tester.pump();
+
+      expect(itemDecorator(tester).focused, isTrue);
+      expect(focusChanges, [true]);
+    });
+
+    testWidgets('attaches to a focus node passed after the first build', (
+      tester,
+    ) async {
+      final focusChanges = <bool>[];
+      final externalNode = FocusNode();
+      addTearDown(externalNode.dispose);
+      await tester.pumpWidget(
+        createTestWidget(
+          ShadItem(
+            onFocusChange: focusChanges.add,
+            onPressed: () {},
+            title: const Text('Title'),
+          ),
+        ),
+      );
+
+      // The item starts on its own internal node; swapping in an external one
+      // must move the listener, so the focus ring and onFocusChange follow it.
+      await tester.pumpWidget(
+        createTestWidget(
+          ShadItem(
+            focusNode: externalNode,
+            onFocusChange: focusChanges.add,
+            onPressed: () {},
+            title: const Text('Title'),
+          ),
+        ),
+      );
+
+      expect(itemDecorator(tester).focused, isFalse);
+
+      externalNode.requestFocus();
       await tester.pump();
 
       expect(itemDecorator(tester).focused, isTrue);
