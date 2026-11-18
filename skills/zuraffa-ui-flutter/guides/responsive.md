@@ -1,4 +1,4 @@
-In *shadcn_ui* the responsiveness is an important part of the library.
+In *zuraffa_ui* the responsiveness is an important part of the library.
 
 The `ShadTheme` supports a customizable set of breakpoints.
 
