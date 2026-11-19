@@ -113,9 +113,9 @@ class ZuraffaApp extends StatefulWidget with ZfaContract {
        assert(
          routerDelegate != null || routerConfig != null,
          'ZuraffaApp.router requires a router delegate: pass routerConfig or '
-         'routerDelegate — the engine app only takes its router path when one of '
-         'those is present; a dispatcher/provider-only configuration would '
-         'otherwise crash in the navigator path.',
+         'routerDelegate — the engine app takes its router path only when '
+         'one of those is present; a dispatcher/provider-only configuration '
+         'would otherwise crash in the navigator path.',
        );
 
   /// The home widget of the app.
