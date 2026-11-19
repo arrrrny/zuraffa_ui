@@ -29,6 +29,29 @@ void main() {
     );
   }
 
+  ShadDecorator itemDecorator(WidgetTester tester) {
+    return tester.widget<ShadDecorator>(
+      find
+          .descendant(
+            of: find.byType(ShadItem),
+            matching: find.byType(ShadDecorator),
+          )
+          .first,
+    );
+  }
+
+  final buttonSemantics = find.descendant(
+    of: find.byType(ShadItem),
+    matching: find.byWidgetPredicate(
+      (widget) => widget is Semantics && widget.properties.button == true,
+    ),
+  );
+
+  ShadThemeData themeOf(WidgetTester tester) {
+    return ShadTheme.of(tester.element(find.byType(ShadItem).first));
+  }
+
+  group('ShadItem', () {
     testWidgets('ShadItem inside a background-painting DecoratedBox surface: '
         'zero framework errors and tap fires', (tester) async {
       // Regression guard for the exact consumer failure mode (spec 1101,
@@ -71,29 +94,6 @@ void main() {
           'Material ancestor');
     });
 
-  ShadDecorator itemDecorator(WidgetTester tester) {
-    return tester.widget<ShadDecorator>(
-      find
-          .descendant(
-            of: find.byType(ShadItem),
-            matching: find.byType(ShadDecorator),
-          )
-          .first,
-    );
-  }
-
-  final buttonSemantics = find.descendant(
-    of: find.byType(ShadItem),
-    matching: find.byWidgetPredicate(
-      (widget) => widget is Semantics && widget.properties.button == true,
-    ),
-  );
-
-  ShadThemeData themeOf(WidgetTester tester) {
-    return ShadTheme.of(tester.element(find.byType(ShadItem).first));
-  }
-
-  group('ShadItem', () {
     testWidgets('renders all the slots', (tester) async {
       await tester.pumpWidget(
         createTestWidget(

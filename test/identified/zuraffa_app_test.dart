@@ -269,9 +269,37 @@ void main() {
         isA<AssertionError>().having(
           (e) => e.message,
           'message',
-          contains('ZuraffaApp.router requires a router configuration'),
+          contains('ZuraffaApp.router requires a router delegate'),
         ),
         reason: 'FR-005: the message must name the conflict',
+      );
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('a dispatcher-only configuration is rejected by the assert', (
+      tester,
+    ) async {
+      // ShadApp routes only on routerDelegate/routerConfig; a
+      // backButtonDispatcher (or provider/parser pair) alone would fall into
+      // its navigator path with nulled home/navigatorObservers and crash on
+      // the null check. The shell asserts instead of letting that through
+      // (FR-005: reject the combination clearly).
+      Object? thrown;
+      try {
+        ZuraffaApp.router(backButtonDispatcher: RootBackButtonDispatcher());
+        fail('expected the router-config assert to throw');
+      } on Object catch (error) {
+        thrown = error;
+      }
+      expect(
+        thrown,
+        isA<AssertionError>().having(
+          (e) => e.message,
+          'message',
+          contains('ZuraffaApp.router requires a router delegate'),
+        ),
+        reason: 'FR-005: partial router input sets are rejected by name, '
+            'not by an opaque null check downstream',
       );
       expect(tester.takeException(), isNull);
     });

@@ -61,6 +61,11 @@ class ZuraffaApp extends StatefulWidget with ZfaContract {
   ///
   /// Accepts the same router inputs [ShadApp.router] accepts and forwards them
   /// unchanged, so an application loses no capability by adopting the shell.
+  /// At least one of [routerConfig] or [routerDelegate] must be non-null —
+  /// those are the inputs `ShadApp` itself routes on; a provider/parser or
+  /// back-button dispatcher alone is rejected by the constructor assert,
+  /// because `ShadApp` would fall into its navigator path and crash on the
+  /// shell's nulled `home`/`navigatorObservers`.
   ///
   /// The shell mounts a [ScaffoldMessenger] above the router and wraps the app
   /// in the violation chrome, exactly like the navigator constructor. The
@@ -106,13 +111,11 @@ class ZuraffaApp extends StatefulWidget with ZfaContract {
        onUnknownRoute = null,
        navigatorObservers = const [],
        assert(
-         routeInformationProvider != null ||
-             routeInformationParser != null ||
-             routerDelegate != null ||
-             backButtonDispatcher != null ||
-             routerConfig != null,
-         'ZuraffaApp.router requires a router configuration: pass routerConfig '
-         'or routeInformationProvider/routeInformationParser/routerDelegate.',
+         routerDelegate != null || routerConfig != null,
+         'ZuraffaApp.router requires a router delegate: pass routerConfig or '
+         'routerDelegate — ShadApp only takes its router path when one of '
+         'those is present; a dispatcher/provider-only configuration would '
+         'otherwise crash in the navigator path.',
        );
 
   /// The home widget of the app.

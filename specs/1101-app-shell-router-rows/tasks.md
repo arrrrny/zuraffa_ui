@@ -94,15 +94,18 @@ release will carry it; no new component code expected.
 
 ## Phase 5: Polish & Release (no behavior markers)
 
-- [ ] T013 Bump `pubspec.yaml` to `version: 7.6.0`
-- [ ] T014 CHANGELOG 7.6.0 entry: router-capable shell, snackbar theming,
-      ShadItem first release (FR-019, FR-020)
-- [ ] T015 Lockfile dependency-bump rule: `rm pubspec.lock && flutter pub get`,
+- [x] T013 Bump `pubspec.yaml` to `version: 7.6.0` (delivered in PR #73)
+- [x] T014 CHANGELOG 7.6.0 entry: router-capable shell, snackbar theming,
+      ShadItem first release (FR-019, FR-020) (delivered in PR #73)
+- [x] T015 Lockfile dependency-bump rule: `rm pubspec.lock && flutter pub get`,
       align declared constraints to resolution, `dart pub outdated` → file chore
       issue for held-back upgrades (AGENTS.md dependency-bump rule)
-- [ ] T016 Full gate: `flutter analyze` + full suite + `./scripts/local_ci.sh`
-      (quickstart.md "Full gate before PR")
-- [ ] T017 Push branch, open PR, hand to the forklift pool (never hand-merge)
+      (delivered in PR #73; held-back upgrades filed as #72)
+- [x] T016 Full gate: `flutter analyze` + full suite + `./scripts/local_ci.sh`
+      (quickstart.md "Full gate before PR") (delivered in PR #73; local_ci.sh
+      flutter-clean hazard filed as #71)
+- [x] T017 Push branch, open PR, hand to the forklift pool (never hand-merge)
+      (this PR)
 
 ## Dependencies & Execution Order
 
