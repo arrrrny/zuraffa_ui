@@ -113,7 +113,7 @@ class ZuraffaApp extends StatefulWidget with ZfaContract {
        assert(
          routerDelegate != null || routerConfig != null,
          'ZuraffaApp.router requires a router delegate: pass routerConfig or '
-         'routerDelegate — ShadApp only takes its router path when one of '
+         'routerDelegate — the engine app only takes its router path when one of '
          'those is present; a dispatcher/provider-only configuration would '
          'otherwise crash in the navigator path.',
        );
@@ -207,7 +207,8 @@ class _ZuraffaAppState extends State<ZuraffaApp> {
 
   @override
   Widget build(BuildContext context) {
-    final usesRouter = widget.routeInformationProvider != null ||
+    final usesRouter =
+        widget.routeInformationProvider != null ||
         widget.routeInformationParser != null ||
         widget.routerDelegate != null ||
         widget.backButtonDispatcher != null ||
