@@ -1,0 +1,33 @@
+{
+  "schema": "proof.v1",
+  "command": "tdd verify-red A3 --re-certify",
+  "target": "A3",
+  "repro": "zfa tdd verify-red A3 --re-certify",
+  "at": "2026-09-17T23:47:45.003770Z",
+  "generator_version": "6.3.0",
+  "input": {
+    "sanctioned": true,
+    "hand_delta": true,
+    "transition": "re-certify",
+    "behavior": "A3",
+    "feature": "shadapp-missing-scaffoldmessenger"
+  },
+  "files": [
+    {
+      "path": "test/tdd/shadapp-missing-scaffoldmessenger/a3_test.dart",
+      "action": "update",
+      "sha256": "00b3c087c72313d12ddf17f7bdc616622636c141609bbb6985d16f70f0214ee8",
+      "bytes": 991,
+      "snapshot": "// zfa:tdd: A3:hand — hand step completed before first red certification\n// (issue #1411)\n//\n// Hand-completed acceptance test for A3 (AC-3, issue\n// arrrrny/zuraffa_browser#168): a widget on a route pushed onto the shell's\n// navigator resolves the shell's ScaffoldMessenger — no \"No ScaffoldMessenger\n// widget found\" throw.\n\nimport 'package:flutter/material.dart';\nimport 'package:flutter_test/flutter_test.dart';\nimport 'package:zuraffa_ui/tdd/shadapp-missing-scaffoldmessenger/a3_subject.dart'\n    as subject;\n\nvoid main() {\n  group('A3 (AC-3)', () {\n    testWidgets(\n      \"A3 — it resolves the shell's messenger without throwing.\",\n      (tester) async {\n        final messenger = await subject.subject_a3(tester);\n\n        // The observable outcome (issue #1488): the messenger resolved from\n        // the pushed route — asserted outside the guard.\n        expect(messenger, isA<ScaffoldMessengerState>());\n        expect(messenger.mounted, isTrue);\n      },\n    );\n  });\n}\n"
+    },
+    {
+      "path": "lib/tdd/shadapp-missing-scaffoldmessenger/a3_subject.dart",
+      "action": "update",
+      "sha256": "e8e513934593092cbcdde0bcff02fa0115ff47a4e10e65e0592b7337ee077a76",
+      "bytes": 1658,
+      "snapshot": "// zfa:tdd: A3:hand — hand step completed before first red certification\n// (issue #1411)\n//\n// Hand-implemented scenario runner for behavior A3 (AC-3): pushes a route\n// onto the shell's navigator and resolves its ScaffoldMessenger from the\n// pushed route — the condition reported in arrrrny/zuraffa_browser#168.\n// ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names\n\nimport 'package:flutter/material.dart';\nimport 'package:flutter_test/flutter_test.dart';\nimport 'package:zuraffa_ui/zuraffa_ui.dart';\n\n/// Runs the A3 scenario and returns the [ScaffoldMessengerState] resolved\n/// from the pushed route's context.\n///\n/// Resolution happens synchronously inside the route's build, exactly where a\n/// real widget would call `ScaffoldMessenger.of(context)`.\nFuture<ScaffoldMessengerState> subject_a3(WidgetTester tester) async {\n  late ScaffoldMessengerState messenger;\n  await tester.pumpWidget(\n    ZuraffaApp(\n      showViolationChrome: false,\n      home: Scaffold(\n        body: Builder(\n          builder: (context) => ZfaButton(\n            child: const Text('open probe route'),\n            onPressed: () => Navigator.of(context).push(\n              MaterialPageRoute<void>(\n                settings: const RouteSettings(name: 'zfa.probe'),\n                builder: (routeContext) {\n                  messenger = ScaffoldMessenger.of(routeContext);\n                  return const Scaffold(body: Text('probe route'));\n                },\n              ),\n            ),\n          ),\n        ),\n      ),\n    ),\n  );\n  await tester.tap(find.text('open probe route'));\n  await tester.pumpAndSettle();\n  return messenger;\n}\n"
+    }
+  ],
+  "receipt_version": 1,
+  "min_core_version": "6.0.0"
+}

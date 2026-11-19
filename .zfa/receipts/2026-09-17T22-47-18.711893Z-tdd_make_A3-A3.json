@@ -1,0 +1,33 @@
+{
+  "schema": "proof.v1",
+  "command": "tdd make A3",
+  "target": "A3",
+  "repro": "zfa tdd make A3",
+  "at": "2026-09-17T22:47:18.711893Z",
+  "generator_version": "6.3.0",
+  "input": {
+    "sanctioned": true,
+    "hand_delta": true,
+    "transition": "skip",
+    "behavior": "A3",
+    "feature": "shadapp-missing-scaffoldmessenger"
+  },
+  "files": [
+    {
+      "path": "test/tdd/shadapp-missing-scaffoldmessenger/a3_test.dart",
+      "action": "update",
+      "sha256": "1477144d92077308ac446bf317e73ff949ec16335fe068f045b716a5bf47f5cc",
+      "bytes": 980,
+      "snapshot": "// zfa:tdd: A3:hand — hand step completed before first red certification (issue #1411)\n//\n// Hand-completed acceptance test for A3 (AC-3, issue\n// arrrrny/zuraffa_browser#168): a widget on a route pushed onto the shell's\n// navigator resolves the shell's ScaffoldMessenger — no \"No ScaffoldMessenger\n// widget found\" throw.\nlibrary;\n\nimport 'package:flutter/material.dart';\nimport 'package:flutter_test/flutter_test.dart';\nimport 'package:zuraffa_ui/tdd/shadapp-missing-scaffoldmessenger/a3_subject.dart'\n    as subject;\n\nvoid main() {\n  group('A3 (AC-3)', () {\n    testWidgets('A3 — it resolves the shell\\'s messenger without throwing.', (\n      tester,\n    ) async {\n      final messenger = await subject.subject_a3(tester);\n\n      // The observable outcome (issue #1488): the messenger resolved from the\n      // pushed route — asserted outside the guard.\n      expect(messenger, isA<ScaffoldMessengerState>());\n      expect(messenger.mounted, isTrue);\n    });\n  });\n}\n"
+    },
+    {
+      "path": "lib/tdd/shadapp-missing-scaffoldmessenger/a3_subject.dart",
+      "action": "update",
+      "sha256": "20dced93b6b5278c30a92fc0660bd1af16509f96ed231e8b1d828202ceb02023",
+      "bytes": 1880,
+      "snapshot": "// zfa:tdd: A3:hand — hand step completed before first red certification (issue #1411)\n//\n// Hand-implemented scenario runner for behavior A3 (AC-3): pushes a route onto\n// ZuraffaApp's navigator and resolves the shell's ScaffoldMessenger from the\n// pushed route's context.\n//\n// The subject name is derived from the behavior id (`subject_a3`) and is\n// deliberately snake_cased — the generator KNOWS the name it emits, so the\n// lint its shape provably trips is suppressed here rather than renaming the\n// contract surface (issue #1035).\n// ignore_for_file: non_constant_identifier_names\nlibrary;\n\nimport 'package:flutter/material.dart';\nimport 'package:flutter_test/flutter_test.dart';\nimport 'package:zuraffa_ui/zuraffa_ui.dart';\n\n/// Runs the A3 scenario: mounts the shell, pushes a named route, and returns\n/// the [ScaffoldMessengerState] resolved from the pushed route's context.\n///\n/// Throws if the shell provides no `ScaffoldMessenger` ancestor — the\n/// condition reported in arrrrny/zuraffa_browser#168.\nFuture<ScaffoldMessengerState> subject_a3(WidgetTester tester) async {\n  late BuildContext routeContext;\n  await tester.pumpWidget(\n    ZuraffaApp(\n      showViolationChrome: false,\n      home: Scaffold(\n        body: Builder(\n          builder: (context) => ZfaButton(\n            child: const Text('open probe route'),\n            onPressed: () => Navigator.of(context).push(\n              MaterialPageRoute<void>(\n                settings: const RouteSettings(name: 'zfa.probe'),\n                builder: (context) {\n                  routeContext = context;\n                  return const Scaffold(body: Text('probe route'));\n                },\n              ),\n            ),\n          ),\n        ),\n      ),\n    ),\n  );\n  await tester.tap(find.text('open probe route'));\n  await tester.pumpAndSettle();\n  return ScaffoldMessenger.of(routeContext);\n}\n"
+    }
+  ],
+  "receipt_version": 1,
+  "min_core_version": "6.0.0"
+}
