@@ -9,9 +9,281 @@ part of 'nodes.dart';
 // **************************************************************************
 
 sealed class ShadNode {
-  ShadNode();
-
   String? get id;
+}
+
+extension ShadNodePolymorphicE on ShadNode {
+  bool get isUnknownNode {
+    return this is UnknownNode;
+  }
+
+  UnknownNode? get asUnknownNode {
+    return this is UnknownNode ? this as UnknownNode : null;
+  }
+
+  bool get isButtonNode {
+    return this is ButtonNode;
+  }
+
+  ButtonNode? get asButtonNode {
+    return this is ButtonNode ? this as ButtonNode : null;
+  }
+
+  bool get isBadgeNode {
+    return this is BadgeNode;
+  }
+
+  BadgeNode? get asBadgeNode {
+    return this is BadgeNode ? this as BadgeNode : null;
+  }
+
+  bool get isTextNode {
+    return this is TextNode;
+  }
+
+  TextNode? get asTextNode {
+    return this is TextNode ? this as TextNode : null;
+  }
+
+  bool get isCardNode {
+    return this is CardNode;
+  }
+
+  CardNode? get asCardNode {
+    return this is CardNode ? this as CardNode : null;
+  }
+
+  bool get isCardHeaderNode {
+    return this is CardHeaderNode;
+  }
+
+  CardHeaderNode? get asCardHeaderNode {
+    return this is CardHeaderNode ? this as CardHeaderNode : null;
+  }
+
+  bool get isCardFooterNode {
+    return this is CardFooterNode;
+  }
+
+  CardFooterNode? get asCardFooterNode {
+    return this is CardFooterNode ? this as CardFooterNode : null;
+  }
+
+  bool get isProgressNode {
+    return this is ProgressNode;
+  }
+
+  ProgressNode? get asProgressNode {
+    return this is ProgressNode ? this as ProgressNode : null;
+  }
+
+  bool get isSeparatorNode {
+    return this is SeparatorNode;
+  }
+
+  SeparatorNode? get asSeparatorNode {
+    return this is SeparatorNode ? this as SeparatorNode : null;
+  }
+
+  bool get isInputNode {
+    return this is InputNode;
+  }
+
+  InputNode? get asInputNode {
+    return this is InputNode ? this as InputNode : null;
+  }
+
+  bool get isSelectNode {
+    return this is SelectNode;
+  }
+
+  SelectNode? get asSelectNode {
+    return this is SelectNode ? this as SelectNode : null;
+  }
+
+  bool get isSelectOptionNode {
+    return this is SelectOptionNode;
+  }
+
+  SelectOptionNode? get asSelectOptionNode {
+    return this is SelectOptionNode ? this as SelectOptionNode : null;
+  }
+
+  bool get isCheckboxNode {
+    return this is CheckboxNode;
+  }
+
+  CheckboxNode? get asCheckboxNode {
+    return this is CheckboxNode ? this as CheckboxNode : null;
+  }
+
+  bool get isSwitchNode {
+    return this is SwitchNode;
+  }
+
+  SwitchNode? get asSwitchNode {
+    return this is SwitchNode ? this as SwitchNode : null;
+  }
+
+  bool get isRadioGroupNode {
+    return this is RadioGroupNode;
+  }
+
+  RadioGroupNode? get asRadioGroupNode {
+    return this is RadioGroupNode ? this as RadioGroupNode : null;
+  }
+
+  bool get isRadioOptionNode {
+    return this is RadioOptionNode;
+  }
+
+  RadioOptionNode? get asRadioOptionNode {
+    return this is RadioOptionNode ? this as RadioOptionNode : null;
+  }
+
+  bool get isFormItemNode {
+    return this is FormItemNode;
+  }
+
+  FormItemNode? get asFormItemNode {
+    return this is FormItemNode ? this as FormItemNode : null;
+  }
+
+  bool get isTabsNode {
+    return this is TabsNode;
+  }
+
+  TabsNode? get asTabsNode {
+    return this is TabsNode ? this as TabsNode : null;
+  }
+
+  bool get isTabNode {
+    return this is TabNode;
+  }
+
+  TabNode? get asTabNode {
+    return this is TabNode ? this as TabNode : null;
+  }
+
+  bool get isTabPaneNode {
+    return this is TabPaneNode;
+  }
+
+  TabPaneNode? get asTabPaneNode {
+    return this is TabPaneNode ? this as TabPaneNode : null;
+  }
+
+  bool get isTooltipNode {
+    return this is TooltipNode;
+  }
+
+  TooltipNode? get asTooltipNode {
+    return this is TooltipNode ? this as TooltipNode : null;
+  }
+
+  bool get isSheetNode {
+    return this is SheetNode;
+  }
+
+  SheetNode? get asSheetNode {
+    return this is SheetNode ? this as SheetNode : null;
+  }
+
+  bool get isDialogNode {
+    return this is DialogNode;
+  }
+
+  DialogNode? get asDialogNode {
+    return this is DialogNode ? this as DialogNode : null;
+  }
+
+  bool get isPopoverNode {
+    return this is PopoverNode;
+  }
+
+  PopoverNode? get asPopoverNode {
+    return this is PopoverNode ? this as PopoverNode : null;
+  }
+
+  bool get isToastNode {
+    return this is ToastNode;
+  }
+
+  ToastNode? get asToastNode {
+    return this is ToastNode ? this as ToastNode : null;
+  }
+
+  bool get isRowNode {
+    return this is RowNode;
+  }
+
+  RowNode? get asRowNode {
+    return this is RowNode ? this as RowNode : null;
+  }
+
+  bool get isColumnNode {
+    return this is ColumnNode;
+  }
+
+  ColumnNode? get asColumnNode {
+    return this is ColumnNode ? this as ColumnNode : null;
+  }
+
+  bool get isStackNode {
+    return this is StackNode;
+  }
+
+  StackNode? get asStackNode {
+    return this is StackNode ? this as StackNode : null;
+  }
+
+  bool get isPaddingNode {
+    return this is PaddingNode;
+  }
+
+  PaddingNode? get asPaddingNode {
+    return this is PaddingNode ? this as PaddingNode : null;
+  }
+
+  bool get isExpandedNode {
+    return this is ExpandedNode;
+  }
+
+  ExpandedNode? get asExpandedNode {
+    return this is ExpandedNode ? this as ExpandedNode : null;
+  }
+
+  bool get isSizedBoxNode {
+    return this is SizedBoxNode;
+  }
+
+  SizedBoxNode? get asSizedBoxNode {
+    return this is SizedBoxNode ? this as SizedBoxNode : null;
+  }
+
+  bool get isListViewNode {
+    return this is ListViewNode;
+  }
+
+  ListViewNode? get asListViewNode {
+    return this is ListViewNode ? this as ListViewNode : null;
+  }
+
+  bool get isImageNode {
+    return this is ImageNode;
+  }
+
+  ImageNode? get asImageNode {
+    return this is ImageNode ? this as ImageNode : null;
+  }
+
+  bool get isIconNode {
+    return this is IconNode;
+  }
+
+  IconNode? get asIconNode {
+    return this is IconNode ? this as IconNode : null;
+  }
 }
 
 extension ShadNodePropertyHelpers on ShadNode {
@@ -2833,7 +3105,7 @@ class SelectNodePatch extends PatchBase<SelectNode, SelectNode$> {
       if (index >= 0 && index < updatedList.length) {
         updatedList[index] = patch(
           SelectOptionNodePatch(),
-        ).applyTo(updatedList[index] as SelectOptionNode);
+        ).applyTo(updatedList[index]);
       }
       return updatedList;
     };
@@ -4019,7 +4291,7 @@ class RadioGroupNodePatch extends PatchBase<RadioGroupNode, RadioGroupNode$> {
       if (index >= 0 && index < updatedList.length) {
         updatedList[index] = patch(
           RadioOptionNodePatch(),
-        ).applyTo(updatedList[index] as RadioOptionNode);
+        ).applyTo(updatedList[index]);
       }
       return updatedList;
     };
@@ -4904,9 +5176,7 @@ class TabsNodePatch extends PatchBase<TabsNode, TabsNode$> {
     patchMap[TabsNode$.tabs] = (List<dynamic> list) {
       var updatedList = List<TabNode>.from(list);
       if (index >= 0 && index < updatedList.length) {
-        updatedList[index] = patch(
-          TabNodePatch(),
-        ).applyTo(updatedList[index] as TabNode);
+        updatedList[index] = patch(TabNodePatch()).applyTo(updatedList[index]);
       }
       return updatedList;
     };
@@ -4927,7 +5197,7 @@ class TabsNodePatch extends PatchBase<TabsNode, TabsNode$> {
       if (index >= 0 && index < updatedList.length) {
         updatedList[index] = patch(
           TabPaneNodePatch(),
-        ).applyTo(updatedList[index] as TabPaneNode);
+        ).applyTo(updatedList[index]);
       }
       return updatedList;
     };
@@ -6487,7 +6757,7 @@ class DialogNodePatch extends PatchBase<DialogNode, DialogNode$> {
       if (index >= 0 && index < updatedList.length) {
         updatedList[index] = patch(
           ButtonNodePatch(),
-        ).applyTo(updatedList[index] as ButtonNode);
+        ).applyTo(updatedList[index]);
       }
       return updatedList;
     };

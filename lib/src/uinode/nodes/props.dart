@@ -23,9 +23,7 @@ class ActionId {
 
   @override
   bool operator ==(Object other) =>
-      other is ActionId &&
-      other.name == name &&
-      mapEquals(other.args, args);
+      other is ActionId && other.name == name && mapEquals(other.args, args);
 
   // Deep like `==`: hash per-entry, order-insensitively, so structurally
   // equal args produce equal hashes.

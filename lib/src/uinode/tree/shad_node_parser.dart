@@ -78,8 +78,14 @@ class ShadNodeParser {
   /// `padding`, an unknown node's `raw`, …) whose maps/lists are not
   /// nodes; decoding them would report false errors on valid trees.
   static const _childKeys = {
-    'content', 'children', 'child', 'header', 'footer', 'trigger',
-    'field', 'actions',
+    'content',
+    'children',
+    'child',
+    'header',
+    'footer',
+    'trigger',
+    'field',
+    'actions',
   };
 
   /// Walks [json] recording every violation instead of stopping at the
