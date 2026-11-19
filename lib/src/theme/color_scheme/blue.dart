@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/theme/color_scheme/base.dart';
+import 'package:zuraffa_ui/src/theme/color_scheme/base.dart';
 
 @immutable
 class ShadBlueColorScheme extends ShadColorScheme {

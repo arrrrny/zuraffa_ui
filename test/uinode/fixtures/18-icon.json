@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "row",
+    "mainAxisAlignment": "center",
+    "gap": 16,
+    "children": [
+      {
+        "widgetType": "icon",
+        "name": "heart",
+        "size": 24
+      },
+      {
+        "widgetType": "icon",
+        "name": "star",
+        "size": 24
+      },
+      {
+        "widgetType": "icon",
+        "name": "bell",
+        "size": 24
+      }
+    ]
+  }
+}

@@ -1,5 +1,10 @@
 name: Update Dart File Hashes
 
+# NOTE: this repo's default branch is `master`. This workflow stays parked
+# until the `BOT_TOKEN` secret exists — without it the push below 403s and
+# every master push goes red. To enable it, point `branches` at `master` and
+# add the secret. Run `.github/scripts/generate_hashes.sh` by hand in the
+# meantime to refresh `cli/hashes.json`.
 on:
   push:
     branches:
@@ -19,12 +24,12 @@ jobs:
         run: |
           bash .github/scripts/generate_hashes.sh
 
-      - name: Commit and force push changes
+      - name: Commit and push changes
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add cli/hashes.json
           git commit -m "Update hashes.json with latest Dart file SHAs" || echo "No changes to commit"
-          git push origin main --force-with-lease
+          git push origin master
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}

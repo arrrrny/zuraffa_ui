@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "padding",
+    "padding": {
+      "all": 16
+    },
+    "child": {
+      "widgetType": "toast",
+      "title": "Changes saved",
+      "description": "Your profile is up to date",
+      "variant": "success"
+    }
+  }
+}

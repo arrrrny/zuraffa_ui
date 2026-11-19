@@ -36,7 +36,7 @@ import 'package:playground/pages/toggle.dart';
 import 'package:playground/pages/toggle_group.dart';
 import 'package:playground/pages/tooltip.dart';
 import 'package:playground/pages/typography.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 extension on GoRouterState {
   bool? getBoolFromArg(String name) {

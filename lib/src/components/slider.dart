@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/raw_components/focusable.dart';
+import 'package:zuraffa_ui/src/raw_components/focusable.dart';
 
-import 'package:shadcn_ui/src/theme/theme.dart';
-import 'package:shadcn_ui/src/utils/gesture_detector.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/utils/gesture_detector.dart';
 
 /// Possible ways for a user to interact with a [ShadSlider].
 enum ShadSliderInteraction {

@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:shadcn_ui/src/app.dart';
-import 'package:shadcn_ui/src/components/button.dart'; // Adjust import path based on your project structure
-import 'package:shadcn_ui/src/theme/components/decorator.dart';
-import 'package:shadcn_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/app.dart';
+import 'package:zuraffa_ui/src/components/button.dart'; // Adjust import path based on your project structure
+import 'package:zuraffa_ui/src/theme/components/decorator.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
 
 void main() {
   // Helper method to create a test widget wrapped in ShadApp and Scaffold
@@ -280,6 +280,46 @@ void main() {
       expect(decoratorFinder, findsOneWidget);
       final decorator = tester.widget<ShadDecorator>(decoratorFinder);
       expect(decorator.focused, true);
+    });
+
+    testWidgets('attaches to a focus node passed after the first build', (
+      WidgetTester tester,
+    ) async {
+      final focusChanges = <bool>[];
+      final externalNode = FocusNode();
+      addTearDown(externalNode.dispose);
+      await tester.pumpWidget(
+        createTestWidget(
+          ShadButton(
+            onFocusChange: focusChanges.add,
+            child: const Text('Focusable Button'),
+          ),
+        ),
+      );
+
+      // The button starts on its own internal node; swapping in an external
+      // one must move the listener, so the focus ring follows the new node.
+      await tester.pumpWidget(
+        createTestWidget(
+          ShadButton(
+            focusNode: externalNode,
+            onFocusChange: focusChanges.add,
+            child: const Text('Focusable Button'),
+          ),
+        ),
+      );
+
+      expect(focusChanges, isEmpty);
+
+      externalNode.requestFocus();
+      await tester.pumpAndSettle();
+
+      expect(focusChanges, [true]);
+      final decoratorFinder = find.descendant(
+        of: find.byType(ShadButton),
+        matching: find.byType(ShadDecorator),
+      );
+      expect(tester.widget<ShadDecorator>(decoratorFinder).focused, isTrue);
     });
 
     testWidgets('handles text direction correctly', (

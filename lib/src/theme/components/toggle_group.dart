@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/components/button.dart';
-import 'package:shadcn_ui/src/components/toggle.dart';
 import 'package:theme_extensions_builder_annotation/theme_extensions_builder_annotation.dart';
+import 'package:zuraffa_ui/src/components/button.dart';
+import 'package:zuraffa_ui/src/components/toggle.dart';
 
 part 'toggle_group.g.theme.dart';
 

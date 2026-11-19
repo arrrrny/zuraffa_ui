@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:material_ui/material_ui.dart';
 
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class SonnerPage extends StatelessWidget {
   const SonnerPage({super.key});

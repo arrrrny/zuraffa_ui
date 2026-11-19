@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:shadcn_ui/src/raw_components/portal.dart';
-import 'package:shadcn_ui/src/theme/components/decorator.dart';
 import 'package:theme_extensions_builder_annotation/theme_extensions_builder_annotation.dart';
+import 'package:zuraffa_ui/src/raw_components/portal.dart';
+import 'package:zuraffa_ui/src/theme/components/decorator.dart';
 
 part 'popover.g.theme.dart';
 
