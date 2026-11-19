@@ -1,3 +1,7 @@
+## Unreleased
+
+- **FIX**: Re-export `ThemeMode` from the package barrel (`package:zuraffa_ui/zuraffa_ui.dart`) so a consumer that imports only the certified vocabulary names the SAME `ThemeMode` `ShadApp`/`ZuraffaApp` accept — material_ui's, not the Flutter SDK's. Since 7.6.0 adopted shadcn_ui 0.60.0's breaking `package:flutter/material.dart` -> standalone `material_ui` migration, the shell's `themeMode` parameter is material_ui's `ThemeMode`, a nominally distinct type from the SDK's; a consumer importing `package:flutter/material.dart` for `ThemeMode` and passing it to the shell failed to compile with "The argument type 'ThemeMode/*1*/' can't be assigned to the parameter type 'ThemeMode/*2*/?'". Consumers now take the family's type from the zuraffa_ui import (arrrrny/zuraffa#2110).
+
 ## 7.6.0 - 2026-11-19
 
 - **FEAT**: `ZuraffaApp.router` — the certified app shell now accepts the same router inputs `ShadApp.router` does (`routerConfig`, `routeInformationProvider`/`routeInformationParser`, `routerDelegate`, `backButtonDispatcher`) and mounts the `ScaffoldMessenger`, violation chrome, audit bus and consumer `builder` exactly like the navigator constructor. Route-push auditing stays with the delegate's own navigator: add `SkinContractKit().observer` to its `observers` (a `RouterConfig` cannot carry observers — an SDK constraint, documented on the constructor).
