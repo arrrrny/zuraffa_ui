@@ -1,3 +1,10 @@
+## 7.6.0 - 2026-11-19
+
+- **FEAT**: `ZuraffaApp.router` — the certified app shell now accepts the same router inputs `ShadApp.router` does (`routerConfig`, `routeInformationProvider`/`routeInformationParser`, `routerDelegate`, `backButtonDispatcher`) and mounts the `ScaffoldMessenger`, violation chrome, audit bus and consumer `builder` exactly like the navigator constructor. Route-push auditing stays with the delegate's own navigator: add `SkinContractKit().observer` to its `observers` (a `RouterConfig` cannot carry observers — an SDK constraint, documented on the constructor).
+- **FEAT**: `materialTheme()` now derives `snackBarTheme` from the shell colour scheme (background `primary`, text/action/close-icon `primaryForeground`), so Material snack bars stop rendering as the M3 near-black slab; consumer `materialThemeBuilder` still overrides.
+- **FEAT**: First release carrying `ShadItem` and its companions (`ShadItemMedia`, `ShadItemContent`, `ShadItemTitle`, `ShadItemDescription`, `ShadItemActions`, `ShadItemHeader`, `ShadItemFooter`, `ShadItemGroup`, `ShadItemSeparator`, sizes, variants) with all `ZfaItem*` aliases — a Material-free row primitive for surfaces that paint their own background (dialogs, sheets, cards).
+- ZuraffaApp now also forwards `materialThemeBuilder`.
+
 ## 0.61.1
 
 - **FIX**: Localizations are compiled into the main web bundle instead of deferred locale chunks, preventing stale tabs from requesting missing chunks after a deployment. The bundle grows by about 18 KB gzipped.

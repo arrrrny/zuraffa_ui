@@ -1,9 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/zfa.dart';
+
+// The item goldens were rendered on Linux (see sheet_test's identical gate);
+// macOS renders different glyph metrics, so they are skipped off-Linux with
+// the reason printed instead of failing every non-Linux host run.
+final bool skipItemGoldens = !Platform.isLinux;
 
 void main() {
   Widget createTestWidget(
@@ -21,6 +28,48 @@ void main() {
       ),
     );
   }
+
+    testWidgets('ShadItem inside a background-painting DecoratedBox surface: '
+        'zero framework errors and tap fires', (tester) async {
+      // Regression guard for the exact consumer failure mode (spec 1101,
+      // SC-002): a ListTile inside a DecoratedBox with a background colour
+      // trips "ListTile background color or ink splashes may be invisible".
+      // ShadItem must render and stay interactive in the same situation,
+      // without requiring a Material ancestor.
+      var taps = 0;
+      await tester.pumpWidget(
+        createTestWidget(
+          Builder(
+            builder: (context) => DecoratedBox(
+              decoration: BoxDecoration(
+                color: ShadTheme.of(context).colorScheme.card,
+                border: Border.all(),
+              ),
+              child: ShadItem(
+                onPressed: () => taps++,
+                child: const ShadItemContent(
+                  children: [
+                    ShadItemTitle(child: Text('row in decorated surface')),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.takeException(),
+        isNull,
+        reason: 'no framework error about background or ink splashes',
+      );
+      expect(find.text('row in decorated surface'), findsOneWidget);
+
+      await tester.tap(find.byType(ShadItem));
+      expect(taps, 1, reason: 'FR-007: the row responds to input without a '
+          'Material ancestor');
+    });
 
   ShadDecorator itemDecorator(WidgetTester tester) {
     return tester.widget<ShadDecorator>(
@@ -1356,6 +1405,7 @@ void main() {
     });
 
     testWidgets('ShadItem matches goldens', (tester) async {
+
       await tester.pumpWidget(
         createTestWidget(
           const ShadItem.outline(
@@ -1378,7 +1428,7 @@ void main() {
         find.byType(ShadItem),
         matchesGoldenFile('goldens/item.png'),
       );
-    });
+    }, skip: skipItemGoldens);
 
     testWidgets('ShadItem.muted sm matches goldens', (tester) async {
       await tester.pumpWidget(
@@ -1396,7 +1446,7 @@ void main() {
         find.byType(ShadItem),
         matchesGoldenFile('goldens/item_muted_sm.png'),
       );
-    });
+    }, skip: skipItemGoldens);
   });
 
   group('ShadItemMedia', () {
