@@ -4,6 +4,7 @@ version: 7.5.0
 repository: https://github.com/arrrrny/zuraffa_ui
 homepage: https://zuraffa.com
 issue_tracker: https://github.com/arrrrny/zuraffa_ui/issues
+documentation: https://mariuti.com/flutter-shadcn-ui
 topics:
   - user-interface
   - design-system
