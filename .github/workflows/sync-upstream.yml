@@ -166,7 +166,7 @@ jobs:
             // Comment on an existing open sync issue instead of duplicating it.
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner, repo: context.repo.repo,
-              state: 'open', labels: 'sync', per_page: 10
+              state: 'open', labels: 'chore', per_page: 10
             });
             const existing = issues.data.find((i) => i.title.includes('merge conflicts'));
             if (existing) {
@@ -179,7 +179,7 @@ jobs:
               await github.rest.issues.create({
                 owner: context.repo.owner, repo: context.repo.repo,
                 title: 'sync: upstream merge conflicts require manual resolution',
-                labels: ['sync'], body,
+                labels: ['chore'], body,
               });
             }
 
@@ -340,7 +340,7 @@ jobs:
             // Dedup: comment on an existing open catch-all if present.
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner, repo: context.repo.repo,
-              state: 'open', labels: 'sync', per_page: 10
+              state: 'open', labels: 'chore', per_page: 10
             });
             const existing = issues.data.find((i) =>
               i.title.includes('failed') && !i.title.includes('conflicts') && !i.title.includes('markers')
@@ -355,6 +355,6 @@ jobs:
               await github.rest.issues.create({
                 owner: context.repo.owner, repo: context.repo.repo,
                 title: 'sync: upstream sync failed (' + new Date().toISOString().split('T')[0] + ')',
-                labels: ['sync'], body,
+                labels: ['chore'], body,
               });
             }
