@@ -45,7 +45,16 @@ $stepsYaml''',
       return (result.exitCode, '${result.stdout}${result.stderr}');
     }
 
-    for (final cmd in <String>['flutter clean', 'dart pub cache clean']) {
+    for (final cmd in <String>[
+      'flutter clean',
+      'dart pub cache clean',
+      // The tolerated `sudo` prefix and trailing flags are still the
+      // destructive act; a leading env assignment is skipped over exactly
+      // like the shell would.
+      'sudo flutter clean',
+      'flutter clean --verbose',
+      'CI=true flutter clean',
+    ]) {
       test('an `run: $cmd` step is skipped, never executed', () async {
         final sandbox = await Directory.systemTemp.createTemp('issue71_ci_');
         addTearDown(() => sandbox.delete(recursive: true));
@@ -58,5 +67,23 @@ $stepsYaml''',
         expect(output, contains('Clean'), reason: output);
       });
     }
+
+    test('a `run: git clean -fdx` step is NOT skipped — the guard never widens',
+        () async {
+      final sandbox = await Directory.systemTemp.createTemp('issue71_ci_');
+      addTearDown(() => sandbox.delete(recursive: true));
+      final (code, output) = await runLocalCi(sandbox, '''
+      - name: Clean
+        run: git clean -fdx
+''');
+      // The negative control: the command carries the word `clean`, but its
+      // command head is `git clean` — a regex widened to catch unrelated
+      // clean words would SKIP this step and fail here loudly.
+      expect(output, isNot(contains('forbidden locally')), reason: output);
+      // The step EXECUTED: `git clean` fails in the sandbox (not a git
+      // repository), and a failed run step is the one shape a skip can
+      // never produce.
+      expect(code, isNot(0), reason: output);
+    });
   });
 }

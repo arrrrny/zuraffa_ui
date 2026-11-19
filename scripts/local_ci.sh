@@ -662,7 +662,8 @@ APT_EQUIVALENTS = {
 # the checkout is disposable and the next step re-resolves everything a
 # pure-Dart package needs (`pub get`).
 FORBIDDEN_CLEAN_RE = re.compile(
-    r"^\s*(?:sudo\s+)?(?:(?:flutter|dart)\s+pub\s+cache\s+clean|flutter\s+clean)\s*$",
+    r"^\s*(?:sudo\s+)?(?:(?:flutter|dart)\s+pub\s+cache\s+clean|flutter\s+clean)"
+    r"(?:\s+\S.*)?\s*$",
     re.I,
 )
 
@@ -670,9 +671,11 @@ FORBIDDEN_CLEAN_RE = re.compile(
 def forbidden_clean_commands(body):
     """The forbidden cache-clean commands a step body asks for, verbatim.
 
-    Only a WHOLE command counts: `flutter clean` as its own step (or its own
-    pipeline line) is the destructive act; a word like `clean` inside another
-    command (`flutter test --plain-name clean`, `git clean`) is not.
+    Only a command with the destructive HEAD counts: `flutter clean` as its
+    own step (or its own pipeline line) is the destructive act, trailing
+    flags included — `flutter clean --verbose` wipes the same caches; a word
+    like `clean` inside another command (`flutter test --plain-name clean`,
+    `git clean -fdx`) is not.
     """
     out = []
     for argv in _shell_commands(body):
