@@ -653,6 +653,43 @@ APT_EQUIVALENTS = {
 }
 
 
+# A cache-destroying step has NO honest local equivalent: `flutter clean`
+# wipes the flutter tool cache and an app repo's SPM-managed iOS dependencies,
+# `flutter/dart pub cache clean` wipes the whole pub cache — 20–30 minutes of
+# rebuild on the shared Intel Mac, and on app repos a nuked SPM plugin graph.
+# These are HARD FORBIDDEN on the fleet (AGENTS.md), so the step is SKIPPED
+# with the reason printed, never executed locally. CI keeps it: on a runner
+# the checkout is disposable and the next step re-resolves everything a
+# pure-Dart package needs (`pub get`).
+FORBIDDEN_CLEAN_RE = re.compile(
+    r"^\s*(?:sudo\s+)?(?:(?:flutter|dart)\s+pub\s+cache\s+clean|flutter\s+clean)"
+    r"(?:\s+\S.*)?\s*$",
+    re.I,
+)
+
+
+def forbidden_clean_commands(body):
+    """The forbidden cache-clean commands a step body asks for, verbatim.
+
+    Only a command with the destructive HEAD counts: `flutter clean` as its
+    own step (or its own pipeline line) is the destructive act, trailing
+    flags included — `flutter clean --verbose` wipes the same caches; a word
+    like `clean` inside another command (`flutter test --plain-name clean`,
+    `git clean -fdx`) is not.
+    """
+    out = []
+    for argv in _shell_commands(body):
+        if not argv:
+            continue
+        i = 0
+        while i < len(argv) and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", argv[i]):
+            i += 1
+        candidate = " ".join(argv[i:])
+        if FORBIDDEN_CLEAN_RE.match(candidate):
+            out.append(candidate)
+    return out
+
+
 # ------------------------------------------------------- cargo cross targets
 
 # A `cargo … --target <triple>` step needs a toolchain that carries that
@@ -1253,6 +1290,22 @@ class Runner:
 
         apt = self.apt_step(body_expanded, head)
         if apt is not None:
+            return
+
+        # A cache-destroying step is forbidden on the fleet (AGENTS.md): its
+        # caches take 20–30 minutes to rebuild on the shared Intel Mac, and on
+        # an app repo `flutter clean` also nukes SPM-managed iOS dependencies.
+        # CI can have it (disposable runner); locally it is skipped loudly.
+        # The check sits BEFORE every other guard, so the step never even
+        # reaches a run path (arrrrny/zuraffa_ui#71 — a live run got as far as
+        # `dart pub cache clean`'s interactive `Are you sure? (y/N)?` prompt).
+        banned = forbidden_clean_commands(body_expanded)
+        if banned:
+            self.skip(head, ", ".join(banned)
+                      + " is forbidden locally (fleet hard rule) — CI-only step; "
+                      "the caches it destroys take 20–30 min to rebuild on this "
+                      "shared host, and the follow-up pub get step re-resolves "
+                      "what a pure-Dart package needs")
             return
 
         cwd = ROOT / wd if wd else ROOT
