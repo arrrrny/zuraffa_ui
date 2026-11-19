@@ -24,7 +24,51 @@ part 'nodes.zorphy.dart';
 
 /// The serializable UI node union: one node kind per certified component
 /// family plus the structural layout primitives.
-@Zorphy()
+///
+/// `explicitSubTypes` declares the closed hierarchy for the generator: since
+/// zorphy 2.5.0 a `$$` base is emitted `sealed` only when the base itself
+/// declares its subtypes (upstream zuraffa#142) — the bare `@Zorphy()` that
+/// sealed it under 2.4.x now stays `abstract`, which broke the exhaustive
+/// switch in `canonical_json.dart`. Every node kind is declared in THIS
+/// library (the #1717 workaround), so the declaration is exact.
+@Zorphy(
+  explicitSubTypes: [
+    $UnknownNode,
+    $ButtonNode,
+    $BadgeNode,
+    $TextNode,
+    $CardNode,
+    $CardHeaderNode,
+    $CardFooterNode,
+    $ProgressNode,
+    $SeparatorNode,
+    $InputNode,
+    $SelectNode,
+    $SelectOptionNode,
+    $CheckboxNode,
+    $SwitchNode,
+    $RadioGroupNode,
+    $RadioOptionNode,
+    $FormItemNode,
+    $TabsNode,
+    $TabNode,
+    $TabPaneNode,
+    $TooltipNode,
+    $SheetNode,
+    $DialogNode,
+    $PopoverNode,
+    $ToastNode,
+    $RowNode,
+    $ColumnNode,
+    $StackNode,
+    $PaddingNode,
+    $ExpandedNode,
+    $SizedBoxNode,
+    $ListViewNode,
+    $ImageNode,
+    $IconNode,
+  ],
+)
 abstract class $$ShadNode {
   /// Host-stable identity for action targets / controller binding.
   String? get id;

@@ -23,6 +23,7 @@
 // Extension declarations cannot be aliased in Dart (they are
 // reached by dot notation, never typed by name):
 //   ShadNodeX
+//   ShadNodePolymorphicE
 //   ShadNodePropertyHelpers
 //   ShadNodeCompareE
 //   ShadDurationExt
