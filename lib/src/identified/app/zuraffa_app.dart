@@ -47,10 +47,76 @@ class ZuraffaApp extends StatefulWidget with ZfaContract {
     this.debugShowCheckedModeBanner = false,
     this.navigatorObservers = const [],
     this.builder,
+    this.materialThemeBuilder,
     this.showViolationChrome = true,
     this.auditBus,
     this.contractEnabled = true,
-  });
+  }) : routeInformationProvider = null,
+       routeInformationParser = null,
+       routerDelegate = null,
+       backButtonDispatcher = null,
+       routerConfig = null;
+
+  /// Creates a certified app shell for a router-based application.
+  ///
+  /// Accepts the same router inputs [ShadApp.router] accepts and forwards them
+  /// unchanged, so an application loses no capability by adopting the shell.
+  /// At least one of [routerConfig] or [routerDelegate] must be non-null —
+  /// those are the inputs `ShadApp` itself routes on; a provider/parser or
+  /// back-button dispatcher alone is rejected by the constructor assert,
+  /// because `ShadApp` would fall into its navigator path and crash on the
+  /// shell's nulled `home`/`navigatorObservers`.
+  ///
+  /// The shell mounts a [ScaffoldMessenger] above the router and wraps the app
+  /// in the violation chrome, exactly like the navigator constructor. The
+  /// audit bus is created (or reused from [auditBus]).
+  ///
+  /// Route-push auditing: `RouterConfig` carries no navigator observers (an
+  /// SDK constraint), so the shell cannot attach its [ZuraffaRouteObserver] to
+  /// a navigator it does not own. To audit routes in a router application, add
+  /// the observer to your delegate's own navigator:
+  ///
+  /// ```dart
+  /// final kit = SkinContractKit();
+  /// ZuraffaApp.router(
+  ///   routerConfig: myRouterConfig,
+  ///   auditBus: kit.bus,
+  ///   // in your delegate's navigator: observers: [kit.observer],
+  /// )
+  /// ```
+  const ZuraffaApp.router({
+    super.key,
+    this.routeInformationProvider,
+    this.routeInformationParser,
+    this.routerDelegate,
+    this.backButtonDispatcher,
+    this.routerConfig,
+    this.title = '',
+    this.theme,
+    this.darkTheme,
+    this.themeMode,
+    this.locale,
+    this.supportedLocales = const [Locale('en', 'US')],
+    this.debugShowCheckedModeBanner = false,
+    this.builder,
+    this.materialThemeBuilder,
+    this.showViolationChrome = true,
+    this.auditBus,
+    this.contractEnabled = true,
+  }) : home = null,
+       routes = const {},
+       initialRoute = null,
+       navigatorKey = null,
+       onGenerateRoute = null,
+       onUnknownRoute = null,
+       navigatorObservers = const [],
+       assert(
+         routerDelegate != null || routerConfig != null,
+         'ZuraffaApp.router requires a router delegate: pass routerConfig or '
+         'routerDelegate — the engine app takes its router path only when '
+         'one of those is present; a dispatcher/provider-only configuration '
+         'would otherwise crash in the navigator path.',
+       );
 
   /// The home widget of the app.
   final Widget? home;
@@ -69,6 +135,15 @@ class ZuraffaApp extends StatefulWidget with ZfaContract {
 
   /// Called when [onGenerateRoute] fails to build a route.
   final RouteFactory? onUnknownRoute;
+
+  /// The router inputs, forwarded to [ShadApp.router] unchanged.
+  ///
+  /// Null on the navigator construction path.
+  final RouteInformationProvider? routeInformationProvider;
+  final RouteInformationParser<Object>? routeInformationParser;
+  final RouterDelegate<Object>? routerDelegate;
+  final BackButtonDispatcher? backButtonDispatcher;
+  final RouterConfig<Object>? routerConfig;
 
   /// The title of the app.
   final String title;
@@ -96,6 +171,11 @@ class ZuraffaApp extends StatefulWidget with ZfaContract {
 
   /// The user's app builder, preserved inside the violation chrome.
   final TransitionBuilder? builder;
+
+  /// The user's Material theme hook, forwarded to the wrapped app. Runs after
+  /// the shell's own Material derivation, so the consumer wins.
+  final ThemeData Function(BuildContext context, ThemeData theme)?
+  materialThemeBuilder;
 
   /// Whether the violation chrome is visible.
   ///
@@ -127,6 +207,39 @@ class _ZuraffaAppState extends State<ZuraffaApp> {
 
   @override
   Widget build(BuildContext context) {
+    final usesRouter =
+        widget.routeInformationProvider != null ||
+        widget.routeInformationParser != null ||
+        widget.routerDelegate != null ||
+        widget.backButtonDispatcher != null ||
+        widget.routerConfig != null;
+    if (usesRouter) {
+      return ShadApp.router(
+        routeInformationProvider: widget.routeInformationProvider,
+        routeInformationParser: widget.routeInformationParser,
+        routerDelegate: widget.routerDelegate,
+        backButtonDispatcher: widget.backButtonDispatcher,
+        routerConfig: widget.routerConfig,
+        title: widget.title,
+        theme: widget.theme,
+        darkTheme: widget.darkTheme,
+        themeMode: widget.themeMode,
+        locale: widget.locale,
+        supportedLocales: widget.supportedLocales,
+        debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner,
+        materialThemeBuilder: widget.materialThemeBuilder,
+        builder: (context, child) {
+          final inner = widget.builder?.call(context, child) ?? child;
+          return ScaffoldMessenger(
+            child: ZfaViolationChrome(
+              bus: _bus,
+              enabled: widget.showViolationChrome,
+              child: inner ?? const SizedBox.shrink(),
+            ),
+          );
+        },
+      );
+    }
     return ShadApp(
       home: widget.home,
       routes: widget.routes,
@@ -141,6 +254,7 @@ class _ZuraffaAppState extends State<ZuraffaApp> {
       locale: widget.locale,
       supportedLocales: widget.supportedLocales,
       debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner,
+      materialThemeBuilder: widget.materialThemeBuilder,
       navigatorObservers: [...widget.navigatorObservers, _observer],
       builder: (context, child) {
         final inner = widget.builder?.call(context, child) ?? child;

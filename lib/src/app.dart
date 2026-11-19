@@ -539,6 +539,14 @@ class _ShadAppState extends State<ShadApp> {
         radius: const Radius.circular(999),
         thumbColor: WidgetStatePropertyAll(themeData.colorScheme.border),
       ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: themeData.colorScheme.primary,
+        contentTextStyle: TextStyle(
+          color: themeData.colorScheme.primaryForeground,
+        ),
+        actionTextColor: themeData.colorScheme.primaryForeground,
+        closeIconColor: themeData.colorScheme.primaryForeground,
+      ),
     );
     mTheme = mTheme.copyWith(
       textTheme: applyGoogleFontToTextTheme(
