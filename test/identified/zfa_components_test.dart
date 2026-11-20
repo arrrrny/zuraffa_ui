@@ -246,8 +246,10 @@ void main() {
       tester,
     ) async {
       final observer = _RouteNameObserver();
+      final kit = SkinContractKit();
       await tester.pumpWidget(
         ZuraffaApp(
+          auditBus: kit.bus,
           navigatorObservers: [observer],
           home: Scaffold(
             body: Center(
@@ -269,6 +271,12 @@ void main() {
         observer.pushedNames,
         contains('zfa.sheet.filters'),
         reason: 'the sheet route must carry the consumer-provided name',
+      );
+      // The contract outcome the bug was about, not just the mechanism.
+      expect(
+        kit.bus.violations,
+        isEmpty,
+        reason: 'a named route must not violate route.unidentified',
       );
     });
   });
@@ -380,8 +388,10 @@ void main() {
       tester,
     ) async {
       final observer = _RouteNameObserver();
+      final kit = SkinContractKit();
       await tester.pumpWidget(
         ZuraffaApp(
+          auditBus: kit.bus,
           navigatorObservers: [observer],
           home: Scaffold(
             body: Center(
@@ -405,6 +415,11 @@ void main() {
         observer.pushedNames,
         contains('zfa.dialog.confirm'),
         reason: 'the dialog route must carry the consumer-provided name',
+      );
+      expect(
+        kit.bus.violations,
+        isEmpty,
+        reason: 'a named route must not violate route.unidentified',
       );
     });
   });

@@ -50,6 +50,9 @@ class ZfaDialog extends StatelessWidget with ZfaContract {
   final bool contractEnabled;
 
   /// Presents this dialog modally, wrapping [showShadDialog].
+  ///
+  /// Pass [routeSettings] to name the pushed route — an unnamed dialog route
+  /// is reported as `route.unidentified` by [ZuraffaRouteObserver].
   static Future<T?> show<T>(
     BuildContext context, {
     Widget? title,

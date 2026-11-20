@@ -46,6 +46,9 @@ class ZfaSheet extends StatelessWidget with ZfaContract {
   final bool contractEnabled;
 
   /// Presents this sheet modally, wrapping [showShadSheet].
+  ///
+  /// Pass [routeSettings] to name the pushed route — an unnamed sheet route
+  /// is reported as `route.unidentified` by [ZuraffaRouteObserver].
   static Future<T?> show<T>(
     BuildContext context, {
     Widget? title,
