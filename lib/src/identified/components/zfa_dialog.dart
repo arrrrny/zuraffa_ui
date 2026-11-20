@@ -56,9 +56,11 @@ class ZfaDialog extends StatelessWidget with ZfaContract {
     Widget? description,
     Widget? child,
     List<Widget> actions = const [],
+    RouteSettings? routeSettings,
   }) {
     return showShadDialog<T>(
       context: context,
+      routeSettings: routeSettings,
       builder: (_) => ZfaDialog(
         title: title,
         description: description,

@@ -52,9 +52,11 @@ class ZfaSheet extends StatelessWidget with ZfaContract {
     Widget? description,
     Widget? child,
     List<Widget> actions = const [],
+    RouteSettings? routeSettings,
   }) {
     return showShadSheet<T>(
       context: context,
+      routeSettings: routeSettings,
       builder: (_) => ZfaSheet(
         title: title,
         description: description,
