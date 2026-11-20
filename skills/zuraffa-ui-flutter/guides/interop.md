@@ -95,7 +95,7 @@ Use `Theme.of(context).copyWith(...)` to override the default theme, without los
 
 ## Shadcn + Cupertino
 
-If you need to use shadcn components with Cupertino components, use `CupertinoApp` instead of `MaterialApp`, like you are already used to. Add the `cupertino_ui` and `material_ui` packages with `flutter pub add cupertino_ui material_ui` (`ShadApp` uses `ThemeMode` from `material_ui`).
+If you need to use shadcn components with Cupertino components, use `CupertinoApp` instead of `MaterialApp`, like you are already used to. Add the `cupertino_ui` and `material_ui` packages with `flutter pub add cupertino_ui material_ui`.
 
 ```diff lang="dart"
 import 'package:zuraffa_ui/zfa.dart';
