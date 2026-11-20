@@ -14,6 +14,19 @@ Widget wrap(Widget child) {
   );
 }
 
+/// Records the names of every route pushed onto the navigator, so a test can
+/// assert a consumer-presented route carries its [RouteSettings.name] instead
+/// of an unnamed `RouteSettings(none, null)` (zuraffa_ui#81).
+class _RouteNameObserver extends NavigatorObserver {
+  final List<String?> pushedNames = [];
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    pushedNames.add(route.settings.name);
+    super.didPush(route, previousRoute);
+  }
+}
+
 void main() {
   group('ZfaButton', () {
     testWidgets('contract: id zfa.button, enabled by default, disableable', (
@@ -228,6 +241,44 @@ void main() {
       expect(find.text('sheet title'), findsOneWidget);
       expect(find.text('sheet body'), findsOneWidget);
     });
+
+    testWidgets('show forwards routeSettings so the sheet route is named', (
+      tester,
+    ) async {
+      final observer = _RouteNameObserver();
+      final kit = SkinContractKit();
+      await tester.pumpWidget(
+        ZuraffaApp(
+          auditBus: kit.bus,
+          navigatorObservers: [observer],
+          home: Scaffold(
+            body: Center(
+              child: ZfaButton(
+                child: const Text('open named sheet'),
+                onPressed: () => ZfaSheet.show<void>(
+                  tester.element(find.byType(ZfaButton)),
+                  title: const Text('named sheet'),
+                  routeSettings: const RouteSettings(name: 'zfa.sheet.filters'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open named sheet'));
+      await tester.pumpAndSettle();
+      expect(
+        observer.pushedNames,
+        contains('zfa.sheet.filters'),
+        reason: 'the sheet route must carry the consumer-provided name',
+      );
+      // The contract outcome the bug was about, not just the mechanism.
+      expect(
+        kit.bus.violations,
+        isEmpty,
+        reason: 'a named route must not violate route.unidentified',
+      );
+    });
   });
 
   group('ZfaDialog', () {
@@ -332,6 +383,45 @@ void main() {
         );
       },
     );
+
+    testWidgets('show forwards routeSettings so the dialog route is named', (
+      tester,
+    ) async {
+      final observer = _RouteNameObserver();
+      final kit = SkinContractKit();
+      await tester.pumpWidget(
+        ZuraffaApp(
+          auditBus: kit.bus,
+          navigatorObservers: [observer],
+          home: Scaffold(
+            body: Center(
+              child: ZfaButton(
+                child: const Text('open named dialog'),
+                onPressed: () => ZfaDialog.show<void>(
+                  tester.element(find.byType(ZfaButton)),
+                  title: const Text('named dialog'),
+                  routeSettings: const RouteSettings(
+                    name: 'zfa.dialog.confirm',
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open named dialog'));
+      await tester.pumpAndSettle();
+      expect(
+        observer.pushedNames,
+        contains('zfa.dialog.confirm'),
+        reason: 'the dialog route must carry the consumer-provided name',
+      );
+      expect(
+        kit.bus.violations,
+        isEmpty,
+        reason: 'a named route must not violate route.unidentified',
+      );
+    });
   });
 
   group('ZfaToaster', () {

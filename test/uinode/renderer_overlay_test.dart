@@ -14,6 +14,17 @@ Widget _harness(ShadNodeTree tree) => ShadApp(
   ),
 );
 
+/// Records the name of every route pushed onto the navigator.
+class _RouteNameObserver extends NavigatorObserver {
+  final List<String?> pushedNames = [];
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    pushedNames.add(route.settings.name);
+    super.didPush(route, previousRoute);
+  }
+}
+
 void main() {
   testWidgets('tabs render panes and switch on tap', (tester) async {
     final tree = _tree({
@@ -150,6 +161,70 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(ShadDialog), findsOneWidget);
     expect(find.text('dialog body'), findsOneWidget);
+  });
+
+  testWidgets('sheet overlay pushes a route named from its stateKey', (
+    tester,
+  ) async {
+    // A nameless overlay route is reported as `route.unidentified` by
+    // ZuraffaRouteObserver (zuraffa_ui#82 review): the uinode renderer is
+    // public surface, so it names its pushed routes like ZfaSheet.show does.
+    final observer = _RouteNameObserver();
+    final tree = _tree({
+      'widgetType': 'sheet',
+      'id': 'profile-sheet',
+      'open': true,
+      'side': 'bottom',
+      'title': 'Edit profile',
+      'content': [
+        {'widgetType': 'text', 'text': 'sheet body'},
+      ],
+    });
+    await tester.pumpWidget(
+      ShadApp(
+        navigatorObservers: [observer],
+        home: Scaffold(
+          body: SingleChildScrollView(child: ShadNodeRenderer(tree: tree)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(ShadSheet), findsOneWidget);
+    expect(
+      observer.pushedNames,
+      contains('zfa.overlay.sheet.profile-sheet'),
+      reason: 'the sheet overlay route must carry its node stateKey',
+    );
+  });
+
+  testWidgets('dialog overlay pushes a route named from its stateKey', (
+    tester,
+  ) async {
+    final observer = _RouteNameObserver();
+    final tree = _tree({
+      'widgetType': 'dialog',
+      'id': 'confirm-dialog',
+      'open': true,
+      'title': 'Confirm',
+      'content': [
+        {'widgetType': 'text', 'text': 'dialog body'},
+      ],
+    });
+    await tester.pumpWidget(
+      ShadApp(
+        navigatorObservers: [observer],
+        home: Scaffold(
+          body: SingleChildScrollView(child: ShadNodeRenderer(tree: tree)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(ShadDialog), findsOneWidget);
+    expect(
+      observer.pushedNames,
+      contains('zfa.overlay.dialog.confirm-dialog'),
+      reason: 'the dialog overlay route must carry its node stateKey',
+    );
   });
 
   testWidgets('popover trigger toggles its content', (tester) async {

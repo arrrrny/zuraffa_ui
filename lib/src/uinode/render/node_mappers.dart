@@ -602,6 +602,15 @@ class _ShadOverlayTriggerMapperState extends State<ShadOverlayTriggerMapper> {
       case ShadOverlayKind.sheet:
         await showShadSheet<void>(
           context: context,
+          // The uinode renderer is public surface (exported via zfa.dart and
+          // documented in docs/…/uinode.md), so an overlay node without a
+          // route name would push `RouteSettings(none, null)` and be reported
+          // as `route.unidentified` by [ZuraffaRouteObserver] — the same gap
+          // #81 closed for the imperative helpers. `stateKey` (node id, else
+          // path) is the stable identity the renderer already carries.
+          routeSettings: RouteSettings(
+            name: 'zfa.overlay.sheet.${widget.stateKey}',
+          ),
           side: switch (widget.side) {
             'top' => ShadSheetSide.top,
             'left' => ShadSheetSide.left,
@@ -619,6 +628,12 @@ class _ShadOverlayTriggerMapperState extends State<ShadOverlayTriggerMapper> {
       case ShadOverlayKind.dialog:
         await showShadDialog<void>(
           context: context,
+          // Same identity rule as the sheet branch above: a public overlay
+          // renderer that pushes a nameless route trips
+          // `route.unidentified` on [ZuraffaRouteObserver].
+          routeSettings: RouteSettings(
+            name: 'zfa.overlay.dialog.${widget.stateKey}',
+          ),
           builder: (context) => ShadDialog(
             title: widget.title == null ? null : Text(widget.title!),
             description: widget.description == null
