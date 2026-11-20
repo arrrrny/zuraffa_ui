@@ -36,6 +36,11 @@ export 'package:flutter_animate/flutter_animate.dart' hide Effect;
 export 'package:flutter_svg/flutter_svg.dart';
 export 'package:intl/intl.dart' hide TextDirection;
 export 'package:lucide_icons_flutter/lucide_icons.dart';
+// `ThemeMode` is the type `ShadApp.themeMode` / `ZuraffaApp.themeMode` accept.
+// material_ui re-declares the enum instead of re-exporting the framework one,
+// so a migrating app takes it from here and needs no direct material_ui
+// dependency (#78).
+export 'package:material_ui/material_ui.dart' show ThemeMode;
 export 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
 export 'package:universal_image/universal_image.dart';
 
