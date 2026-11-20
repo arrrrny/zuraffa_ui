@@ -1,6 +1,9 @@
 // ignore_for_file: lines_longer_than_80_chars
 
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'
+    as sdk_localizations
+    show GlobalMaterialLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/src/components/sonner.dart';
 import 'package:zuraffa_ui/src/components/toast.dart';
@@ -444,6 +447,15 @@ class _ShadAppState extends State<ShadApp> {
     }
     yield GlobalShadLocalizations.delegate;
     yield* GlobalMaterialLocalizations.delegates;
+    // material_ui is a fork of the Flutter material library and declares its
+    // own [MaterialLocalizations] type. Widgets from package:flutter/material
+    // (AppBar, Scaffold, tooltips, semantic labels) look up the SDK type, so
+    // the SDK's delegate has to be in the implicit chain as well — without it
+    // every such widget fails `debugCheckHasMaterialLocalizations` under
+    // ShadApp. The SDK's GlobalMaterialLocalizations, not the English-only
+    // DefaultMaterialLocalizations: the Localizations status check requires a
+    // delegate for this type to support EVERY declared locale.
+    yield sdk_localizations.GlobalMaterialLocalizations.delegate;
   }
 
   @override
