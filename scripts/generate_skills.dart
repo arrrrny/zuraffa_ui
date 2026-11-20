@@ -284,6 +284,8 @@ String _generateSkillMd(
     'Here is a complete example of a Counter App using `zuraffa_ui`, including light and dark theme support.',
   );
   buffer.writeln('```dart');
+  // `ShadApp.themeMode` takes `ThemeMode` from material_ui; both barrels export
+  // it, so the engine import above is the only one the sample needs (#78).
   buffer.writeln("import 'package:zuraffa_ui/zfa.dart';");
   buffer.writeln();
   buffer.writeln('void main() {');

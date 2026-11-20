@@ -87,6 +87,30 @@ class MyApp extends StatelessWidget {
 If you need to use the `Router` instead of the `Navigator`, use `ShadApp.router`.
 :::
 
+### ThemeMode
+
+`ShadApp.themeMode` (and `ZuraffaApp.themeMode`) takes `ThemeMode` from
+`material_ui`, **not** the framework's same-named enum: `material_ui` re-declares
+the type instead of re-exporting the framework one, so the two are distinct and
+passing one where the other is expected fails with
+`argument_type_not_assignable`.
+
+Both barrels export the type — `package:zuraffa_ui/zfa.dart` (the engine barrel)
+and `package:zuraffa_ui/zuraffa_ui.dart` (the certified skin barrel) — so no
+direct `material_ui` dependency is needed. If your file also imports
+`package:flutter/material.dart`, hide its `ThemeMode` on that import so the name
+is not ambiguous:
+
+```diff lang="dart"
+  import 'package:flutter/material.dart' hide ThemeMode;
+  import 'package:zuraffa_ui/zuraffa_ui.dart';
+
+  ZuraffaApp(
+    themeMode: ThemeMode.dark,
+    home: const SkinShell(),
+  )
+```
+
 ## Shadcn + Material
 
 We are the first Flutter UI library to allow shadcn components to be used simultaneously with Material components.
@@ -182,7 +206,7 @@ Use `Theme.of(context).copyWith(...)` to override the default theme, without los
 
 ## Shadcn + Cupertino
 
-If you need to use shadcn components with Cupertino components, use `CupertinoApp` instead of `MaterialApp`, like you are already used to. Add the `cupertino_ui` and `material_ui` packages with `flutter pub add cupertino_ui material_ui` (`ShadApp` uses `ThemeMode` from `material_ui`).
+If you need to use shadcn components with Cupertino components, use `CupertinoApp` instead of `MaterialApp`, like you are already used to. Add the `cupertino_ui` and `material_ui` packages with `flutter pub add cupertino_ui material_ui`.
 
 ```diff lang="dart"
 import 'package:zuraffa_ui/zfa.dart';

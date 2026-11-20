@@ -20,9 +20,16 @@ void main() {
     });
 
     test('the enum carries the three modes the engine switches on', () {
+      // Containment, not an exact ordered list: the claim is that the engine's
+      // enum carries these modes, not that material_ui's upstream enum shape
+      // is frozen — an upstream release must not turn this suite red.
       expect(
         ThemeMode.values,
-        const [ThemeMode.system, ThemeMode.light, ThemeMode.dark],
+        containsAll(<ThemeMode>[
+          ThemeMode.system,
+          ThemeMode.light,
+          ThemeMode.dark,
+        ]),
       );
     });
   });
