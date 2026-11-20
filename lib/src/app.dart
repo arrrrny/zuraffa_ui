@@ -3,6 +3,7 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'
     as sdk_localizations
+    // ignore: deprecated_member_use
     show GlobalMaterialLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:zuraffa_ui/src/components/sonner.dart';
@@ -455,6 +456,7 @@ class _ShadAppState extends State<ShadApp> {
     // ShadApp. The SDK's GlobalMaterialLocalizations, not the English-only
     // DefaultMaterialLocalizations: the Localizations status check requires a
     // delegate for this type to support EVERY declared locale.
+    // ignore: deprecated_member_use
     yield sdk_localizations.GlobalMaterialLocalizations.delegate;
   }
 
