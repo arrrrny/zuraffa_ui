@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/utils/border.dart';
 import 'package:theme_extensions_builder_annotation/theme_extensions_builder_annotation.dart';
+import 'package:zuraffa_ui/src/utils/border.dart';
 
 part 'card.g.theme.dart';
 

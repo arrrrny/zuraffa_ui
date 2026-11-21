@@ -1,0 +1,33 @@
+{
+  "schema": "proof.v1",
+  "command": "tdd make A2",
+  "target": "A2",
+  "repro": "zfa tdd make A2",
+  "at": "2026-09-17T23:53:42.023316Z",
+  "generator_version": "6.3.0",
+  "input": {
+    "sanctioned": true,
+    "hand_delta": true,
+    "transition": "skip",
+    "behavior": "A2",
+    "feature": "shadapp-missing-scaffoldmessenger"
+  },
+  "files": [
+    {
+      "path": "test/tdd/shadapp-missing-scaffoldmessenger/a2_test.dart",
+      "action": "update",
+      "sha256": "aafaaa66a2bd55568b2243f9190e6fccedc6231103a09446f1e5405ac56867a2",
+      "bytes": 1138,
+      "snapshot": "// zfa:tdd: A2:hand — hand step completed before first red certification\n// (issue #1411)\n//\n// Hand-completed acceptance test for A2 (AC-2, issue\n// arrrrny/zuraffa_browser#168): a widget under the shell shows a SnackBar\n// through ScaffoldMessenger and its content renders in the tree.\n\nimport 'package:flutter_test/flutter_test.dart';\nimport 'package:zuraffa_ui/tdd/shadapp-missing-scaffoldmessenger/a2_subject.dart'\n    as subject;\n\nvoid main() {\n  group('A2 (AC-2)', () {\n    testWidgets(\n      \"A2 — the SnackBar's content renders in the widget tree.\",\n      (tester) async {\n        final evidence = await subject.subject_a2(tester);\n\n        // The observable outcome (issue #1488): the SnackBar actually\n        // rendered through the shell's messenger — asserted outside the\n        // guard.\n        expect(\n          evidence.messengerResolved,\n          isTrue,\n          reason: 'the shell must provide the ScaffoldMessenger',\n        );\n        expect(\n          evidence.snackbarRendered,\n          isTrue,\n          reason: 'the SnackBar content must render in the widget tree',\n        );\n      },\n    );\n  });\n}\n"
+    },
+    {
+      "path": "lib/tdd/shadapp-missing-scaffoldmessenger/a2_subject.dart",
+      "action": "update",
+      "sha256": "2991fb09f30b5af76ce883c19b0e01b2006049dc6d3e0f415e7236c668e0a04d",
+      "bytes": 2247,
+      "snapshot": "// zfa:tdd: A2:hand — hand step completed before first red certification\n// (issue #1411)\n//\n// Hand-implemented scenario runner for behavior A2 (AC-2): mounts the app\n// shell, shows a SnackBar through ScaffoldMessenger.of(context) from a widget\n// inside a Scaffold, and reports what the tree rendered — the export-flow\n// scenario reported in arrrrny/zuraffa_browser#168.\n// ignore_for_file: depend_on_referenced_packages, non_constant_identifier_names\n\nimport 'package:flutter/material.dart';\nimport 'package:flutter_test/flutter_test.dart';\nimport 'package:zuraffa_ui/zuraffa_ui.dart';\n\n/// The rendering evidence collected by the A2 scenario.\nclass A2Evidence {\n  /// Creates the evidence record.\n  const A2Evidence({\n    required this.messengerResolved,\n    required this.snackbarRendered,\n  });\n\n  /// Whether `ScaffoldMessenger.of` resolved for the tapping widget.\n  final bool messengerResolved;\n\n  /// Whether the SnackBar's content was found in the widget tree.\n  final bool snackbarRendered;\n}\n\n/// Runs the A2 scenario: taps a widget that shows a SnackBar through the\n/// shell's messenger, drains the SnackBar's auto-hide timer, and returns the\n/// rendering [A2Evidence].\nFuture<A2Evidence> subject_a2(WidgetTester tester) async {\n  var messengerResolved = false;\n  await tester.pumpWidget(\n    ZuraffaApp(\n      showViolationChrome: false,\n      home: Scaffold(\n        body: Builder(\n          builder: (context) => ZfaButton(\n            child: const Text('save'),\n            onPressed: () {\n              ScaffoldMessenger.of(\n                context,\n              ).showSnackBar(const SnackBar(content: Text('Saved')));\n              messengerResolved = true;\n            },\n          ),\n        ),\n      ),\n    ),\n  );\n\n  await tester.tap(find.text('save'));\n  await tester.pump();\n  await tester.pump(const Duration(milliseconds: 300));\n  final rendered = find.text('Saved').evaluate().isNotEmpty;\n\n  // Drain the SnackBar's display timer and exit animation so the test does\n  // not end with a pending timer.\n  await tester.pump(const Duration(seconds: 5));\n  await tester.pump(const Duration(milliseconds: 300));\n\n  return A2Evidence(\n    messengerResolved: messengerResolved,\n    snackbarRendered: rendered,\n  );\n}\n"
+    }
+  ],
+  "receipt_version": 1,
+  "min_core_version": "6.0.0"
+}

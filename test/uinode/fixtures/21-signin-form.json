@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "root": {
+    "widgetType": "sizedBox",
+    "width": 320,
+    "child": {
+      "widgetType": "card",
+      "title": "Sign in",
+      "description": "Welcome back",
+      "content": [
+        {
+          "widgetType": "input",
+          "placeholder": "Email",
+          "id": "email"
+        },
+        {
+          "widgetType": "input",
+          "placeholder": "Password",
+          "obscure": true,
+          "id": "password"
+        },
+        {
+          "widgetType": "checkbox",
+          "label": "Remember me"
+        },
+        {
+          "widgetType": "button",
+          "label": "Continue",
+          "action": {
+            "action": "submit_selection",
+            "args": {
+              "form": "signin"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

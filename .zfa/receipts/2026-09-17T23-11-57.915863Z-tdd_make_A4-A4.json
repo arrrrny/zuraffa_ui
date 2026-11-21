@@ -1,0 +1,33 @@
+{
+  "schema": "proof.v1",
+  "command": "tdd make A4",
+  "target": "A4",
+  "repro": "zfa tdd make A4",
+  "at": "2026-09-17T23:11:57.915863Z",
+  "generator_version": "6.3.0",
+  "input": {
+    "sanctioned": true,
+    "hand_delta": true,
+    "transition": "skip",
+    "behavior": "A4",
+    "feature": "shadapp-missing-scaffoldmessenger"
+  },
+  "files": [
+    {
+      "path": "test/tdd/shadapp-missing-scaffoldmessenger/a4_test.dart",
+      "action": "update",
+      "sha256": "1a35b4005041883063dbd070ca4e6c131ddf688e6306745abc0251f3da659819",
+      "bytes": 1660,
+      "snapshot": "// zfa:tdd: A4:hand — hand step completed before first red certification (issue #1411)\n//\n// Hand-completed acceptance test for A4 (AC-4, issue\n// arrrrny/zuraffa_browser#168): the ScaffoldMessenger fix must not disturb the\n// shell's existing wiring — the user's builder, the violation chrome, the\n// route-contract observer and ShadToaster/ShadSonner stay mounted above the\n// navigator.\nlibrary;\n\nimport 'package:flutter_test/flutter_test.dart';\nimport 'package:zuraffa_ui/tdd/shadapp-missing-scaffoldmessenger/a4_subject.dart'\n    as subject;\n\nvoid main() {\n  group('A4 (AC-4)', () {\n    testWidgets(\n      'A4 — the user\\'s builder output, the violation chrome, the '\n      'route-contract observer and `ShadToaster`/`ShadSonner` all remain '\n      'mounted above the navigator.',\n      (tester) async {\n        final evidence = await subject.subject_a4(tester);\n\n        // The observable outcome (issue #1488): every piece of the shell's\n        // wiring is still mounted above the navigator — asserted outside the\n        // guard.\n        expect(evidence.userBuilderAboveNavigator, isTrue);\n        expect(evidence.chromeAboveNavigator, isTrue);\n        expect(evidence.toasterAboveNavigator, isTrue);\n        expect(evidence.sonnerAboveNavigator, isTrue);\n        expect(\n          evidence.contractObserverReported,\n          isTrue,\n          reason:\n              'an unnamed push must still be reported by the '\n              'route-contract observer',\n        );\n        expect(\n          evidence.userObserverNotified,\n          isTrue,\n          reason: 'user navigator observers must stay merged',\n        );\n      },\n    );\n  });\n}\n"
+    },
+    {
+      "path": "lib/tdd/shadapp-missing-scaffoldmessenger/a4_subject.dart",
+      "action": "update",
+      "sha256": "4025d2e08f467f7b62b8974d0655b2bb9caaa612e4a61ac2354a33b995e62eed",
+      "bytes": 3756,
+      "snapshot": "// zfa:tdd: A4:hand — hand step completed before first red certification (issue #1411)\n//\n// Hand-implemented scenario runner for behavior A4 (AC-4): mounts the shell\n// with a user builder and a user navigator observer, pushes an unnamed route,\n// and collects the wiring evidence the test asserts on — every piece must\n// remain mounted above the navigator.\n//\n// The subject name is derived from the behavior id (`subject_a4`) and is\n// deliberately snake_cased — the generator KNOWS the name it emits, so the\n// lint its shape provably trips is suppressed here rather than renaming the\n// contract surface (issue #1035).\n// ignore_for_file: non_constant_identifier_names\nlibrary;\n\nimport 'package:flutter/material.dart';\nimport 'package:flutter_test/flutter_test.dart';\nimport 'package:zuraffa_ui/shad.dart' show ShadSonner, ShadToaster;\nimport 'package:zuraffa_ui/zuraffa_ui.dart';\n\n/// The wiring evidence collected by the A4 scenario.\nclass A4Evidence {\n  /// Creates the evidence record.\n  const A4Evidence({\n    required this.userBuilderAboveNavigator,\n    required this.chromeAboveNavigator,\n    required this.toasterAboveNavigator,\n    required this.sonnerAboveNavigator,\n    required this.contractObserverReported,\n    required this.userObserverNotified,\n  });\n\n  /// The user builder's output is mounted above the navigator.\n  final bool userBuilderAboveNavigator;\n\n  /// The violation chrome is mounted above the navigator.\n  final bool chromeAboveNavigator;\n\n  /// The engine's `ShadToaster` is mounted above the navigator.\n  final bool toasterAboveNavigator;\n\n  /// The engine's `ShadSonner` is mounted above the navigator.\n  final bool sonnerAboveNavigator;\n\n  /// An unnamed push was reported by the route-contract observer.\n  final bool contractObserverReported;\n\n  /// The user's own navigator observer saw the push (observers were merged).\n  final bool userObserverNotified;\n}\n\n/// Runs the A4 scenario and returns the collected [A4Evidence].\nFuture<A4Evidence> subject_a4(WidgetTester tester) async {\n  final bus = ZfaAuditBus();\n  final userObserverSaw = <String>[];\n  await tester.pumpWidget(\n    ZuraffaApp(\n      auditBus: bus,\n      builder: (context, child) => KeyedSubtree(\n        key: const Key('user-builder'),\n        child: child ?? const SizedBox.shrink(),\n      ),\n      navigatorObservers: [_PushRecordingObserver(userObserverSaw.add)],\n      home: Scaffold(\n        body: Builder(\n          builder: (context) => ZfaButton(\n            child: const Text('push unnamed route'),\n            onPressed: () => Navigator.of(context).push(\n              MaterialPageRoute<void>(\n                builder: (_) => const Scaffold(body: Text('unnamed route')),\n              ),\n            ),\n          ),\n        ),\n      ),\n    ),\n  );\n  await tester.tap(find.text('push unnamed route'));\n  await tester.pumpAndSettle();\n\n  final navigator = find.byType(Navigator);\n  bool aboveNavigator(Finder finder) =>\n      find.ancestor(of: navigator, matching: finder).evaluate().isNotEmpty;\n\n  return A4Evidence(\n    userBuilderAboveNavigator: aboveNavigator(\n      find.byKey(const Key('user-builder')),\n    ),\n    chromeAboveNavigator: aboveNavigator(find.byType(ZfaViolationChrome)),\n    toasterAboveNavigator: aboveNavigator(find.byType(ShadToaster)),\n    sonnerAboveNavigator: aboveNavigator(find.byType(ShadSonner)),\n    contractObserverReported: bus.violations.isNotEmpty,\n    userObserverNotified: userObserverSaw.contains('<unnamed>'),\n  );\n}\n\nclass _PushRecordingObserver extends NavigatorObserver {\n  _PushRecordingObserver(this.onPush);\n\n  final void Function(String name) onPush;\n\n  @override\n  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {\n    onPush(route.settings.name ?? '<unnamed>');\n  }\n}\n"
+    }
+  ],
+  "receipt_version": 1,
+  "min_core_version": "6.0.0"
+}

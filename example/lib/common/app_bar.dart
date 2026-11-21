@@ -1,7 +1,7 @@
 import 'package:example/main.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_solidart/flutter_solidart.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:zuraffa_ui/zfa.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MyAppBar({

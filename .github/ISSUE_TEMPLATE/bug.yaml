@@ -1,6 +1,6 @@
 name: Report a bug
 description: |
-  You found a bug in Flutter ShadcnUI causing your application to crash or
+  You found a bug in Zuraffa UI causing your application to crash or
   throw an exception, a widget is buggy, or something looks wrong.
 labels:
   - bug
@@ -9,10 +9,10 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for using Flutter ShadcnUI!
+        Thank you for using Zuraffa UI!
 
-        If you are looking for support, please check out our documentation
-        or consider asking a question on Discord:
+        The engine is the upstream shadcn_ui port; its documentation and
+        community live here:
 
           - https://flutter-shadcn-ui.mariuti.com
           - https://discord.gg/ZhRMAPNh5Y
@@ -20,7 +20,7 @@ body:
     attributes:
       value: |
         Before filling the form fields, please consider the following:
-        - Ensure that you have searched the [existing issues](https://github.com/nank1ro/flutter-shadcn-ui/issues)
+        - Ensure that you have searched the [existing issues](https://github.com/arrrrny/zuraffa_ui/issues)
   - type: textarea
     attributes:
       label: Steps to reproduce
@@ -45,8 +45,8 @@ body:
       required: true
   - type: input
     attributes:
-      label: shadcn_ui version
-      description: Please tell us which version of shadcn_ui you are using.
+      label: zuraffa_ui version
+      description: Please tell us which version of zuraffa_ui you are using.
       placeholder: ex. 0.7.3
     validations:
       required: true

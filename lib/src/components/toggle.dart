@@ -1,12 +1,12 @@
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/components/button.dart';
-import 'package:shadcn_ui/src/theme/components/button_sizes.dart';
-import 'package:shadcn_ui/src/theme/components/decorator.dart';
-import 'package:shadcn_ui/src/theme/components/toggle.dart';
-import 'package:shadcn_ui/src/theme/data.dart';
-import 'package:shadcn_ui/src/theme/theme.dart';
-import 'package:shadcn_ui/src/utils/debug_check.dart';
-import 'package:shadcn_ui/src/utils/states_controller.dart';
+import 'package:zuraffa_ui/src/components/button.dart';
+import 'package:zuraffa_ui/src/theme/components/button_sizes.dart';
+import 'package:zuraffa_ui/src/theme/components/decorator.dart';
+import 'package:zuraffa_ui/src/theme/components/toggle.dart';
+import 'package:zuraffa_ui/src/theme/data.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/utils/debug_check.dart';
+import 'package:zuraffa_ui/src/utils/states_controller.dart';
 
 /// The variant of the [ShadToggle].
 enum ShadToggleVariant { primary, outline }

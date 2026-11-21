@@ -4,16 +4,16 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:shadcn_ui/src/components/button.dart';
-import 'package:shadcn_ui/src/components/toggle.dart';
-import 'package:shadcn_ui/src/theme/components/decorator.dart';
-import 'package:shadcn_ui/src/theme/components/toggle.dart';
-import 'package:shadcn_ui/src/theme/data.dart';
-import 'package:shadcn_ui/src/theme/theme.dart';
-import 'package:shadcn_ui/src/utils/border.dart';
-import 'package:shadcn_ui/src/utils/debug_check.dart';
-import 'package:shadcn_ui/src/utils/provider.dart';
-import 'package:shadcn_ui/src/utils/separated_iterable.dart';
+import 'package:zuraffa_ui/src/components/button.dart';
+import 'package:zuraffa_ui/src/components/toggle.dart';
+import 'package:zuraffa_ui/src/theme/components/decorator.dart';
+import 'package:zuraffa_ui/src/theme/components/toggle.dart';
+import 'package:zuraffa_ui/src/theme/data.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/utils/border.dart';
+import 'package:zuraffa_ui/src/utils/debug_check.dart';
+import 'package:zuraffa_ui/src/utils/provider.dart';
+import 'package:zuraffa_ui/src/utils/separated_iterable.dart';
 
 /// Controls the selected values of a [ShadToggleGroup].
 class ShadToggleGroupController<T> extends ValueNotifier<Set<T>> {

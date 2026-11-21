@@ -1,16 +1,20 @@
 // ignore_for_file: lines_longer_than_80_chars
 
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'
+    as sdk_localizations
+    // ignore: deprecated_member_use
+    show GlobalMaterialLocalizations;
 import 'package:material_ui/material_ui.dart';
-import 'package:shadcn_ui/src/components/sonner.dart';
-import 'package:shadcn_ui/src/components/toast.dart';
-import 'package:shadcn_ui/src/i18n/localizations_delegate.dart';
-import 'package:shadcn_ui/src/theme/color_scheme/slate.dart';
-import 'package:shadcn_ui/src/theme/data.dart';
-import 'package:shadcn_ui/src/theme/text_theme/theme.dart';
-import 'package:shadcn_ui/src/theme/theme.dart';
-import 'package:shadcn_ui/src/utils/mouse_area.dart';
-import 'package:shadcn_ui/src/utils/mouse_cursor_provider.dart';
+import 'package:zuraffa_ui/src/components/sonner.dart';
+import 'package:zuraffa_ui/src/components/toast.dart';
+import 'package:zuraffa_ui/src/i18n/localizations_delegate.dart';
+import 'package:zuraffa_ui/src/theme/color_scheme/slate.dart';
+import 'package:zuraffa_ui/src/theme/data.dart';
+import 'package:zuraffa_ui/src/theme/text_theme/theme.dart';
+import 'package:zuraffa_ui/src/theme/theme.dart';
+import 'package:zuraffa_ui/src/utils/mouse_area.dart';
+import 'package:zuraffa_ui/src/utils/mouse_cursor_provider.dart';
 
 enum ShadAppType {
   shadcn,
@@ -444,6 +448,16 @@ class _ShadAppState extends State<ShadApp> {
     }
     yield GlobalShadLocalizations.delegate;
     yield* GlobalMaterialLocalizations.delegates;
+    // material_ui is a fork of the Flutter material library and declares its
+    // own [MaterialLocalizations] type. Widgets from package:flutter/material
+    // (AppBar, Scaffold, tooltips, semantic labels) look up the SDK type, so
+    // the SDK's delegate has to be in the implicit chain as well — without it
+    // every such widget fails `debugCheckHasMaterialLocalizations` under
+    // ShadApp. The SDK's GlobalMaterialLocalizations, not the English-only
+    // DefaultMaterialLocalizations: the Localizations status check requires a
+    // delegate for this type to support EVERY declared locale.
+    // ignore: deprecated_member_use
+    yield sdk_localizations.GlobalMaterialLocalizations.delegate;
   }
 
   @override
@@ -538,6 +552,14 @@ class _ShadAppState extends State<ShadApp> {
         thickness: const WidgetStatePropertyAll(8),
         radius: const Radius.circular(999),
         thumbColor: WidgetStatePropertyAll(themeData.colorScheme.border),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: themeData.colorScheme.primary,
+        contentTextStyle: TextStyle(
+          color: themeData.colorScheme.primaryForeground,
+        ),
+        actionTextColor: themeData.colorScheme.primaryForeground,
+        closeIconColor: themeData.colorScheme.primaryForeground,
       ),
     );
     mTheme = mTheme.copyWith(

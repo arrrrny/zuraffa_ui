@@ -1,3 +1,17 @@
+## Unreleased
+
+- **FIX**: Overlay nodes declared in a UI-node tree (`widgetType: sheet | dialog`) now push a named route — `zfa.overlay.sheet.<stateKey>` / `zfa.overlay.dialog.<stateKey>`, from the node's `id` (else its path) — instead of an unnamed `RouteSettings(none, null)` that `ZuraffaRouteObserver` reports as a `route.unidentified` contract violation. The uinode renderer is public surface (exported from `lib/zfa.dart` and documented in `docs/src/content/docs/Utils/uinode.md`), so it carried the same gap #81 closed for the imperative helpers (arrrrny/zuraffa_ui#81).
+- **FIX**: `ZfaDialog.show` and `ZfaSheet.show` now accept an optional `RouteSettings? routeSettings` and forward it to `showShadDialog`/`showShadSheet`, so a consumer-presented dialog or sheet carries its route name instead of pushing an unnamed `RouteSettings(none, null)` that `ZuraffaRouteObserver` reports as a `route.unidentified` contract violation. Additive and non-breaking: a consumer that passes nothing keeps today's behaviour (zuraffa_ui#81).
+- **FIX**: Re-export `ThemeMode` from the package barrel (`package:zuraffa_ui/zuraffa_ui.dart`) so a consumer that imports only the certified vocabulary names the SAME `ThemeMode` `ShadApp`/`ZuraffaApp` accept — material_ui's, not the Flutter SDK's. Since 7.6.0 adopted shadcn_ui 0.60.0's breaking `package:flutter/material.dart` -> standalone `material_ui` migration, the shell's `themeMode` parameter is material_ui's `ThemeMode`, a nominally distinct type from the SDK's; a consumer importing `package:flutter/material.dart` for `ThemeMode` and passing it to the shell failed to compile with "The argument type 'ThemeMode/*1*/' can't be assigned to the parameter type 'ThemeMode/*2*/?'". Consumers now take the family's type from the zuraffa_ui import (arrrrny/zuraffa#2110).
+
+## 7.6.0 - 2026-11-19
+
+- **BREAKING**: `ShadApp.themeMode` (and `ZuraffaApp.themeMode`) now takes `material_ui`'s `ThemeMode`, not the framework's same-named enum — `material_ui` re-declares it rather than re-exporting the framework type, so the two are distinct and passing one where the other is expected fails with `argument_type_not_assignable`. Both barrels now export `ThemeMode` from `material_ui` — the engine barrel `package:zuraffa_ui/zfa.dart` and the certified skin barrel `package:zuraffa_ui/zuraffa_ui.dart` — so a migrating app writes `hide ThemeMode` on its framework `package:flutter/material.dart` import and types its `themeMode` values against the engine's enum with no direct `material_ui` dependency. See the 0.60.0 entry for the wider material_ui migration.
+- **FEAT**: `ZuraffaApp.router` — the certified app shell now accepts the same router inputs `ShadApp.router` does (`routerConfig`, `routeInformationProvider`/`routeInformationParser`, `routerDelegate`, `backButtonDispatcher`) and mounts the `ScaffoldMessenger`, violation chrome, audit bus and consumer `builder` exactly like the navigator constructor. Route-push auditing stays with the delegate's own navigator: add `SkinContractKit().observer` to its `observers` (a `RouterConfig` cannot carry observers — an SDK constraint, documented on the constructor).
+- **FEAT**: `materialTheme()` now derives `snackBarTheme` from the shell colour scheme (background `primary`, text/action/close-icon `primaryForeground`), so Material snack bars stop rendering as the M3 near-black slab; consumer `materialThemeBuilder` still overrides.
+- **FEAT**: First release carrying `ShadItem` and its companions (`ShadItemMedia`, `ShadItemContent`, `ShadItemTitle`, `ShadItemDescription`, `ShadItemActions`, `ShadItemHeader`, `ShadItemFooter`, `ShadItemGroup`, `ShadItemSeparator`, sizes, variants) with all `ZfaItem*` aliases — a Material-free row primitive for surfaces that paint their own background (dialogs, sheets, cards).
+- ZuraffaApp now also forwards `materialThemeBuilder`.
+
 ## 0.61.2
 
 - **FIX**: The controller wins over `initialValue` on `ShadRadioGroup`, `ShadSelect`, and their form fields. Only an internal controller follows `initialValue` (#734, #739).
@@ -13,6 +27,176 @@
 ## 0.60.0
 
 - **BREAKING**: Migrate from the deprecated `package:flutter/material.dart` and `package:flutter/cupertino.dart` to the standalone `material_ui` and `cupertino_ui` packages. The minimum Flutter version is now 3.47. The types in these packages are different from the SDK types, so apps must migrate too: run `flutter pub add material_ui` (and `cupertino_ui` if you use Cupertino), then `dart fix --apply --code=migrate_design_widgets`. `dart fix` does not rewrite `export` directives, so update any `export 'package:flutter/material.dart'` or `export 'package:flutter/cupertino.dart'` by hand. If you import `flutter_localizations` for `GlobalMaterialLocalizations` or `GlobalCupertinoLocalizations`, remove that import and use `GlobalMaterialLocalizations.delegates` from `material_ui`, which also includes the Cupertino and Widgets delegates. Otherwise the names are ambiguous and the file does not compile. See the [Flutter migration guide](https://docs.flutter.dev/release/breaking-changes/material-ui-and-cupertino-ui). Dependencies that still use `package:flutter/material.dart` (for example, one that calls `showDatePicker`) no longer get a Material theme or `MaterialLocalizations` from `ShadApp`, and throw "No MaterialLocalizations found". Until they migrate, wrap them with the temporary `MaterialUiCompatibilityBridge` from `material_ui`, for example `ShadApp(builder: (context, child) => MaterialUiCompatibilityBridge(child: child!))`. The bridge is deprecated, so it reports a `deprecated_member_use` info.
+
+## 7.5.0 - 2026-11-15
+
+Release 7.5.0: Signal-backed view-state migration template with SignalScope ownership (#2076); signal listener/subscription cleanup on eager-delivery throw (#2081, #2083); UseCase/StreamUseCase catch-all SEVERE logs now carry the cause (#2077, #2079); dependencies upgraded and pinned to latest resolvable.
+
+## 7.4.2 - 2026-11-13
+
+- Mono-version fleet alignment to 7.4.2; internal dependencies refreshed; xml override 7.1.0.
+
+## 7.4.1 - 2026-11-11
+
+Fleet release 7.4.1: core adds zfa tunnel (Cloudflare-hosted MCP servers), MCP streamable-HTTP transport with usecase tools, blocking lifecycle hooks (#2032), typed tool param coercion (#2061); whole fleet mono-aligned to 7.4.1.
+
+## 7.3.6 - 2026-11-02
+
+- Mono-version fleet alignment to 7.3.6; internal dependencies refreshed; xml override 7.1.0.
+
+## 7.3.2 - 2026-10-31
+
+Mono-version fleet alignment to 7.3.2: outbound send port lands in zuraffa_intents (shareText/shareFiles behind ShareIntentService); the whole family ships at one version.
+
+## 7.3.0 - 2026-10-28
+
+- Mono-version fleet alignment: the whole zuraffa family ships at 7.3.0 together with the core.
+- `zuraffa` dependency constraints unified to ^7.3.0; cross-family constraints move with the release.
+- Fleet-wide `dependency_overrides: xml: 7.1.0`; README install guides refreshed to 7.3.0.
+
+## 7.2.0 - 2026-10-28
+
+- Mono-version fleet alignment: the whole zuraffa family now ships at the same version as the core.
+- `zuraffa` dependency constraint unified to ^7.2.0 across the fleet.
+- zuraffa_storage now wraps the maintained `zuraffa_minio` fork instead of the abandoned `minio` package (xml 7 compatible).
+- Fleet-wide `dependency_overrides: xml: 7.1.0` policy; README install guides refreshed to the release version.
+
+## 0.4.0
+
+- **FEAT**: the UINode layer — every certified component as serializable
+  data (`json → node tree → widget tree`, and back). 34 node kinds
+  (`ShadNode` sealed union: 24 component + 9 structural + `unknown`) with a
+  Zorphy entity model, `ShadNodeParser` (schema validation, composition
+  caps depth 32 / 500 nodes / 10k text, typed `UiTreeTooLarge` /
+  `UiVersionError` / `UiParseError`, unknown-widget tolerance), byte-stable
+  `canonicalJson`, `validate()` CI self-check, `ShadNodeRenderer` mapping
+  every node to its engine component with theme-token styling and lifted
+  interaction state, and `UiActionRegistry` resolving semantic action IDs
+  (unknown actions and throwing handlers surface as typed events, never
+  crashes). Import `package:zuraffa_ui/uinode.dart` (also re-exported from
+  `zfa.dart`). The wire contract is cross-repo (zuraffa, zuraffa_agent);
+  see `specs/1100-uinode-system/contracts/uinode-api.md` and the coverage
+  audit for the v1 vocabulary and exclusions. Spec 1100 / issue #4
+  (ZikZak Wave U foundation). Zorphy sealed-base codegen workaround:
+  arrrrny/zuraffa#1717. New docs page: `Utils/uinode`.
+- **FEAT**: `ShadListSection.sticky` opt-out flag on `ShadStickySectionList`
+  (#33): a section created with `sticky: false` (e.g. a headerless ad
+  placeholder) never becomes the active section — the pinned bar keeps the
+  previous listing's title across its band, `onSectionChanged` skips it
+  entirely, and its inline header stays visible as it scrolls past. Default
+  `true`, so existing consumers are unchanged.
+- **FIX**: UINode hardening from review and CI (#25): the renderer mapper
+  imports `widgets` instead of `material` (check-imports gate), the
+  `lucide_icons_flutter` floor is raised to `3.1.17`, the analyze infos the
+  gate flagged are fixed, and the golden fixtures are regenerated on
+  Linux-rendered Flutter 3.47.4.
+- **Base fork SHA**: `a6e7688` (upstream `shadcn_ui` 0.57.0 + fixes; no new
+  upstream sync since 0.3.1).
+
+## 0.3.1
+
+- **FIX**: `ShadStickySectionList` no longer flickers the pinned title when
+  scrolling past a headerless ad section (#28, reopened report #31). Inline
+  headers are measured in list-viewport coordinates (a bar-height change can
+  no longer feed back into section detection), the active section is the last
+  one whose header reached the viewport top — selected deterministically and
+  evaluated in a deduped post-frame callback so every decision uses the
+  positions on screen. The pinned bar clears the top safe-area inset, and the
+  section title never paints twice during a transition (the active section's
+  inline header renders transparent while keeping its exact size). A
+  regression test pins the zero-padding consumer geometry (headerless
+  `SizedBox.shrink()` ad sections, `headerPadding`/`inlineHeaderPadding`
+  zero). Consumer apps on 0.3.0 still flicker — this release is the fix.
+- **FEAT**: the Zfa alias map skips zorphy `$$` written abstracts (#24).
+- **FIX**: generated form field ids are unique (upstream #707).
+- **FIX**: engine follows upstream `a6e7688` (post-`b7c4ad0` fixes); the
+  generated brand map and `cli/hashes.json` are regenerated on top.
+- **CHORE**: `scripts/local_ci.sh` runs the pull_request workflow's jobs and
+  steps locally, step-for-step (`--plan`/`--list`/`--job`); AGENTS.md carries
+  the reference. `flutter test` concurrency is capped at 2 everywhere (fleet
+  guard, arrrrrny/forklift#176). The sync-upstream conflict procedure was
+  exercised and TDD-verified for real (#27).
+- **Base fork SHA**: `a6e7688` (upstream `shadcn_ui` 0.57.0 + fixes).
+
+## 0.3.0
+
+- **BREAKING**: the raw engine library is `lib/zfa.dart` (was `lib/shad.dart`);
+  `package:zuraffa_ui/shad.dart` no longer resolves. That library also carries
+  a generated `Zfa*` alias for every public engine name (256 aliases across 120
+  libraries — `scripts/generate_zfa_aliases.dart`) and re-exports the certified
+  barrel, so `import 'package:zuraffa_ui/zfa.dart';` reaches the whole Zfa
+  vocabulary from one line. Consumer code never types a `Shad*` name;
+  `test/identified/zfa_alias_coverage_test.dart` fails on drift.
+- **FEAT**: `ZfaButton` gains the engine's variants — `raw`, `destructive`,
+  `outline`, `secondary`, `ghost`, `link` — plus `mainAxisAlignment`;
+  `ZfaInput` gains `padding`/`leading` and takes the engine's `Widget`
+  `placeholder`; `ZfaToaster.of(context).show(ZfaToast(...))` mirrors
+  `ShadToaster.of`. A skin can now build its screens without spelling a single
+  engine name.
+- **FEAT**: `.github/workflows/sync-upstream.yml` subscribes the fork to
+  `nank1ro/flutter-shadcn-ui` daily (03:00 UTC + manual dispatch). Conflicts
+  are never auto-resolved: the job aborts, opens a `sync`-labelled issue with
+  the resolution procedure, and fails. A clean merge must keep every entry of
+  `.github/FORK_OWNED_FILES` (the identified layer, the package identity, the
+  check-imports gate), and the brand map + `cli/hashes.json` are regenerated on
+  top of the merge. `AGENTS.md` records the policy.
+- **FIX**: engine synced to upstream `b7c4ad0` (`shadcn_ui` 0.57.0). A
+  `ShadDialog` no longer bakes status-bar/navigation-bar padding into a centred
+  card (`SafeArea` moves to the route level — this is what `ZfaDialog` renders
+  now; pass `useSafeArea: false` to restore the old behaviour), the same fix
+  lands for non-expandable `ShadSheet`s, and cross-axis safe-area insets no
+  longer leak into constrained sheets (#681, #685).
+- **FIX**: the `check-imports` gate ignores matches inside comments, so a doc
+  example may show an import line again while every real import is still
+  caught (line numbers included in the report).
+- **CHORE**: `cli/hashes.json` follows the merged tree; the generated agent
+  skill's Basic Setup example reads the Zfa surface.
+- **Base fork SHA**: `b7c4ad0` (upstream `shadcn_ui` 0.57.0).
+
+## 0.2.0
+
+- **FEAT**: `ShadStickySectionList` (with `ShadListSection` and the matching
+  `ShadStickySectionListTheme`) — a scrollable list with one sticky header that
+  tracks the active section by measuring the live inline headers, plus an
+  `onSectionChanged` callback. Wired through `ShadThemeData` and both default
+  theme variants, with tests, example pages and a sheet guide for the
+  pinned-title-with-list pattern.
+- **FIX**: the packaged font families still named the old package —
+  `kDefaultFontFamily`/`kDefaultFontFamilyMono` now resolve
+  `packages/zuraffa_ui/Geist` instead of the pre-repackage path, which silently
+  fell back to the platform font.
+- **FIX**: `ZuraffaApp.theme`/`darkTheme` are typed `ZfaThemeData`, so the
+  certified barrel no longer exposes a raw `Shad*` type.
+- **CHORE**: the localization output is regenerated with the current `slang`
+  builder.
+- **CHORE**: the CLI package is renamed `shadcn` → `zuraffa`, and the generated
+  agent skill moves to `skills/zuraffa-ui-flutter`.
+- Package identity reframed end to end: pubspec repository URL, README, the
+  prohibited-import CI check (it still matched the old barrel path), the publish
+  workflow (it called the upstream reusable workflow instead of this repo's own),
+  `CONTRIBUTING.md` and the issue/PR templates.
+
+## 0.1.0
+
+End-to-end repackage of the shadcn_ui fork as `zuraffa_ui` (spec #1099) — the
+skin lane's certified vocabulary.
+
+- **Base fork SHA**: `afc95690e53629324ddbf094ca78021f56848bd4` (arrrrny/zuraffa-ui)
+- **Upstream**: nank1ro/flutter-shadcn-ui, `shadcn_ui` 0.56.3
+- Package renamed `shadcn_ui` → `zuraffa_ui` (pubspec, barrel, package URIs);
+  version reset to `0.1.0` — zuraffa_ui owns its own semver timeline, breaking
+  shadcn upstream bumps become internal fixes.
+- Raw `Shad*` engine moved to `lib/shad.dart` (internal library, content
+  unchanged); `lib/zuraffa_ui.dart` is the package barrel exporting the
+  identified surface only.
+- New `lib/src/identified/` layer (isolated from upstream merges):
+  `ZuraffaApp` (route-contract observer + audit bus + violation chrome mounted
+  by default), `ZfaButton`, `ZfaInput`, `ZfaCard`, `ZfaSheet`, `ZfaToaster`,
+  `ZfaDialog` — each carrying the typed contract protocol
+  (`contractId`/`contractEnabled`) — plus `ZfaTheme`/`ZfaThemeData` aliases
+  and the `SkinContractKit` promoted from the 006 pilot (#1102).
+- The fork's component tests carried over (import URIs rewritten) and extended
+  with identification + contract-kit tests in `test/identified/`.
 
 ## 0.59.0
 
