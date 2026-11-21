@@ -466,10 +466,40 @@ class ShadFormBuilderSelectState<T>
 
   @override
   void didUpdateWidget(covariant ShadSelectFormField<T> oldWidget) {
+    // Capture the external controller's selection before super.didUpdateWidget
+    // potentially overwrites the form value with initialValue.
+    final swappedToInternal =
+        oldWidget.controller != null && widget.controller == null;
+    final externalSelection = oldWidget.controller?.value.firstOrNull;
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      final previousController = oldWidget.controller ?? _controller;
+      previousController?.removeListener(onControllerChange);
+      if (oldWidget.controller == null && widget.controller != null) {
+        _controller?.dispose();
+        _controller = null;
+      }
+      if (swappedToInternal) {
+        // Seed the replacement controller from the external controller's
+        // selection, not initialValue — the lazy getter would rebuild from
+        // initialValue, and super.didUpdateWidget already wrote initialValue
+        // into the form value.
+        final seed = externalSelection ?? value;
+        _controller = ShadSelectController<T>(
+          initialValue: {?seed},
+        );
+        if (externalSelection != null && value != externalSelection) {
+          setValue(externalSelection);
+        }
+      }
+      controller.addListener(onControllerChange);
+      if (controller.value.firstOrNull != value) {
+        setValue(controller.value.firstOrNull);
+      }
+    }
     // ShadSelect always receives this field's controller, so it will not
     // apply an initial value itself.
-    if (widget.id != oldWidget.id) {
+    if (!swappedToInternal && widget.id != oldWidget.id) {
       if (widget.controller == null) {
         // Re-registration stored the form value for the new id on this field.
         // Copy it into the controller this field owns.

@@ -823,5 +823,56 @@ void main() {
         expect(find.text('Empty'), findsOneWidget);
       },
     );
+
+    testWidgets(
+      'removing the external controller keeps the current field value',
+      (tester) async {
+        final formKey = GlobalKey<ShadFormState>();
+        final fieldKey = GlobalKey<ShadFormBuilderSelectState<String>>();
+        final external = ShadSelectController<String>(initialValue: {'b'});
+        ShadSelectController<String>? controller = external;
+
+        Widget field() {
+          return createTestWidget(
+            ShadForm(
+              key: formKey,
+              child: ShadSelectFormField<String>(
+                key: fieldKey,
+                id: 'fruit',
+                controller: controller,
+                initialValue: 'a',
+                placeholder: const Text('Select'),
+                selectedOptionBuilder: (context, value) => Text(value),
+                options: options,
+              ),
+            ),
+          );
+        }
+
+        await tester.pumpWidget(field());
+        expect(tester.takeException(), isNull);
+        expect(external.value, {'b'});
+
+        // Select a different value via the external controller to prove
+        // the field tracks it.
+        external.value = {'c'};
+        await tester.pump();
+        expect(fieldKey.currentState!.controller.value, {'c'});
+
+        // Drop the external controller — the field must keep 'c'.
+        controller = null;
+        await tester.pumpWidget(field());
+        expect(tester.takeException(), isNull);
+
+        final state = fieldKey.currentState!;
+        expect(state.controller.value, {'c'});
+        expect(state.controller, isNot(same(external)));
+        expect(state.value, 'c');
+        expect(formKey.currentState!.value['fruit'], 'c');
+
+        await tester.pumpWidget(const SizedBox());
+        external.dispose();
+      },
+    );
   });
 }
