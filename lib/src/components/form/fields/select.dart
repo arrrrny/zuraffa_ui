@@ -465,6 +465,84 @@ class ShadFormBuilderSelectState<T>
   }
 
   @override
+  void didUpdateWidget(covariant ShadSelectFormField<T> oldWidget) {
+    // Capture the external controller's selection before super.didUpdateWidget
+    // potentially overwrites the form value with initialValue.
+    final swappedToInternal =
+        oldWidget.controller != null && widget.controller == null;
+    final externalSelection = oldWidget.controller?.value.firstOrNull;
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      final previousController = oldWidget.controller ?? _controller;
+      previousController?.removeListener(onControllerChange);
+      if (oldWidget.controller == null && widget.controller != null) {
+        _controller?.dispose();
+        _controller = null;
+      }
+      if (swappedToInternal) {
+        // Seed the replacement controller from the external controller's
+        // selection, not initialValue — the lazy getter would rebuild from
+        // initialValue, and super.didUpdateWidget already wrote initialValue
+        // into the form value.
+        final seed = externalSelection ?? value;
+        _controller = ShadSelectController<T>(
+          initialValue: {?seed},
+        );
+        if (externalSelection != null && value != externalSelection) {
+          setValue(externalSelection);
+        }
+      }
+      controller.addListener(onControllerChange);
+      if (controller.value.firstOrNull != value) {
+        setValue(controller.value.firstOrNull);
+      }
+    }
+    // ShadSelect always receives this field's controller, so it will not
+    // apply an initial value itself.
+    if (!swappedToInternal && widget.id != oldWidget.id) {
+      if (widget.controller == null) {
+        // Re-registration stored the form value for the new id on this field.
+        // Copy it into the controller this field owns.
+        if (controller.value.firstOrNull != value) _setControllerValue(value);
+      } else {
+        // An external controller keeps its selection. Register that selection
+        // under the new id instead of writing the new id's value into it.
+        final selection = controller.value.firstOrNull;
+        if (value != selection) {
+          setValue(selection);
+        }
+      }
+    }
+
+    // initialValue only drives a controller this field created. The resolved
+    // initialValue falls back to the form value, so inside a ShadForm a null
+    // initialValue keeps that value. Otherwise null is a valid selection when
+    // T is nullable, and ignored when it is not, matching ShadSelect.
+    if (widget.controller != null ||
+        widget.initialValue == oldWidget.initialValue) {
+      return;
+    }
+    final next = initialValue;
+    if (next is! T) return;
+
+    // onChanged is not called here: a parent setState inside it would run
+    // during build. setValue still writes the registered form value.
+    _setControllerValue(next);
+    if (value != next) {
+      setValue(next);
+    }
+  }
+
+  // New set so ValueNotifier notifies. The listener is detached because it
+  // calls didChange, and the form cannot setState during this update.
+  void _setControllerValue(T? next) {
+    final updated = next is T ? <T>{next} : <T>{};
+    controller.removeListener(onControllerChange);
+    controller.value = updated;
+    controller.addListener(onControllerChange);
+  }
+
+  @override
   void reset() {
     super.reset();
     controller.value = initialValue is T ? <T>{initialValue as T} : <T>{};

@@ -12,6 +12,10 @@
 - **FEAT**: First release carrying `ShadItem` and its companions (`ShadItemMedia`, `ShadItemContent`, `ShadItemTitle`, `ShadItemDescription`, `ShadItemActions`, `ShadItemHeader`, `ShadItemFooter`, `ShadItemGroup`, `ShadItemSeparator`, sizes, variants) with all `ZfaItem*` aliases — a Material-free row primitive for surfaces that paint their own background (dialogs, sheets, cards).
 - ZuraffaApp now also forwards `materialThemeBuilder`.
 
+## 0.61.2
+
+- **FIX**: The controller wins over `initialValue` on `ShadRadioGroup`, `ShadSelect`, and their form fields. Only an internal controller follows `initialValue` (#734, #739).
+
 ## 0.61.1
 
 - **FIX**: Localizations are compiled into the main web bundle instead of deferred locale chunks, preventing stale tabs from requesting missing chunks after a deployment. The bundle grows by about 18 KB gzipped.
