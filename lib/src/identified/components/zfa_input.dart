@@ -28,6 +28,8 @@ class ZfaInput extends StatelessWidget with ZfaContract {
     this.readOnly = false,
     this.obscureText = false,
     this.keyboardType,
+    this.maxLines = 1,
+    this.minLines,
     this.autofocus = false,
     this.focusNode,
     this.padding,
@@ -63,6 +65,18 @@ class ZfaInput extends StatelessWidget with ZfaContract {
   /// The keyboard type for the input.
   final TextInputType? keyboardType;
 
+  /// The maximum number of lines the input can display.
+  ///
+  /// Defaults to `1` (a single-line field), mirroring [ShadInput.maxLines].
+  /// Set to `null` or a value greater than `1` for a multiline field.
+  final int? maxLines;
+
+  /// The minimum number of lines the input should display.
+  ///
+  /// Defaults to `null`; must be less than or equal to [maxLines]. Mirrors
+  /// [ShadInput.minLines].
+  final int? minLines;
+
   /// Whether the input autofocuses.
   final bool autofocus;
 
@@ -93,6 +107,8 @@ class ZfaInput extends StatelessWidget with ZfaContract {
       readOnly: readOnly,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      maxLines: maxLines,
+      minLines: minLines,
       autofocus: autofocus,
       focusNode: focusNode,
       padding: padding,

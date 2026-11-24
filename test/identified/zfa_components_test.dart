@@ -178,6 +178,17 @@ void main() {
       expect(engine.padding, padding);
       expect(find.text('lead'), findsOneWidget);
     });
+
+    testWidgets('forwards maxLines and minLines to the engine', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          const ZfaInput(maxLines: 8, minLines: 2),
+        ),
+      );
+      final engine = tester.widget<ShadInput>(find.byType(ShadInput));
+      expect(engine.maxLines, 8);
+      expect(engine.minLines, 2);
+    });
   });
 
   group('ZfaCard', () {
